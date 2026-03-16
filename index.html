@@ -1110,45 +1110,84 @@ const 상충 = [
 const 십이운성순서 = ['장생','목욕','관대','건록','제왕','쇠','병','사','묘','절','태','양'];
 
 // 양간의 장생 시작 지지 인덱스
-const 양간장생 = { '甲': 2, '丙': 5, '戊': 5, '庚': 8, '壬': 11 };
-const 음간장생 = { '乙': 8, '丁': 11, '己': 11, '辛': 2, '癸': 5 };
+const 양간장생 = { '甲': 11, '丙': 2, '戊': 2, '庚': 5, '壬': 8 };
+const 음간장생 = { '乙': 6, '丁': 9, '己': 9, '辛': 0, '癸': 3 };
 
-// ── 음력→양력 변환 (간이) ──
-// 실제 서비스에서는 음력 DB 필요. 여기서는 근사값 사용
-function lunarToSolar(y, m, d) {
-  // 대략적 변환: 음력은 양력보다 약 1달 늦음
-  let sm = m + 1;
-  let sy = y;
-  let sd = d;
-  if (sm > 12) { sm -= 12; sy += 1; }
-  return { year: sy, month: sm, day: sd };
+// ── 절기 경계 (사주 월 결정 기준) ──
+// 각 절기: [양력월, 평균시작일, 사주월 지지인덱스]
+// ※ 절기일은 평균값 기준 (±1일 오차 가능, 절기 당일 출생자는 전문가 확인 권장)
+// 역순 배열 (검색 효율)
+const 절기경계 = [
+  [12, 7, 0],   // 대설(大雪) → 子月
+  [11, 7, 11],  // 입동(立冬) → 亥月
+  [10, 8, 10],  // 한로(寒露) → 戌月
+  [9, 8, 9],    // 백로(白露) → 酉月
+  [8, 8, 8],    // 입추(立秋) → 申月
+  [7, 7, 7],    // 소서(小暑) → 未月
+  [6, 6, 6],    // 망종(芒種) → 午月
+  [5, 6, 5],    // 입하(立夏) → 巳月
+  [4, 5, 4],    // 청명(清明) → 辰月
+  [3, 6, 3],    // 경칩(驚蟄) → 卯月
+  [2, 4, 2],    // 입춘(立春) → 寅月
+  [1, 6, 1],    // 소한(小寒) → 丑月
+];
+
+// 입춘 기준 사주 년도 결정
+function getSajuYear(year, month, day) {
+  // 입춘(~2/4) 이전이면 전년도 간지 사용
+  if (month < 2 || (month === 2 && day < 4)) {
+    return year - 1;
+  }
+  return year;
 }
 
-// ── 년주 계산 ──
-function getYearPillar(year) {
-  // 입춘 기준 (2월 4일 전후)은 간소화하여 양력 2월 4일로 처리
-  const ganIdx = (year - 4) % 10;
-  const jiIdx = (year - 4) % 12;
+// 절기 기준 사주 월지 결정
+function getSajuMonthJi(month, day) {
+  for (const [m, d, ji] of 절기경계) {
+    if (month > m || (month === m && day >= d)) {
+      return ji;
+    }
+  }
+  // 1월 1~5일: 아직 子月 (전년 대설 이후)
+  return 0;
+}
+
+// ── 음력→양력 변환 ──
+// 음력 변환은 천문 데이터 기반 정밀 테이블 필요 — 현재 미지원
+// analyze()에서 음력 선택 시 경고 처리
+function lunarToSolar(y, m, d) {
+  return null;
+}
+
+// ── 년주 계산 (입춘 기준 적용) ──
+function getYearPillar(year, month, day) {
+  month = month || 6; // 기본값: 입춘 이후
+  day = day || 1;
+  const sajuYear = getSajuYear(year, month, day);
+  const ganIdx = (sajuYear - 4) % 10;
+  const jiIdx = (sajuYear - 4) % 12;
   return { gan: (ganIdx + 10) % 10, ji: (jiIdx + 12) % 12 };
 }
 
-// ── 월주 계산 ──
-function getMonthPillar(year, month) {
-  const yearGan = getYearPillar(year).gan;
+// ── 월주 계산 (절기 기준 적용) ──
+function getMonthPillar(year, month, day) {
+  day = day || 15; // 기본값: 절기 이후
+  const sajuYear = getSajuYear(year, month, day);
+  const yearGan = ((sajuYear - 4) % 10 + 10) % 10;
 
   // 월간 기준: 甲己→丙寅, 乙庚→戊寅, 丙辛→庚寅, 丁壬→壬寅, 戊癸→甲寅
   const monthGanBase = ((yearGan % 5) * 2 + 2) % 10;
 
-  // 전통 월 인덱스: 寅月(2월)=0, 卯月(3월)=1, ..., 丑月(1월)=11
-  const traditionalMonthIdx = ((month - 2) + 12) % 12;
+  // 절기 기준 월지
+  const monthJi = getSajuMonthJi(month, day);
+
+  // 전통 월 인덱스: 寅(2)=0, 卯(3)=1, ..., 丑(1)=11, 子(0)=10
+  const traditionalMonthIdx = ((monthJi - 2) + 12) % 12;
 
   // 월간 = 기준 + 전통월 인덱스
   const monthGan = (monthGanBase + traditionalMonthIdx) % 10;
 
-  // 월지: 2월→寅(2), 3월→卯(3), ..., 12월→子(0), 1월→丑(1)
-  const monthJiIdx = month % 12;
-
-  return { gan: monthGan, ji: monthJiIdx };
+  return { gan: monthGan, ji: monthJi };
 }
 
 // ── 일주 계산 (sxtwl 교차검증 완료) ──
@@ -1223,12 +1262,13 @@ function countElements(pillars) {
     if (p) {
       count[천간오행[p.gan]]++;
       count[지지오행[p.ji]]++;
-      // 지지장간도 카운트 (가중치 낮게)
+      // 지지장간 카운트 (본기 0.7, 중기 0.3, 여기 0.1)
       const jj = 지지장간[지지[p.ji]];
       if (jj) {
+        const weights = [0.7, 0.3, 0.1];
         jj.forEach((g, i) => {
           const gIdx = 천간.indexOf(g);
-          count[천간오행[gIdx]] += (i === 0 ? 0.5 : 0.3);
+          count[천간오행[gIdx]] += (weights[i] || 0.1);
         });
       }
     }
@@ -1273,24 +1313,100 @@ function getYongsin(dayGanIdx, elementCounts) {
   return { 용신, 희신, 기신, 신강여부: 비겁력 > 설기력 ? '신강' : '신약' };
 }
 
-// ── 대운 계산 ──
-function getDaeun(yearGan, yearJi, gender) {
+// ── 조후용신 보조 판단 (월령 기반 한난조습) ──
+function getJohuYongsin(monthJi) {
+  // 여름(巳午未 = 5,6,7): 水 필요 (더위 식힘)
+  if ([5, 6, 7].includes(monthJi)) return { johu: '수', 설명: '여름생으로 더위가 강하니 水(수)의 기운이 필요합니다.' };
+  // 겨울(亥子丑 = 11,0,1): 火 필요 (추위 녹임)
+  if ([11, 0, 1].includes(monthJi)) return { johu: '화', 설명: '겨울생으로 추위가 강하니 火(화)의 기운이 필요합니다.' };
+  // 봄/가을: 조후 특별 요구 없음
+  return null;
+}
+
+// ── 사주 내 합/충 감지 ──
+function findHapChung(pillars) {
+  const result = { 합: [], 충: [] };
+  const jiNames = pillars.filter(p => p).map((p, i) => ({
+    name: ['년지','월지','일지','시지'][i],
+    ji: 지지[p.ji]
+  }));
+
+  for (let a = 0; a < jiNames.length; a++) {
+    for (let b = a + 1; b < jiNames.length; b++) {
+      const pair = [jiNames[a].ji, jiNames[b].ji];
+      // 육합 체크
+      for (const [x, y] of 육합) {
+        if ((pair[0] === x && pair[1] === y) || (pair[0] === y && pair[1] === x)) {
+          result.합.push(`${jiNames[a].name}(${pair[0]})-${jiNames[b].name}(${pair[1]}) 육합`);
+        }
+      }
+      // 상충 체크
+      for (const [x, y] of 상충) {
+        if ((pair[0] === x && pair[1] === y) || (pair[0] === y && pair[1] === x)) {
+          result.충.push(`${jiNames[a].name}(${pair[0]})-${jiNames[b].name}(${pair[1]}) 상충`);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+// ── 대운 계산 (월주 기준, 년간으로 순역 판단) ──
+function getDaeun(monthGan, monthJi, yearGan, gender, birthYear, birthMonth, birthDay) {
   const isYangGan = 천간음양[yearGan] === '양';
   const isMale = gender === 'male';
   // 양남음녀 순행, 음남양녀 역행
   const forward = (isYangGan && isMale) || (!isYangGan && !isMale);
 
+  // 대운 시작나이 계산: 생일~다음/이전 절기 일수 ÷ 3
+  let startAge = 3; // 기본값
+  if (birthYear && birthMonth && birthDay) {
+    const birthDate = new Date(birthYear, birthMonth - 1, birthDay);
+    let targetDate = null;
+
+    if (forward) {
+      // 순행: 다음 절기까지 일수
+      for (let i = 절기경계.length - 1; i >= 0; i--) {
+        const [m, d] = 절기경계[i];
+        let targetYear = birthYear;
+        const jDate = new Date(targetYear, m - 1, d);
+        if (jDate > birthDate) { targetDate = jDate; break; }
+      }
+      if (!targetDate) {
+        // 올해 절기 모두 지남 → 내년 소한(1/6)
+        targetDate = new Date(birthYear + 1, 0, 6);
+      }
+    } else {
+      // 역행: 이전 절기까지 일수
+      for (let i = 0; i < 절기경계.length; i++) {
+        const [m, d] = 절기경계[i];
+        let targetYear = birthYear;
+        const jDate = new Date(targetYear, m - 1, d);
+        if (jDate <= birthDate) { targetDate = jDate; break; }
+      }
+      if (!targetDate) {
+        // 올해 절기 이전 없음 → 전년 대설(12/7)
+        targetDate = new Date(birthYear - 1, 11, 7);
+      }
+    }
+
+    const dayDiff = Math.abs(Math.floor((birthDate - targetDate) / 86400000));
+    startAge = Math.round(dayDiff / 3);
+    if (startAge < 1) startAge = 1;
+    if (startAge > 10) startAge = 10;
+  }
+
   const daeuns = [];
   for (let i = 1; i <= 8; i++) {
     const ganIdx = forward
-      ? (yearGan + i) % 10
-      : (yearGan - i + 100) % 10;
+      ? (monthGan + i) % 10
+      : (monthGan - i + 100) % 10;
     const jiIdx = forward
-      ? (yearJi + i) % 12
-      : (yearJi - i + 120) % 12;
+      ? (monthJi + i) % 12
+      : (monthJi - i + 120) % 12;
     daeuns.push({
       gan: ganIdx, ji: jiIdx,
-      age: i * 10 - 7 // 대략적 대운 시작 나이
+      age: startAge + (i - 1) * 10
     });
   }
   return daeuns;
@@ -1629,10 +1745,8 @@ function analyze() {
   // 음력→양력 변환
   let solarYear = year, solarMonth = month, solarDay = day;
   if (selectedCalendar === 'lunar') {
-    const converted = lunarToSolar(year, month, day);
-    solarYear = converted.year;
-    solarMonth = converted.month;
-    solarDay = converted.day;
+    alert('음력 입력은 현재 정확한 변환을 지원하지 않습니다.\n\n양력 생년월일을 입력해주세요.\n(네이버에서 "음력 양력 변환"을 검색하면 쉽게 변환할 수 있습니다.)');
+    return;
   }
 
   // 로딩 표시
@@ -1640,8 +1754,8 @@ function analyze() {
 
   setTimeout(() => {
     // 사주 계산
-    const yearP = getYearPillar(solarYear);
-    const monthP = getMonthPillar(solarYear, solarMonth);
+    const yearP = getYearPillar(solarYear, solarMonth, solarDay);
+    const monthP = getMonthPillar(solarYear, solarMonth, solarDay);
     const dayP = getDayPillar(solarYear, solarMonth, solarDay);
     const hourP = getHourPillar(dayP.gan, hour);
 
@@ -1651,7 +1765,7 @@ function analyze() {
 
     // 올해 운세 (2026년 = 병오)
     const currentYear = 2026;
-    const cyP = getYearPillar(currentYear);
+    const cyP = getYearPillar(currentYear, 6, 1);
     const yearFortune = getYearFortune(dayP.gan, cyP.gan, cyP.ji, yongsinInfo);
 
     const dayGan = 천간[dayP.gan];
