@@ -1552,7 +1552,23 @@ function getWealthAnalysis(dayGanIdx, elementCounts, yongsin) {
   const foodGodCount = elementCounts[아생[dayElement]]; // 식상 (재물을 생해주는 기운)
   const {신강여부} = yongsin;
 
+  // 편재/정재 구분: 같은 음양이면 편재, 다르면 정재
+  const dayYY = 천간음양[dayGanIdx];
+  // 재성 오행에 해당하는 천간 중 양/음 확인
+  const 재성간들 = 천간.map((g, i) => ({ gan: g, idx: i })).filter(x => 천간오행[x.idx] === wealthElement);
+  const 편재간 = 재성간들.find(x => 천간음양[x.idx] === dayYY);
+  const 정재간 = 재성간들.find(x => 천간음양[x.idx] !== dayYY);
+  const wealthType = wealthCount >= 1.5 ? (편재간 ? '편재' : '정재') : '';
+
   let text = '';
+  if (wealthType) {
+    text += `<span class="info">▸ 재성 유형:</span> `;
+    if (wealthType === '편재') {
+      text += `<span class="highlight">편재</span> — 투자, 사업, 유동적 재물에 강합니다. 모험적이고 스케일이 큰 돈의 흐름을 다룰 수 있는 기질입니다.<br><br>`;
+    } else {
+      text += `<span class="highlight">정재</span> — 근로소득, 저축, 안정적 자산에 강합니다. 꾸준히 모아가는 성실한 재물 관리가 체질입니다.<br><br>`;
+    }
+  }
   if (wealthCount >= 2.5) {
     text = `재성(${오행한자[wealthElement]})이 강하여 <span class="highlight">타고난 재물 감각</span>이 있는 사주입니다. 돈의 흐름을 본능적으로 읽는 능력이 있어서, 투자나 사업에서 기회를 잘 포착합니다. 특히 <span class="highlight">${오행관계[wealthElement].계절}</span>에 재물운이 상승하므로 이 시기를 잘 활용하세요.`;
     if (신강여부 === '신강') {
@@ -1763,13 +1779,27 @@ function analyze() {
     const elementCounts = countElements(pillars);
     const yongsinInfo = getYongsin(dayP.gan, elementCounts);
 
-    // 올해 운세 (2026년 = 병오)
-    const currentYear = 2026;
+    // 올해 운세 (동적 연도)
+    const currentYear = new Date().getFullYear();
     const cyP = getYearPillar(currentYear, 6, 1);
     const yearFortune = getYearFortune(dayP.gan, cyP.gan, cyP.ji, yongsinInfo);
 
     const dayGan = 천간[dayP.gan];
     const personalityInfo = 일간성격[dayGan];
+
+    // 대운 계산
+    const daeunList = getDaeun(monthP.gan, monthP.ji, yearP.gan, selectedGender, solarYear, solarMonth, solarDay);
+
+    // 합충 감지
+    const hapChung = findHapChung(pillars);
+
+    // 조후용신
+    const johuInfo = getJohuYongsin(monthP.ji);
+
+    // 4주 십신
+    const sipsung년 = yearP ? getSipsung(dayP.gan, yearP.gan) : '';
+    const sipsung월 = monthP ? getSipsung(dayP.gan, monthP.gan) : '';
+    const sipsung시 = hourP ? getSipsung(dayP.gan, hourP.gan) : '';
 
     // 건강 분석
     const healthInfo = getHealthAnalysis(elementCounts, 천간오행[dayP.gan]);
@@ -1799,6 +1829,7 @@ function analyze() {
         return;
       }
       const ganEl = 오행영문[천간오행[p.gan]];
+      const sipsungLabel = i === 2 ? '일원' : [sipsung년, sipsung월, '', sipsung시][i];
       pillarsHTML += `
         <div class="pillar" data-element="${ganEl}" style="animation-delay: ${i * 0.1}s">
           <div class="pillar-label">${pillarNames[i]}</div>
@@ -1808,6 +1839,7 @@ function analyze() {
           <div class="pillar-element el-${오행영문[천간오행[p.gan]]}">
             ${오행한자[천간오행[p.gan]]} · ${천간음양[p.gan]}
           </div>
+          <div class="pillar-sipsung" style="font-size:0.75rem; color:var(--gold); margin-top:4px">${sipsungLabel}</div>
         </div>`;
     });
 
@@ -1833,6 +1865,9 @@ function analyze() {
     if (excess.length) elAnalysis += `<span class="caution">과다한 오행:</span> ${excess.map(e => 오행한자[e] + '(' + e + ')').join(', ')}<br>`;
     if (lacking.length) elAnalysis += `<span class="good">부족한 오행:</span> ${lacking.map(e => 오행한자[e] + '(' + e + ')').join(', ')}<br>`;
     elAnalysis += `<br>일간 강약: <span class="highlight">${yongsinInfo.신강여부}</span> · 용신: <span class="highlight">${오행한자[yongsinInfo.용신]}(${yongsinInfo.용신})</span> · 기신: <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신})</span>`;
+    if (johuInfo) {
+      elAnalysis += `<br><span class="info">▸ 조후:</span> ${johuInfo.설명}`;
+    }
 
     // 건강 텍스트
     let healthHTML = healthInfo.map(h => {
@@ -1919,6 +1954,28 @@ function analyze() {
       <div class="pillars-section">
         <div class="pillars-title">사 주 팔 자</div>
         <div class="pillars-grid">${pillarsHTML}</div>
+        ${(hapChung.합.length || hapChung.충.length) ? `
+        <div style="margin-top:12px; text-align:center; font-size:0.85rem; color:var(--text-dim)">
+          ${hapChung.합.length ? `<span class="good">합:</span> ${hapChung.합.join(', ')}` : ''}
+          ${hapChung.합.length && hapChung.충.length ? ' · ' : ''}
+          ${hapChung.충.length ? `<span class="caution">충:</span> ${hapChung.충.join(', ')}` : ''}
+        </div>` : ''}
+      </div>
+
+      <!-- 대운 흐름 -->
+      <div class="analysis-card" data-icon="📊" style="animation-delay: 0.05s">
+        <div class="card-title">대운 흐름</div>
+        <div class="card-content">
+          <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center">
+            ${daeunList.map((d, i) => `
+              <div style="text-align:center; padding:8px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.08); min-width:60px">
+                <div style="font-size:0.7rem; color:var(--text-dim)">${d.age}세~</div>
+                <div style="font-size:1.1rem; color:${오행색상[천간오행[d.gan]]}">${천간[d.gan]}${지지[d.ji]}</div>
+                <div style="font-size:0.7rem; color:var(--text-dim)">${천간한글[d.gan]}${지지한글[d.ji]}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
       </div>
 
       <!-- 12운성 -->
@@ -1975,7 +2032,7 @@ function analyze() {
 
       <!-- 올해 운세 -->
       <div class="analysis-card" data-icon="⭐" style="animation-delay: 0.8s">
-        <div class="card-title">2026년 올해의 운세</div>
+        <div class="card-title">${currentYear}년 올해의 운세</div>
         <div class="card-content">${yearFortune.종합}</div>
       </div>
 
@@ -2049,9 +2106,9 @@ function analyze() {
 
         <div class="premium-card">
           <div class="premium-card-blur">
-            <div class="card-title">📊 10년 대운 로드맵</div>
+            <div class="card-title">📊 대운별 상세 인생 로드맵</div>
             <div class="card-content">
-              현재 대운부터 향후 30년간의 대운 흐름을 연도별로 분석합니다. 인생의 전환점, 재물 상승기, 건강 주의기, 결혼 적기, 이직 최적기를 구체적인 년도와 함께 알려드립니다. ${name}님의 인생 내비게이션...
+              각 대운 시기별 재물운, 연애운, 건강운을 상세 분석합니다. 인생의 전환점, 재물 상승기, 결혼 적기, 이직 최적기를 구체적인 년도와 함께 알려드립니다. ${name}님만을 위한 인생 내비게이션...
             </div>
           </div>
           <div class="premium-lock">
