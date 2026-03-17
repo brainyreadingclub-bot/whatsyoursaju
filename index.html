@@ -57,6 +57,16 @@ body {
   overflow-x: hidden;
   line-height: 1.8;
 }
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
+}
 
 /* ─── Animated background ─── */
 .cosmos {
@@ -367,44 +377,74 @@ input::placeholder {
   display: none;
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(10,6,16,0.92);
+  background: rgba(10,6,16,0.96);
   z-index: 999;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  gap: 30px;
+  gap: 24px;
 }
 .loading-overlay.active {
   display: flex;
 }
 
-.trigram-spinner {
-  width: 100px; height: 100px;
-  position: relative;
-  animation: trigramSpin 3s linear infinite;
+.loading-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 8px;
+  opacity: 0;
+  animation: loadingNameIn 0.8s ease-out 0.1s forwards;
 }
-@keyframes trigramSpin {
-  to { transform: rotate(360deg); }
+@keyframes loadingNameIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.trigram-spinner::before {
-  content: '☰';
-  position: absolute;
-  font-size: 60px;
+
+.loading-pillars {
+  display: flex;
+  gap: 16px;
+}
+.loading-pillar-frame {
+  width: 56px;
+  height: 72px;
+  border: 1px solid rgba(107,63,160,0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--text-dim);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+.loading-pillar-frame.filled {
+  border-color: var(--gold-dim);
   color: var(--gold);
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  text-shadow: 0 0 30px rgba(212,168,83,0.5);
+  opacity: 1;
+  background: rgba(212,168,83,0.05);
+  box-shadow: 0 0 15px rgba(212,168,83,0.1);
+}
+.loading-pillar-frame:nth-child(1) { animation: pillarFrameIn 0.3s ease-out 0.8s forwards; }
+.loading-pillar-frame:nth-child(2) { animation: pillarFrameIn 0.3s ease-out 1.0s forwards; }
+.loading-pillar-frame:nth-child(3) { animation: pillarFrameIn 0.3s ease-out 1.2s forwards; }
+.loading-pillar-frame:nth-child(4) { animation: pillarFrameIn 0.3s ease-out 1.4s forwards; }
+@keyframes pillarFrameIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .loading-text {
-  font-size: 16px;
-  color: var(--text-secondary);
-  letter-spacing: 6px;
-  animation: loadingPulse 1.5s ease-in-out infinite;
+  font-size: 14px;
+  color: var(--text-dim);
+  letter-spacing: 4px;
+  opacity: 0;
+  animation: loadingTextIn 0.5s ease-out 1.8s forwards;
 }
-@keyframes loadingPulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+@keyframes loadingTextIn {
+  from { opacity: 0; }
+  to { opacity: 0.7; }
 }
 
 /* ─── Results ─── */
@@ -434,6 +474,15 @@ input::placeholder {
 }
 
 /* ─── Pillars Display ─── */
+.pillars-section, .elements-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.pillars-section.visible, .elements-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 .pillars-section {
   margin-bottom: 48px;
 }
@@ -487,9 +536,9 @@ input::placeholder {
   margin-bottom: 16px;
 }
 .pillar-hanja {
-  font-size: 36px;
+  font-size: 44px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.2;
   margin-bottom: 8px;
 }
 .pillar-hangul {
@@ -585,20 +634,149 @@ input::placeholder {
 .analysis-card {
   background: linear-gradient(145deg, rgba(17,13,26,0.95), rgba(26,19,40,0.9));
   border: 1px solid rgba(107,63,160,0.15);
-  border-radius: 20px;
+  border-left: 4px solid var(--purple-mid);
+  border-radius: 4px 20px 20px 4px;
   padding: 40px;
   margin-bottom: 24px;
   position: relative;
   overflow: hidden;
-  animation: cardAppear 0.6s ease-out both;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out, border-left-width 0.3s ease;
+}
+.analysis-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.analysis-card:hover {
+  border-left-width: 8px;
+}
+
+/* 섹션별 좌측 색상선 */
+.analysis-card[data-accent="gold"] { border-left-color: var(--gold); }
+.analysis-card[data-accent="purple"] { border-left-color: var(--purple-light); }
+.analysis-card[data-accent="rose"] { border-left-color: var(--rose); }
+.analysis-card[data-accent="wood"] { border-left-color: var(--wood); }
+.analysis-card[data-accent="fire"] { border-left-color: var(--fire); }
+.analysis-card[data-accent="metal"] { border-left-color: var(--metal); }
+.analysis-card[data-accent="water"] { border-left-color: var(--water); }
+
+/* ─── 3-Tier Card Hierarchy ─── */
+/* Hero tier: 대운, 오행 — larger presence */
+.analysis-card.card-hero {
+  padding: 48px 44px;
+  border-left-width: 5px;
+  background: linear-gradient(145deg, rgba(17,13,26,0.98), rgba(30,22,48,0.95));
+}
+.analysis-card.card-hero::after { font-size: 44px; }
+
+/* Utility tier: 가까이/피할것 + 행운아이템 — compact 2-column */
+.utility-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.utility-grid .analysis-card {
+  margin-bottom: 0;
+  padding: 28px 24px;
+}
+.utility-grid .analysis-card::after {
+  font-size: 28px;
+  top: 12px; right: 16px;
+}
+.utility-grid .card-title { font-size: 0.95rem; }
+.utility-grid .lucky-grid { gap: 8px; }
+.utility-grid .lucky-item { padding: 10px 8px; }
+.utility-grid .lucky-item-value { font-size: 15px; }
+@media (max-width: 640px) {
+  .utility-grid { grid-template-columns: 1fr; }
+  .utility-grid .analysis-card { padding: 20px 16px; }
 }
 
 .analysis-card::after {
   content: attr(data-icon);
   position: absolute;
-  top: 20px; right: 24px;
-  font-size: 32px;
-  opacity: 0.15;
+  top: 16px; right: 24px;
+  font-size: 38px;
+  opacity: 0.12;
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  color: var(--gold-dim);
+}
+
+/* ─── Daeun Timeline ─── */
+.daeun-timeline {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 0;
+  padding: 20px 16px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) transparent;
+}
+.daeun-timeline::-webkit-scrollbar { height: 4px; }
+.daeun-timeline::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+.daeun-item {
+  scroll-snap-align: center;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-width: 80px;
+  padding: 0 8px;
+}
+.daeun-hanja {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.daeun-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--purple-mid);
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+.daeun-item.current .daeun-dot {
+  width: 16px;
+  height: 16px;
+  background: var(--gold);
+  box-shadow: 0 0 20px var(--gold), 0 0 40px rgba(212,168,83,0.3);
+  animation: daeunPulse 2s ease-in-out infinite;
+}
+@keyframes daeunPulse {
+  0%, 100% { box-shadow: 0 0 20px var(--gold), 0 0 40px rgba(212,168,83,0.3); }
+  50% { box-shadow: 0 0 30px var(--gold), 0 0 60px rgba(212,168,83,0.5); }
+}
+.daeun-item.past .daeun-hanja,
+.daeun-item.past .daeun-age { opacity: 0.45; }
+.daeun-item.current .daeun-hanja { color: var(--gold-light); }
+.daeun-line {
+  position: absolute;
+  top: calc(50%);
+  left: calc(50% + 8px);
+  width: calc(100% - 16px);
+  height: 2px;
+  background: rgba(107,63,160,0.3);
+  z-index: 1;
+}
+.daeun-item:last-child .daeun-line { display: none; }
+.daeun-item.current .daeun-line { background: var(--gold-dim); }
+.daeun-age {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+.daeun-current-badge {
+  font-size: 0.6rem;
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-top: 4px;
 }
 
 .card-title {
@@ -714,6 +892,15 @@ input::placeholder {
 }
 
 /* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .container { max-width: 720px; }
+}
+@media (max-width: 768px) {
+  .container { max-width: 100%; padding: 32px 20px; }
+  .analysis-card { padding: 32px 24px; }
+  .analysis-card.card-hero { padding: 36px 24px; }
+  .pillar-hanja { font-size: 38px; }
+}
 @media (max-width: 640px) {
   .container { padding: 24px 16px; }
   .form-section { padding: 32px 20px; }
@@ -721,8 +908,13 @@ input::placeholder {
   .title-chinese { font-size: 44px; letter-spacing: 12px; }
   .pillars-grid { grid-template-columns: repeat(2, 1fr); }
   .lucky-grid { grid-template-columns: 1fr; }
-  .analysis-card { padding: 28px 20px; }
+  .analysis-card { padding: 24px 16px; }
+  .analysis-card.card-hero { padding: 28px 16px; }
   .elements-chart { gap: 12px; }
+  .pillar-hanja { font-size: 34px; }
+  .loading-name { font-size: 24px; letter-spacing: 4px; }
+  .loading-pillar-frame { width: 48px; height: 60px; font-size: 20px; }
+  .daeun-item { min-width: 70px; }
 }
 
 /* ─── Stagger animations ─── */
@@ -785,36 +977,24 @@ input::placeholder {
   overflow: hidden;
 }
 .premium-card-blur {
-  filter: blur(6px);
+  -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
   user-select: none;
   pointer-events: none;
-  opacity: 0.5;
 }
 .premium-card-blur .card-content {
   line-height: 2;
   color: var(--text-secondary);
 }
 .premium-lock {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  z-index: 3;
-  background: rgba(10,6,16,0.3);
-}
-.premium-lock-icon {
-  font-size: 36px;
-  opacity: 0.8;
+  text-align: center;
+  padding: 8px 0 0;
 }
 .premium-lock-text {
   font-size: 14px;
-  color: var(--gold-light);
+  color: var(--gold);
   letter-spacing: 2px;
-  text-align: center;
-  line-height: 1.8;
+  opacity: 0.8;
 }
 .premium-cta {
   display: block;
@@ -956,8 +1136,14 @@ input::placeholder {
 
 <!-- Loading -->
 <div class="loading-overlay" id="loading">
-  <div class="trigram-spinner"></div>
-  <div class="loading-text">천명을 해석하고 있습니다</div>
+  <div class="loading-name" id="loading-name"></div>
+  <div class="loading-pillars" id="loading-pillars">
+    <div class="loading-pillar-frame">年</div>
+    <div class="loading-pillar-frame">月</div>
+    <div class="loading-pillar-frame">日</div>
+    <div class="loading-pillar-frame">時</div>
+  </div>
+  <div class="loading-text" id="loading-text">사주를 풀어보고 있습니다</div>
 </div>
 
 <div class="container">
@@ -1833,8 +2019,17 @@ function analyze() {
     return;
   }
 
-  // 로딩 표시
+  // 로딩 표시 — 이름 세팅 + 기둥 프레임 리셋
+  document.getElementById('loading-name').textContent = name;
+  document.querySelectorAll('.loading-pillar-frame').forEach(f => f.classList.remove('filled'));
   document.getElementById('loading').classList.add('active');
+
+  // 기둥 하나씩 채우기
+  const frames = document.querySelectorAll('.loading-pillar-frame');
+  const pillarLabels = ['年', '月', '日', '時'];
+  pillarLabels.forEach((lbl, i) => {
+    setTimeout(() => { frames[i].classList.add('filled'); }, 900 + i * 200);
+  });
 
   setTimeout(() => {
     // 사주 계산
@@ -2020,7 +2215,7 @@ function analyze() {
     const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = `
       <div class="result-header">
-        <div class="result-name">${name}</div>
+        <div class="result-name" id="result-name-typed"></div>
         <div class="result-subtitle">${year}년 ${month}월 ${day}일 · ${selectedCalendar === 'solar' ? '양력' : '음력'} · ${selectedGender === 'female' ? '여성' : '남성'}</div>
       </div>
 
@@ -2037,23 +2232,30 @@ function analyze() {
       </div>
 
       <!-- 대운 흐름 -->
-      <div class="analysis-card" data-icon="📊" style="animation-delay: 0.05s">
+      <div class="analysis-card card-hero" data-icon="運" data-accent="gold">
         <div class="card-title">대운 흐름</div>
         <div class="card-content">
-          <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center">
-            ${daeunList.map((d, i) => `
-              <div style="text-align:center; padding:8px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.08); min-width:60px">
-                <div style="font-size:0.7rem; color:var(--text-dim)">${d.age}세~</div>
-                <div style="font-size:1.1rem; color:${오행색상[천간오행[d.gan]]}">${천간[d.gan]}${지지[d.ji]}</div>
-                <div style="font-size:0.7rem; color:var(--text-dim)">${천간한글[d.gan]}${지지한글[d.ji]}</div>
-              </div>
-            `).join('')}
+          <div class="daeun-timeline">
+            ${daeunList.map((d, i) => {
+              const userAge = currentYear - solarYear;
+              const isCurrent = userAge >= d.age && (i === daeunList.length - 1 || userAge < daeunList[i+1].age);
+              const isPast = userAge >= (daeunList[i+1] ? daeunList[i+1].age : d.age + 10);
+              const cls = isCurrent ? 'current' : (isPast ? 'past' : '');
+              return `
+              <div class="daeun-item ${cls}">
+                <div class="daeun-hanja" style="color:${오행색상[천간오행[d.gan]]}">${천간[d.gan]}${지지[d.ji]}</div>
+                <div class="daeun-dot"></div>
+                <div class="daeun-line"></div>
+                <div class="daeun-age">${d.age}세~${d.age+9}세</div>
+                ${isCurrent ? '<div class="daeun-current-badge">현재</div>' : ''}
+              </div>`;
+            }).join('')}
           </div>
         </div>
       </div>
 
       <!-- 12운성 -->
-      <div class="analysis-card" data-icon="⚖" style="animation-delay: 0.1s">
+      <div class="analysis-card" data-icon="星" data-accent="purple">
         <div class="card-title">일주 12운성 — ${dayUnsung}</div>
         <div class="card-content">${unsungText}</div>
       </div>
@@ -2066,7 +2268,7 @@ function analyze() {
       </div>
 
       <!-- 성격 및 적성 -->
-      <div class="analysis-card" data-icon="✦" style="animation-delay: 0.3s">
+      <div class="analysis-card" data-icon="性" data-accent="purple">
         <div class="card-title">성격 및 기질</div>
         <div class="card-content">
           <p>일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> — ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <span class="highlight">${yongsinInfo.신강여부}</span></p>
@@ -2082,7 +2284,7 @@ function analyze() {
 
       <!-- 특수 구조 -->
       ${specialStructures.length > 0 ? `
-      <div class="analysis-card" data-icon="⚡" style="animation-delay: 0.45s">
+      <div class="analysis-card" data-icon="格" data-accent="fire">
         <div class="card-title">사주 특수 구조</div>
         <div class="card-content">
           ${specialStructures.map(s => `<p><span class="highlight">▸ ${s.type}</span><br>${s.desc}</p>`).join('<br>')}
@@ -2090,37 +2292,39 @@ function analyze() {
       </div>` : ''}
 
       <!-- 재물운 -->
-      <div class="analysis-card" data-icon="💰" style="animation-delay: 0.4s">
+      <div class="analysis-card" data-icon="財" data-accent="gold">
         <div class="card-title">재물운</div>
         <div class="card-content">${wealthText}</div>
       </div>
 
       <!-- 직업운 -->
-      <div class="analysis-card" data-icon="🏢" style="animation-delay: 0.5s">
+      <div class="analysis-card" data-icon="業" data-accent="metal">
         <div class="card-title">직업운 및 적성</div>
         <div class="card-content">${careerText}</div>
       </div>
 
       <!-- 연애운 -->
-      <div class="analysis-card" data-icon="♥" style="animation-delay: 0.6s">
+      <div class="analysis-card" data-icon="緣" data-accent="rose">
         <div class="card-title">연애운 · 궁합</div>
         <div class="card-content">${loveText}</div>
       </div>
 
       <!-- 건강 -->
-      <div class="analysis-card" data-icon="🌿" style="animation-delay: 0.7s">
+      <div class="analysis-card" data-icon="壽" data-accent="wood">
         <div class="card-title">건강 주의사항</div>
         <div class="card-content">${healthHTML}</div>
       </div>
 
       <!-- 올해 운세 -->
-      <div class="analysis-card" data-icon="⭐" style="animation-delay: 0.8s">
+      <div class="analysis-card" data-icon="歲" data-accent="gold">
         <div class="card-title">${currentYear}년 올해의 운세</div>
         <div class="card-content">${yearFortune.종합}</div>
       </div>
 
+      <!-- 유틸리티 카드 2열 -->
+      <div class="utility-grid">
       <!-- 가까이할 것 / 피할 것 -->
-      <div class="analysis-card" data-icon="☯" style="animation-delay: 0.9s">
+      <div class="analysis-card" data-icon="道" data-accent="purple">
         <div class="card-title">가까이할 것 · 피해야 할 것</div>
         <div class="card-content">
           <p style="margin-bottom: 12px; color: var(--gold);">✦ 가까이하면 좋은 것</p>
@@ -2136,7 +2340,7 @@ function analyze() {
       </div>
 
       <!-- 행운 아이템 -->
-      <div class="analysis-card" data-icon="🍀" style="animation-delay: 1.0s">
+      <div class="analysis-card" data-icon="福" data-accent="gold">
         <div class="card-title">행운의 아이템</div>
         <div class="lucky-grid">
           <div class="lucky-item">
@@ -2153,6 +2357,7 @@ function analyze() {
           </div>
         </div>
       </div>
+      </div><!-- /utility-grid -->
 
       <!-- 공유 버튼 -->
       <div class="share-bar" id="share-bar">
@@ -2182,8 +2387,7 @@ function analyze() {
             </div>
           </div>
           <div class="premium-lock">
-            <div class="premium-lock-icon">🔒</div>
-            <div class="premium-lock-text">프리미엄 분석에서 확인하세요</div>
+            <div class="premium-lock-text">프리미엄에서 계속 읽기 →</div>
           </div>
         </div>
 
@@ -2195,8 +2399,7 @@ function analyze() {
             </div>
           </div>
           <div class="premium-lock">
-            <div class="premium-lock-icon">🔒</div>
-            <div class="premium-lock-text">프리미엄 분석에서 확인하세요</div>
+            <div class="premium-lock-text">프리미엄에서 계속 읽기 →</div>
           </div>
         </div>
 
@@ -2208,8 +2411,7 @@ function analyze() {
             </div>
           </div>
           <div class="premium-lock">
-            <div class="premium-lock-icon">🔒</div>
-            <div class="premium-lock-text">프리미엄 분석에서 확인하세요</div>
+            <div class="premium-lock-text">프리미엄에서 계속 읽기 →</div>
           </div>
         </div>
 
@@ -2229,6 +2431,25 @@ function analyze() {
     // 결과 표시
     document.getElementById('loading').classList.remove('active');
     resultsDiv.classList.add('visible');
+
+    // 타이프라이터 이름 효과
+    const nameEl = document.getElementById('result-name-typed');
+    if (nameEl) {
+      nameEl.textContent = '';
+      nameEl.style.borderRight = '2px solid var(--gold)';
+      let ci = 0;
+      const typeTimer = setInterval(() => {
+        nameEl.textContent += name[ci];
+        ci++;
+        if (ci >= name.length) {
+          clearInterval(typeTimer);
+          setTimeout(() => { nameEl.style.borderRight = 'none'; }, 800);
+        }
+      }, 120);
+    }
+
+    // IntersectionObserver로 카드 스크롤 등장
+    setTimeout(() => observeResultCards(), 100);
 
     // 스크롤
     setTimeout(() => {
@@ -2343,6 +2564,31 @@ function showToast(msg) {
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2500);
 }
+
+// ── IntersectionObserver: 스크롤 등장 애니메이션 ──
+const scrollObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      scrollObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+function observeResultCards() {
+  document.querySelectorAll('.analysis-card, .elements-section, .pillars-section, .premium-section').forEach(el => {
+    scrollObserver.observe(el);
+  });
+}
+
+// ── 스크롤 진행률 표시 ──
+const progressBar = document.createElement('div');
+progressBar.style.cssText = 'position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--purple-glow));z-index:1000;transition:width 0.1s;width:0;pointer-events:none;';
+document.body.appendChild(progressBar);
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+  progressBar.style.width = pct + '%';
+});
 
 // ── 브라우저 콘솔 테스트 (runTests() 호출) ──
 function runTests() {
