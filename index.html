@@ -1543,7 +1543,7 @@ function getHealthAnalysis(elementCounts, dayElement) {
 }
 
 // 재물운 분석 (강화)
-function getWealthAnalysis(dayGanIdx, elementCounts, yongsin) {
+function getWealthAnalysis(dayGanIdx, elementCounts, yongsin, pillars) {
   const dayElement = 천간오행[dayGanIdx];
   const 아극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
   const 아생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
@@ -1552,23 +1552,23 @@ function getWealthAnalysis(dayGanIdx, elementCounts, yongsin) {
   const foodGodCount = elementCounts[아생[dayElement]]; // 식상 (재물을 생해주는 기운)
   const {신강여부} = yongsin;
 
-  // 편재/정재 구분: 같은 음양이면 편재, 다르면 정재
+  // 편재/정재 구분: 실제 사주 4주 천간에서 재성 오행 확인
   const dayYY = 천간음양[dayGanIdx];
-  // 재성 오행에 해당하는 천간 중 양/음 확인
-  const 재성간들 = 천간.map((g, i) => ({ gan: g, idx: i })).filter(x => 천간오행[x.idx] === wealthElement);
-  const 편재간 = 재성간들.find(x => 천간음양[x.idx] === dayYY);
-  const 정재간 = 재성간들.find(x => 천간음양[x.idx] !== dayYY);
-  const wealthType = wealthCount >= 1.5 ? (편재간 ? '편재' : '정재') : '';
+  const pillarGans = (pillars || []).filter(p => p).map(p => p.gan);
+  const 편재수 = pillarGans.filter(g => 천간오행[g] === wealthElement && 천간음양[g] === dayYY).length;
+  const 정재수 = pillarGans.filter(g => 천간오행[g] === wealthElement && 천간음양[g] !== dayYY).length;
+  const wealthType = (편재수 + 정재수 > 0) ? (편재수 >= 정재수 ? '편재' : '정재') : '';
 
-  let text = '';
+  let wealthTypeText = '';
   if (wealthType) {
-    text += `<span class="info">▸ 재성 유형:</span> `;
+    wealthTypeText += `<span class="info">▸ 재성 유형:</span> `;
     if (wealthType === '편재') {
-      text += `<span class="highlight">편재</span> — 투자, 사업, 유동적 재물에 강합니다. 모험적이고 스케일이 큰 돈의 흐름을 다룰 수 있는 기질입니다.<br><br>`;
+      wealthTypeText += `<span class="highlight">편재</span> — 투자, 사업, 유동적 재물에 강합니다. 모험적이고 스케일이 큰 돈의 흐름을 다룰 수 있는 기질입니다.<br><br>`;
     } else {
-      text += `<span class="highlight">정재</span> — 근로소득, 저축, 안정적 자산에 강합니다. 꾸준히 모아가는 성실한 재물 관리가 체질입니다.<br><br>`;
+      wealthTypeText += `<span class="highlight">정재</span> — 근로소득, 저축, 안정적 자산에 강합니다. 꾸준히 모아가는 성실한 재물 관리가 체질입니다.<br><br>`;
     }
   }
+  let text = '';
   if (wealthCount >= 2.5) {
     text = `재성(${오행한자[wealthElement]})이 강하여 <span class="highlight">타고난 재물 감각</span>이 있는 사주입니다. 돈의 흐름을 본능적으로 읽는 능력이 있어서, 투자나 사업에서 기회를 잘 포착합니다. 특히 <span class="highlight">${오행관계[wealthElement].계절}</span>에 재물운이 상승하므로 이 시기를 잘 활용하세요.`;
     if (신강여부 === '신강') {
@@ -1591,7 +1591,7 @@ function getWealthAnalysis(dayGanIdx, elementCounts, yongsin) {
     }
   }
 
-  return text;
+  return wealthTypeText + text;
 }
 
 // 연애운 분석 (강화)
@@ -1805,7 +1805,7 @@ function analyze() {
     const healthInfo = getHealthAnalysis(elementCounts, 천간오행[dayP.gan]);
 
     // 재물운
-    const wealthText = getWealthAnalysis(dayP.gan, elementCounts, yongsinInfo);
+    const wealthText = getWealthAnalysis(dayP.gan, elementCounts, yongsinInfo, pillars);
 
     // 연애운
     const loveText = getLoveAnalysis(dayP.gan, selectedGender, elementCounts, yongsinInfo);
@@ -2015,7 +2015,7 @@ function analyze() {
       <!-- 직업운 -->
       <div class="analysis-card" data-icon="🏢" style="animation-delay: 0.5s">
         <div class="card-title">직업운 및 적성</div>
-        <div class="card-content">추천 분야: <span class="highlight">${careerText}</span></div>
+        <div class="card-content">${careerText}</div>
       </div>
 
       <!-- 연애운 -->
