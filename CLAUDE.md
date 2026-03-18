@@ -12,13 +12,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-모든 코드가 `index.html` (약 2,260줄)에 인라인으로 포함되어 있음:
+모든 코드가 `index.html` (약 2,700줄)에 인라인으로 포함되어 있음:
 
 ### 구조 (순서대로)
 1. **HTML/CSS** (1~1050줄) — 입력 폼, 결과 표시 영역, 공유 카드, 로딩/파티클 애니메이션
 2. **파티클 생성 스크립트** (~938줄) — 배경 장식 효과
 3. **사주 분석 엔진** (~1053~1715줄) — 핵심 계산 로직
-4. **UI 로직** (~1719~2266줄) — 폼 초기화, `analyze()`, 공유 기능
+4. **UI 로직** (~1719~2713줄) — 폼 초기화, `analyze()`, 공유 기능
 
 ### 핵심 계산 함수
 | 함수 | 역할 |
@@ -33,6 +33,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `getJohuYongsin()` | 조후용신 (계절 기반) |
 | `getDaeun()` | 대운 계산 (순행/역행, 시작나이) |
 | `findHapChung()` | 육합/상충 감지 |
+| `getCheonganHap()` | 천간합 궁합 (甲己合土 등) |
+| `detectSpecialStructures()` | 특수 구조 감지 (식신생재, 관살혼잡 등) |
 | `getHealthAnalysis/WealthAnalysis/LoveAnalysis()` | 영역별 풀이 텍스트 생성 |
 | `getYearFortune()` | 올해 운세 (동적 연도) |
 
@@ -65,11 +67,25 @@ Node.js 기반 단계별 검증 테스트 (브라우저 아닌 CLI):
 node test_step1.js   # 입춘/절기 경계, 4주 계산 정확도
 node test_step2.js   # 12운성, 대운, 오행카운트, 용신, 합충
 node test_step3.js   # 십신, 풀이 텍스트 통합, 합충 케이스
+node test_review.js  # 편재/정재 판별, 재물 분석 텍스트 보존, null 시주 처리
 ```
 
 각 테스트 파일은 `index.html`의 계산 함수를 독립 복제하여 검증. 테스트 결과는 ✅/❌로 콘솔에 출력되며, 마지막에 통과/실패 수 요약.
 
 **주의:** 테스트 파일과 `index.html`의 계산 로직이 별도 복사본이므로, 한쪽 수정 시 다른 쪽도 동기화 필요.
+
+### 계산 파이프라인
+
+분석 흐름: 입력 검증 → 4주(년월일시) 계산 → 오행 카운트 → 신강/신약 판단 → 용신/조후용신 → 십신·12운성 → 합충 감지 → 영역별 풀이 텍스트 생성 → 대운·올해 운세 → 결과 렌더링·공유카드
+
+### 참고 문서
+
+`CORE/` 디렉토리에 서비스 개요, PRD, 기술 스택 및 시스템 구조 문서가 있음. 기획 의도나 요구사항 확인 시 참조.
+
+## Git 커밋 컨벤션
+
+- 한국어 메시지, 접두사 사용: `Fix:`, `docs:`, `Step N:`, `P1-N:` 등
+- 도메인 용어 그대로 사용 (편재, 천간합 등)
 
 ## 기준 테스트 케이스
 
