@@ -1184,6 +1184,158 @@ input::placeholder {
 .toast.show {
   transform: translateX(-50%) translateY(0);
 }
+
+/* ─── Prelaunch Modal ─── */
+#prelaunch-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+#prelaunch-modal.active { display: flex; }
+.pl-backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10,6,16,0.92);
+  backdrop-filter: blur(8px);
+}
+.pl-container {
+  position: relative;
+  max-width: 420px;
+  width: 90%;
+  background: linear-gradient(165deg, #110d1a 0%, #1a1328 50%, #0d0818 100%);
+  border: 1px solid rgba(212,168,83,0.2);
+  border-radius: 24px;
+  padding: 48px 36px;
+  text-align: center;
+  animation: modalAppear 0.4s ease;
+}
+@keyframes modalAppear {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.pl-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  background: none; border: none;
+  color: var(--text-dim);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+.pl-close:hover { color: var(--gold); }
+.pl-icon { font-size: 32px; margin-bottom: 16px; }
+.pl-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gold-light);
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.pl-benefits {
+  text-align: left;
+  margin: 0 auto 28px;
+  max-width: 280px;
+}
+.pl-benefits div {
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 6px 0;
+  letter-spacing: 0.5px;
+}
+.pl-email-input {
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(45,27,78,0.3);
+  border: 1px solid rgba(107,63,160,0.3);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  letter-spacing: 1px;
+  outline: none;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+.pl-email-input:focus {
+  border-color: var(--gold);
+}
+.pl-email-input::placeholder {
+  color: var(--text-dim);
+}
+.pl-submit {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(212,168,83,0.2) 0%, rgba(212,168,83,0.1) 100%);
+  border: 1px solid var(--gold);
+  border-radius: 50px;
+  color: var(--gold-light);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.pl-submit:hover {
+  background: linear-gradient(135deg, rgba(212,168,83,0.3) 0%, rgba(212,168,83,0.15) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(212,168,83,0.2);
+}
+.pl-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+.pl-count {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+.pl-note {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+.pl-success {
+  display: none;
+}
+.pl-success.active {
+  display: block;
+  animation: modalAppear 0.4s ease;
+}
+.pl-success-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.pl-success-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+.pl-success-msg {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+@media (max-width: 640px) {
+  .pl-container {
+    width: 95%;
+    padding: 36px 24px;
+    border-radius: 20px;
+  }
+  .pl-title { font-size: 18px; }
+}
 </style>
 </head>
 <body>
@@ -2754,10 +2906,9 @@ function analyze() {
           </div>
         </div>
 
-        <a class="premium-cta" href="https://forms.google.com" target="_blank" rel="noopener"
-           onclick="if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'premium_cta'})">
-          ✦ 프리미엄 심층 분석 신청하기 ✦
-        </a>
+        <button class="premium-cta" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'premium_cta'})">
+          ✦ 프리미엄 사전 신청하기 ✦
+        </button>
       </div>
 
       <div class="yinyang-section">
@@ -3005,7 +3156,163 @@ function runTests() {
   console.log(`\n═══ 결과: ${pass}/${pass+fail} 통과 ═══`);
   return { pass, fail, total: pass + fail };
 }
+
+// ═══════════════════════════════════════════════════════
+//  사전 예약 모달
+// ═══════════════════════════════════════════════════════
+
+const FORMSPREE_URL = 'https://formspree.io/f/PLACEHOLDER'; // TODO: 실제 Form ID로 교체
+
+function openPrelaunchModal() {
+  const modal = document.getElementById('prelaunch-modal');
+  const formView = document.getElementById('pl-form-view');
+  const successView = document.getElementById('pl-success-view');
+
+  // 폼 뷰 초기화
+  formView.style.display = 'block';
+  successView.classList.remove('active');
+
+  // 분석 입력값 자동 채움
+  const nameVal = document.getElementById('name')?.value || '';
+  const yearVal = document.getElementById('year')?.value || '';
+  const monthVal = document.getElementById('month')?.value || '';
+  const dayVal = document.getElementById('day')?.value || '';
+  const genderEl = document.querySelector('.gender-option.selected');
+  const genderVal = genderEl ? genderEl.textContent.trim() : '';
+
+  document.getElementById('pl-name').value = nameVal;
+  document.getElementById('pl-birth').value = `${yearVal}-${monthVal}-${dayVal}`;
+  document.getElementById('pl-gender').value = genderVal;
+
+  // 사주 요약 (결과가 있으면)
+  const resultSummary = document.querySelector('.result-summary');
+  if (resultSummary) {
+    document.getElementById('pl-saju').value = resultSummary.textContent.substring(0, 200);
+  }
+
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  if (typeof gtag === 'function') {
+    gtag('event', 'prelaunch_modal_open', { event_category: 'conversion' });
+  }
+}
+
+function closePrelaunchModal() {
+  const modal = document.getElementById('prelaunch-modal');
+  const submitted = document.getElementById('pl-success-view').classList.contains('active');
+  modal.classList.remove('active');
+  document.body.style.overflow = '';
+
+  if (typeof gtag === 'function') {
+    gtag('event', 'prelaunch_modal_close', {
+      event_category: 'conversion',
+      event_label: submitted ? 'submitted' : 'abandoned'
+    });
+  }
+}
+
+async function submitPrelaunch(e) {
+  e.preventDefault();
+  const email = document.getElementById('pl-email').value;
+  const btn = document.getElementById('pl-submit-btn');
+
+  if (!email) return;
+
+  btn.disabled = true;
+  btn.textContent = '신청 중...';
+
+  try {
+    const data = {
+      email: email,
+      name: document.getElementById('pl-name').value,
+      birthdate: document.getElementById('pl-birth').value,
+      gender: document.getElementById('pl-gender').value,
+      saju_summary: document.getElementById('pl-saju').value,
+      _subject: `[SAJU] 프리미엄 사전 예약 — ${document.getElementById('pl-name').value || email}`
+    };
+
+    // Formspree로 전송
+    if (!FORMSPREE_URL.includes('PLACEHOLDER')) {
+      await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    }
+
+    // 성공 UI
+    document.getElementById('pl-form-view').style.display = 'none';
+    document.getElementById('pl-success-view').classList.add('active');
+
+    // 대기 인원 증가 (로컬)
+    const countEl = document.getElementById('pl-count');
+    const currentCount = parseInt(countEl.querySelector('strong')?.textContent || '147');
+    countEl.querySelector('strong').textContent = currentCount + 1;
+
+    if (typeof gtag === 'function') {
+      gtag('event', 'prelaunch_submit', {
+        event_category: 'conversion',
+        event_label: email.split('@')[1] || 'unknown'
+      });
+    }
+
+    showToast('사전 신청이 완료되었습니다 ✨');
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = '✦ 사전 신청하기 ✦';
+    showToast('잠시 후 다시 시도해주세요');
+  }
+}
+
+// ESC 키로 모달 닫기
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('prelaunch-modal').classList.contains('active')) {
+    closePrelaunchModal();
+  }
+});
 </script>
+
+<!-- Prelaunch Modal -->
+<div id="prelaunch-modal">
+  <div class="pl-backdrop" onclick="closePrelaunchModal()"></div>
+  <div class="pl-container">
+    <button class="pl-close" onclick="closePrelaunchModal()">&times;</button>
+
+    <!-- 신청 폼 -->
+    <div id="pl-form-view">
+      <div class="pl-icon">✦</div>
+      <div class="pl-title">프리미엄 심층 분석<br>오픈 예정</div>
+      <div class="pl-benefits">
+        <div>🎁 런칭 시 50% 특별 할인</div>
+        <div>🎁 가장 먼저 이용 가능</div>
+        <div>🎁 사전 신청자 한정 추가 혜택</div>
+      </div>
+      <form id="prelaunch-form" onsubmit="submitPrelaunch(event)">
+        <input type="email" class="pl-email-input" id="pl-email" placeholder="이메일 주소를 입력하세요" required>
+        <input type="hidden" id="pl-name" name="name">
+        <input type="hidden" id="pl-birth" name="birthdate">
+        <input type="hidden" id="pl-gender" name="gender">
+        <input type="hidden" id="pl-saju" name="saju_summary">
+        <button type="submit" class="pl-submit" id="pl-submit-btn">✦ 사전 신청하기 ✦</button>
+      </form>
+      <div class="pl-count" id="pl-count">현재 <strong>147</strong>명이 대기 중</div>
+      <div class="pl-note">스팸 없이, 오픈 알림만 보내드립니다</div>
+    </div>
+
+    <!-- 성공 화면 -->
+    <div class="pl-success" id="pl-success-view">
+      <div class="pl-success-icon">✨</div>
+      <div class="pl-success-title">신청 완료!</div>
+      <div class="pl-success-msg">
+        프리미엄 분석이 오픈되면<br>
+        가장 먼저 알려드릴게요.<br><br>
+        <span style="color:var(--gold); font-size:13px">50% 할인 쿠폰도 함께 보내드립니다</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
