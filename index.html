@@ -1904,7 +1904,7 @@ function getHealthAnalysis(elementCounts, dayElement) {
 }
 
 // 재물운 분석 (강화)
-function getWealthAnalysis(dayGanIdx, elementCounts, yongsin, pillars) {
+function getWealthAnalysis(dayGanIdx, elementCounts, yongsin, pillars, specialStructures) {
   const dayElement = 천간오행[dayGanIdx];
   const 아극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
   const 아생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
@@ -1938,11 +1938,15 @@ function getWealthAnalysis(dayGanIdx, elementCounts, yongsin, pillars) {
       text += `<br><br>다만 일간이 약한 상태에서 재성이 강하면, 재물은 보이지만 잡기가 쉽지 않은 패턴이 될 수 있습니다. <span class="highlight">실력과 자기 역량을 먼저 키우고</span> 나서 재물을 추구하면 훨씬 안정적으로 부를 쌓을 수 있습니다.`;
     }
   } else if (wealthCount >= 1) {
-    text = `재성이 적당하여 <span class="highlight">꾸준하고 안정적인 경제생활</span>이 가능한 사주입니다. 한 방에 큰 돈을 버는 타입보다는, 매달 차곡차곡 모아가는 스타일이 더 잘 맞습니다.`;
+    if (wealthType === '편재') {
+      text = `재성이 편재 위주로 구성되어, 안정적 월급보다는 <span class="highlight">사업·투자·플랫폼에서 수익을 내는 구조</span>가 체질에 맞습니다. 여러 수입원을 동시에 운영하는 능력이 있지만, 에너지가 분산되지 않도록 핵심 1~2개에 집중하는 것이 중요합니다.`;
+    } else if (wealthType === '정재') {
+      text = `재성이 정재 위주로 구성되어, <span class="highlight">꾸준하고 안정적인 경제생활</span>이 가능한 사주입니다. 안정적인 월급 생활에 강점이 있으며, <span class="highlight">적금, 연금, 부동산</span> 같은 안전 자산에 꾸준히 투자하는 전략이 맞습니다.`;
+    } else {
+      text = `재성이 적당하여 <span class="highlight">꾸준하고 안정적인 경제생활</span>이 가능한 사주입니다. 한 방에 큰 돈을 버는 타입보다는, 매달 차곡차곡 모아가는 스타일이 더 잘 맞습니다.`;
+    }
     if (foodGodCount >= 2) {
       text += `<br><br>식상(표현력)이 강하니, <span class="highlight">재능이나 기술을 돈으로 바꾸는 능력</span>이 뛰어납니다. 글쓰기, 강의, 콘텐츠 제작, 프리랜서 등 자기 능력을 직접 수익화하는 방향이 유리합니다.`;
-    } else {
-      text += `<br><br>안정적인 월급 생활에 강점이 있으며, 무리한 투자보다는 <span class="highlight">적금, 연금, 부동산</span> 같은 안전 자산에 꾸준히 투자하는 전략이 당신에게 맞습니다.`;
     }
   } else {
     text = `재성이 약하여 재물이 쉽게 모이지 않을 수 있습니다. 하지만 이것은 <span class="highlight">물질보다 정신적 가치를 추구하는 높은 기질</span>이기도 합니다.`;
@@ -1950,6 +1954,15 @@ function getWealthAnalysis(dayGanIdx, elementCounts, yongsin, pillars) {
     if (신강여부 === '신강') {
       text += ` 특히 일간이 강하니 <span class="highlight">독립적인 사업이나 프리랜서</span> 형태가 월급 생활보다 더 잘 맞을 수 있습니다.`;
     }
+  }
+
+  // 구조별 재물운 보충
+  const ss = specialStructures || [];
+  if (ss.some(s => s.type === '상관생재')) {
+    text += `<br><br><span class="highlight">▸ 상관생재(傷官生財):</span> 독창적인 아이디어나 서비스를 만들어서 수익화하는 것이 가장 자연스러운 돈벌이 경로입니다. 남이 만든 것을 유통하기보다, 자기가 직접 만든 콘텐츠·서비스·커뮤니티에서 수익을 내는 구조가 사주와 가장 잘 맞습니다.`;
+  }
+  if (ss.some(s => s.type === '편재 쌍')) {
+    text += `<br><br><span class="highlight">▸ 편재 쌍:</span> 동시다발적 수입원을 자연스럽게 만드는 구조입니다. 다만 정재(正財)가 없거나 약하면 안정적인 현금 흐름이 구조적으로 부족할 수 있으니, 자동이체 저축이나 비상금 확보 같은 시스템으로 변동성을 완충하세요.`;
   }
 
   return wealthTypeText + text;
@@ -2188,7 +2201,7 @@ function analyze() {
     const healthInfo = getHealthAnalysis(elementCounts, 천간오행[dayP.gan]);
 
     // 재물운
-    const wealthText = getWealthAnalysis(dayP.gan, elementCounts, yongsinInfo, pillars);
+    const wealthText = getWealthAnalysis(dayP.gan, elementCounts, yongsinInfo, pillars, specialStructures);
 
     // 연애운
     const loveText = getLoveAnalysis(dayP.gan, selectedGender, elementCounts, yongsinInfo);
