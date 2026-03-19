@@ -2189,9 +2189,31 @@ function analyze() {
 
     if (excess.length) elAnalysis += `<span class="caution">과다한 오행:</span> ${excess.map(e => 오행한자[e] + '(' + e + ')').join(', ')}<br>`;
     if (lacking.length) elAnalysis += `<span class="good">부족한 오행:</span> ${lacking.map(e => 오행한자[e] + '(' + e + ')').join(', ')}<br>`;
-    elAnalysis += `<br>일간 강약: <span class="highlight">${yongsinInfo.신강여부}</span> · 용신: <span class="highlight">${오행한자[yongsinInfo.용신]}(${yongsinInfo.용신})</span> · 기신: <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신})</span>`;
+    // 용신·희신 십신 역할 텍스트
+    const dayElement = 천간오행[dayP.gan];
+    const 생아 = { '목':'수', '화':'목', '토':'화', '금':'토', '수':'금' };
+    const 아생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
+    const 아극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
+    const 극아 = { '목':'금', '화':'수', '토':'목', '금':'화', '수':'토' };
+    const 오행십신역할 = (el) => {
+      if (el === dayElement) return '비겁';
+      if (el === 생아[dayElement]) return '인성';
+      if (el === 아생[dayElement]) return '식상';
+      if (el === 아극[dayElement]) return '재성';
+      if (el === 극아[dayElement]) return '관성';
+      return '';
+    };
+    const 용신역할 = 오행십신역할(yongsinInfo.용신);
+    const 희신역할 = 오행십신역할(yongsinInfo.희신);
+
+    elAnalysis += `<br>일간 강약: <span class="highlight">${yongsinInfo.신강여부}</span>`;
+    elAnalysis += `<br>용신: <span class="highlight">${오행한자[yongsinInfo.용신]}·${오행한자[yongsinInfo.희신]}(${yongsinInfo.용신}·${yongsinInfo.희신})</span> — ${용신역할} + ${희신역할} 발산`;
+    elAnalysis += `<br>기신: <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신})</span>`;
     if (johuInfo) {
       elAnalysis += `<br><span class="info">▸ 조후:</span> ${johuInfo.설명}`;
+      if (johuInfo.johu !== yongsinInfo.용신) {
+        elAnalysis += `<br><span class="info">▸ 조후용신 참고:</span> 억부용신(${오행한자[yongsinInfo.용신]})과 조후용신(${오행한자[johuInfo.johu]})이 다릅니다. ${오행한자[johuInfo.johu]}(${johuInfo.johu})의 기운도 함께 보충하면 균형이 좋아집니다.`;
+      }
     }
 
     // 건강 텍스트
@@ -2238,12 +2260,10 @@ function analyze() {
       careerText += `<br><span class="info">▸</span> 독립적인 사업이나 프리랜서에 적합`;
     }
 
-    const 아생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
     if (elementCounts[아생[천간오행[dayP.gan]]] >= 2) {
       careerText += `<br><span class="info">▸</span> 창작, 표현, 기획 분야에서 두각`;
     }
 
-    const 극아 = { '목':'금', '화':'수', '토':'목', '금':'화', '수':'토' };
     if (elementCounts[극아[천간오행[dayP.gan]]] >= 2) {
       careerText += `<br><span class="info">▸</span> 조직 내 승진, 관리직에 유리`;
     }
@@ -2556,7 +2576,7 @@ function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, day
       <div class="sc-divider"></div>
       <div class="sc-summary">
         <strong>${천간[dayP.gan]}(${천간한글[dayP.gan]})</strong> 일간 · ${yongsinInfo.신강여부}<br>
-        12운성 <strong>${dayUnsung}</strong> · 용신 <strong>${오행한자[yongsinInfo.용신]}(${yongsinInfo.용신})</strong>
+        12운성 <strong>${dayUnsung}</strong> · 용신 <strong>${오행한자[yongsinInfo.용신]}·${오행한자[yongsinInfo.희신]}</strong>
       </div>
       <div class="sc-footer">whatsyoursaju.vercel.app</div>
     </div>
