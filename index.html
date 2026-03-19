@@ -778,6 +778,20 @@ input::placeholder {
   letter-spacing: 1px;
   margin-top: 4px;
 }
+.daeun-sipsung {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.daeun-detail {
+  margin-top: 20px;
+  padding: 20px 24px;
+  background: rgba(10,6,16,0.5);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px 12px 12px 4px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
 
 .card-title {
   font-size: 18px;
@@ -1654,6 +1668,20 @@ function detectSpecialStructures(dayGanIdx, pillars, elementCounts) {
   return results;
 }
 
+// ── 대운 십신 해석 ──
+const 대운십신해석 = {
+  '비견': '자신감과 추진력이 상승하는 시기. 독립적 활동과 새로운 도전에 유리하나, 경쟁도 심해질 수 있습니다.',
+  '겁재': '동료·경쟁자와의 관계가 활발해지는 시기. 협력과 경쟁이 공존하며, 재물 관리에 신중해야 합니다.',
+  '식신': '표현력과 재능이 빛나는 시기. 안정적인 창작 활동과 건강한 생활이 가능합니다.',
+  '상관': '혁신과 변화의 시기. 기존 틀을 깨는 에너지가 강하지만, 대인관계에서 갈등에 주의하세요.',
+  '편재': '재물 기회가 활발한 시기. 사업 확장이나 투자에 기회가 오지만, 과욕은 금물입니다.',
+  '정재': '안정적인 수입과 경제생활이 가능한 시기. 저축과 자산 형성에 좋은 때입니다.',
+  '편관': '예측 불가한 변화와 도전이 오는 시기. 강제로 성장하는 시기이며, 유연한 대처가 필요합니다.',
+  '정관': '사회적 책임과 역할이 커지는 시기. 승진·인정의 기회가 오지만, 자유가 제한될 수 있습니다.',
+  '편인': '독학과 자기계발에 최적인 시기. 새로운 기술이나 지식을 습득하기 좋으나, 생각만 많고 실행이 늦어질 수 있습니다.',
+  '정인': '학습과 내면 성숙의 시기. 어른이나 멘토의 도움을 받기 좋고, 안정적인 성장이 가능합니다.',
+};
+
 // ── 자형(自刑) 감지 ──
 function detectJahyung(pillars) {
   const jiPairs = [];
@@ -2437,9 +2465,11 @@ function analyze() {
               const isCurrent = userAge >= d.age && (i === daeunList.length - 1 || userAge < daeunList[i+1].age);
               const isPast = userAge >= (daeunList[i+1] ? daeunList[i+1].age : d.age + 10);
               const cls = isCurrent ? 'current' : (isPast ? 'past' : '');
+              const daeunSipsung = getSipsung(dayP.gan, d.gan);
               return `
               <div class="daeun-item ${cls}">
                 <div class="daeun-hanja" style="color:${오행색상[천간오행[d.gan]]}">${천간[d.gan]}${지지[d.ji]}</div>
+                <div class="daeun-sipsung">${daeunSipsung}</div>
                 <div class="daeun-dot"></div>
                 <div class="daeun-line"></div>
                 <div class="daeun-age">${d.age}세~${d.age+9}세</div>
@@ -2447,6 +2477,19 @@ function analyze() {
               </div>`;
             }).join('')}
           </div>
+          ${(() => {
+            const userAge = currentYear - solarYear;
+            const currentDaeun = daeunList.find((d, i) => userAge >= d.age && (i === daeunList.length - 1 || userAge < daeunList[i+1].age));
+            if (!currentDaeun) return '';
+            const cdGanSipsung = getSipsung(dayP.gan, currentDaeun.gan);
+            const cdJiSipsung = getSipsung(dayP.gan, (() => { const jiElement = 지지오행[currentDaeun.ji]; const jiYY = ['양','음','양','음','양','음','양','음','양','음','양','음'][currentDaeun.ji]; const 오행순 = ['목','화','토','금','수']; const idx = 오행순.indexOf(jiElement); for (let g = 0; g < 10; g++) { if (천간오행[g] === jiElement && 천간음양[g] === jiYY) return g; } return 0; })());
+            return `
+            <div class="daeun-detail">
+              <strong>현재 대운 ${천간[currentDaeun.gan]}${지지[currentDaeun.ji]} (${currentDaeun.age}세~${currentDaeun.age+9}세)</strong><br><br>
+              <span class="highlight">천간 ${cdGanSipsung}:</span> ${대운십신해석[cdGanSipsung] || ''}<br><br>
+              <span class="highlight">지지 ${cdJiSipsung}:</span> ${대운십신해석[cdJiSipsung] || ''}
+            </div>`;
+          })()}
         </div>
       </div>
 
