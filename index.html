@@ -2263,6 +2263,13 @@ function analyze() {
     const elementCounts = countElements(pillars);
     const yongsinInfo = getYongsin(dayP.gan, elementCounts);
 
+    // 오행 관계 맵 (analyze 전역에서 사용)
+    const dayElement = 천간오행[dayP.gan];
+    const 생아 = { '목':'수', '화':'목', '토':'화', '금':'토', '수':'금' };
+    const 아생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
+    const 아극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
+    const 극아 = { '목':'금', '화':'수', '토':'목', '금':'화', '수':'토' };
+
     // 올해 운세 (동적 연도)
     const currentYear = new Date().getFullYear();
     const cyP = getYearPillar(currentYear, 6, 1);
@@ -2390,11 +2397,6 @@ function analyze() {
     if (excess.length) elAnalysis += `<span class="caution">과다한 오행:</span> ${excess.map(e => 오행한자[e] + '(' + e + ')').join(', ')}<br>`;
     if (lacking.length) elAnalysis += `<span class="good">부족한 오행:</span> ${lacking.map(e => 오행한자[e] + '(' + e + ')').join(', ')}<br>`;
     // 용신·희신 십신 역할 텍스트
-    const dayElement = 천간오행[dayP.gan];
-    const 생아 = { '목':'수', '화':'목', '토':'화', '금':'토', '수':'금' };
-    const 아생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
-    const 아극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
-    const 극아 = { '목':'금', '화':'수', '토':'목', '금':'화', '수':'토' };
     const 오행십신역할 = (el) => {
       if (el === dayElement) return '비겁';
       if (el === 생아[dayElement]) return '인성';
@@ -2424,15 +2426,9 @@ function analyze() {
       return `<span class="info">▸</span> ${h.text}`;
     }).join('<br><br>');
 
-    healthHTML += `<br><br><span class="info">▸</span> <strong>보양 원칙:</strong> <span class="highlight">${오행한자[yongsinInfo.용신]}(${yongsinInfo.용신}) 보충:</span> ${오행보충설명[yongsinInfo.용신] || 오행관계[yongsinInfo.용신].맛 + ' 음식을 자주 섭취하세요.'}`;
-    healthHTML += `<br><span class="info">▸</span> <span class="highlight">${오행한자[yongsinInfo.희신]}(${yongsinInfo.희신}) 보충:</span> ${오행보충설명[yongsinInfo.희신] || 오행관계[yongsinInfo.희신].맛 + ' 음식이 도움됩니다.'}`;
-    healthHTML += `<br><span class="caution">▸</span> <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신}) 줄이기:</span> ${오행관계[yongsinInfo.기신].맛}이 나는 음식을 과하게 먹지 마세요.`;
-
     // 피해야 할 것 / 가까이할 것
     const yEl = yongsinInfo.용신;
     const gEl = yongsinInfo.기신;
-
-    // 용신(+희신) 복합 표시
     const hEl = yongsinInfo.희신;
     const 오행보충설명 = {
       '목': '푸른 잎채소, 신맛 음식(레몬, 매실)이 도움이 됩니다.',
@@ -2441,6 +2437,10 @@ function analyze() {
       '금': '흰색 음식(무, 도라지, 배), 매운맛이 폐를 돕습니다.',
       '수': '검은콩, 검은깨, 해조류 등 검은색 음식과 하루 2리터 이상 물이 필수입니다.',
     };
+
+    healthHTML += `<br><br><span class="info">▸</span> <strong>보양 원칙:</strong> <span class="highlight">${오행한자[yongsinInfo.용신]}(${yongsinInfo.용신}) 보충:</span> ${오행보충설명[yongsinInfo.용신] || 오행관계[yongsinInfo.용신].맛 + ' 음식을 자주 섭취하세요.'}`;
+    healthHTML += `<br><span class="info">▸</span> <span class="highlight">${오행한자[yongsinInfo.희신]}(${yongsinInfo.희신}) 보충:</span> ${오행보충설명[yongsinInfo.희신] || 오행관계[yongsinInfo.희신].맛 + ' 음식이 도움됩니다.'}`;
+    healthHTML += `<br><span class="caution">▸</span> <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신}) 줄이기:</span> ${오행관계[yongsinInfo.기신].맛}이 나는 음식을 과하게 먹지 마세요.`;
 
     const goodThings = [
       `${오행관계[yEl].색} 계열 컬러 (용신)`,
