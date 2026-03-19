@@ -2424,27 +2424,45 @@ function analyze() {
       return `<span class="info">▸</span> ${h.text}`;
     }).join('<br><br>');
 
-    healthHTML += `<br><br><span class="info">▸</span> <strong>보양 원칙:</strong> <span class="highlight">${오행관계[yongsinInfo.용신].맛}</span>이 나는 음식을 자주 섭취하고, <span class="caution">${오행관계[yongsinInfo.기신].맛}</span>이 나는 음식은 줄이세요.`;
+    healthHTML += `<br><br><span class="info">▸</span> <strong>보양 원칙:</strong> <span class="highlight">${오행한자[yongsinInfo.용신]}(${yongsinInfo.용신}) 보충:</span> ${오행보충설명[yongsinInfo.용신] || 오행관계[yongsinInfo.용신].맛 + ' 음식을 자주 섭취하세요.'}`;
+    healthHTML += `<br><span class="info">▸</span> <span class="highlight">${오행한자[yongsinInfo.희신]}(${yongsinInfo.희신}) 보충:</span> ${오행보충설명[yongsinInfo.희신] || 오행관계[yongsinInfo.희신].맛 + ' 음식이 도움됩니다.'}`;
+    healthHTML += `<br><span class="caution">▸</span> <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신}) 줄이기:</span> ${오행관계[yongsinInfo.기신].맛}이 나는 음식을 과하게 먹지 마세요.`;
 
     // 피해야 할 것 / 가까이할 것
     const yEl = yongsinInfo.용신;
     const gEl = yongsinInfo.기신;
 
+    // 용신(+희신) 복합 표시
+    const hEl = yongsinInfo.희신;
+    const 오행보충설명 = {
+      '목': '푸른 잎채소, 신맛 음식(레몬, 매실)이 도움이 됩니다.',
+      '화': '붉은색 음식(토마토, 대추), 따뜻한 차가 기운을 북돋습니다.',
+      '토': '노란색 음식(호박, 고구마), 달달한 간식이 안정감을 줍니다.',
+      '금': '흰색 음식(무, 도라지, 배), 매운맛이 폐를 돕습니다.',
+      '수': '검은콩, 검은깨, 해조류 등 검은색 음식과 하루 2리터 이상 물이 필수입니다.',
+    };
+
     const goodThings = [
-      `${오행관계[yEl].색} 계열 컬러`,
+      `${오행관계[yEl].색} 계열 컬러 (용신)`,
+      `${오행관계[hEl].색} 계열 컬러 (희신)`,
       `${오행관계[yEl].방위} 방향`,
-      `${오행관계[yEl].맛} 음식`,
+      `${오행관계[yEl].맛} + ${오행관계[hEl].맛} 음식`,
       `${오행관계[yEl].계절}에 활동 강화`,
-      `${오행한자[yEl]} 기운을 가진 사람 (${오행관계[yEl].동물}띠)`
+      `${오행한자[yEl]}·${오행한자[hEl]} 기운을 가진 사람`
     ];
 
+    // 기신 + 과다 오행 모두 포함
+    const 과다오행 = ['목','화','토','금','수'].filter(el => elementCounts[el] >= 3 && el !== gEl);
     const badThings = [
       `${오행관계[gEl].색} 계열 과다 사용`,
       `${오행관계[gEl].방위} 방향 (중요한 일 피하기)`,
       `${오행관계[gEl].맛} 음식 과식`,
       `${오행관계[gEl].계절}의 무리한 활동`,
-      `갈등이 잦은 ${오행관계[gEl].동물}띠와의 관계`
+      `갈등이 잦은 ${오행관계[gEl].동물}띠와의 관계`,
     ];
+    과다오행.forEach(el => {
+      badThings.push(`${오행관계[el].색} 계열 과다 — 이미 ${오행한자[el]}(${el})이 과다하므로 더하면 부담`);
+    });
 
     // 행운 아이템
     const luckyColor = 오행관계[yEl].색;
