@@ -1997,7 +1997,7 @@ function getWealthAnalysis(dayGanIdx, elementCounts, yongsin, pillars, specialSt
 }
 
 // 연애운 분석 (강화)
-function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo) {
+function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo, dayP, pillars) {
   const dayElement = 천간오행[dayGanIdx];
   const dayYY = 천간음양[dayGanIdx];
   const {신강여부} = yongsinInfo;
@@ -2056,6 +2056,39 @@ function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo) {
 
   text += `<br><span class="highlight">연애운 상승 컬러:</span> ${오행관계[partnerElement].색} 계열`;
   text += `<br><span class="highlight">인연의 방위:</span> ${오행관계[partnerElement].방위}쪽 인연에 주목하세요`;
+
+  // 배우자궁(일지) 12운성 분석
+  if (dayP) {
+    const spouseUnsung = get12Unsung(dayGanIdx, dayP.ji);
+    const 배우자궁운성 = {
+      '장생': '배우자궁에 장생이 있어, 파트너가 성장지향적이고 함께 발전하는 관계를 형성합니다.',
+      '목욕': '배우자궁에 목욕이 있어, 이성에게 본능적으로 끌리는 힘이 있고 매력적이지만, 감정에 휘둘리기 쉽습니다. 연애 초기의 감정적 판단에 주의하세요.',
+      '관대': '배우자궁에 관대가 있어, 사회적으로 인정받는 파트너와 인연이 깊고, 외적으로 빛나는 관계를 형성합니다.',
+      '건록': '배우자궁에 건록이 있어, 독립적이고 자존심 강한 파트너와 인연이 깊습니다. 서로의 영역을 존중하는 것이 핵심입니다.',
+      '제왕': '배우자궁에 제왕이 있어, 카리스마 있는 파트너에게 끌리지만 주도권 다툼이 생길 수 있습니다. 양보의 미학이 필요합니다.',
+      '쇠': '배우자궁에 쇠가 있어, 성숙하고 경험 많은 파트너와 인연이 깊습니다. 안정적이고 지혜로운 관계입니다.',
+      '병': '배우자궁에 병이 있어, 파트너의 건강이나 에너지에 주의가 필요합니다. 서로를 돌보는 관계가 됩니다.',
+      '사': '배우자궁에 사가 있어, 극적인 인연이 올 수 있습니다. 한 관계가 끝나면 완전히 다른 차원의 인연이 시작됩니다.',
+      '묘': '배우자궁에 묘가 있어, 조용하지만 깊은 인연을 형성합니다. 내면의 유대감이 매우 강합니다.',
+      '절': '배우자궁에 절이 있어, 인연의 전환점이 확실합니다. 과거 관계를 깨끗이 정리하고 새 인연을 만날 때 더 좋은 결과가 옵니다.',
+      '태': '배우자궁에 태가 있어, 순수하고 새로운 느낌의 인연이 찾아옵니다. 첫사랑 같은 설렘이 있는 관계입니다.',
+      '양': '배우자궁에 양이 있어, 따뜻하고 포용적인 파트너와 인연이 깊습니다. 서로를 성장시키는 관계입니다.',
+    };
+    if (배우자궁운성[spouseUnsung]) {
+      text += `<br><br><span class="highlight">▸ 배우자궁(${지지[dayP.ji]}) ${spouseUnsung}:</span> ${배우자궁운성[spouseUnsung]}`;
+    }
+  }
+
+  // 남성: 편재만 있고 정재 없는 경우
+  if (gender === 'male' && pillars) {
+    const wealthEl = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' }[dayElement];
+    const pillarGans = pillars.filter(p => p).map(p => p.gan);
+    const 편재cnt = pillarGans.filter(g => 천간오행[g] === wealthEl && 천간음양[g] === dayYY).length;
+    const 정재cnt = pillarGans.filter(g => 천간오행[g] === wealthEl && 천간음양[g] !== dayYY).length;
+    if (편재cnt > 0 && 정재cnt === 0) {
+      text += `<br><br><span class="caution">▸ 편재만 있고 정재가 없는 구조:</span> 연애는 뜨겁지만 결혼 이후의 일상적·안정적 관계 유지에 의식적 노력이 필요합니다. '연애는 잘하는데 결혼은 어렵다'는 패턴이 되지 않도록, 일상 속 작은 배려와 표현을 연습하세요.`;
+    }
+  }
 
   return text;
 }
@@ -2232,7 +2265,7 @@ function analyze() {
     const wealthText = getWealthAnalysis(dayP.gan, elementCounts, yongsinInfo, pillars, specialStructures);
 
     // 연애운
-    const loveText = getLoveAnalysis(dayP.gan, selectedGender, elementCounts, yongsinInfo);
+    const loveText = getLoveAnalysis(dayP.gan, selectedGender, elementCounts, yongsinInfo, dayP, pillars);
 
     // 용신 오행 관련
     const yongsinEl = yongsinInfo.용신;
