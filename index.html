@@ -17,6 +17,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" defer></script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LTFZ1YMVNM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-LTFZ1YMVNM');
+</script>
 <style>
 :root {
   --bg-deep: #0a0610;
@@ -2746,7 +2754,8 @@ function analyze() {
           </div>
         </div>
 
-        <a class="premium-cta" href="https://forms.google.com" target="_blank" rel="noopener">
+        <a class="premium-cta" href="https://forms.google.com" target="_blank" rel="noopener"
+           onclick="if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'premium_cta'})">
           ✦ 프리미엄 심층 분석 신청하기 ✦
         </a>
       </div>
@@ -2777,6 +2786,14 @@ function analyze() {
           setTimeout(() => { nameEl.style.borderRight = 'none'; }, 800);
         }
       }, 120);
+    }
+
+    // GA: 분석 완료 이벤트
+    if (typeof gtag === 'function') {
+      gtag('event', 'analyze_complete', {
+        event_category: 'engagement',
+        event_label: `${천간한글[dayP.gan]}${지지한글[dayP.ji]} / ${yongsinInfo.신강여부}`
+      });
     }
 
     // IntersectionObserver로 카드 스크롤 등장
@@ -2840,6 +2857,7 @@ function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, day
 }
 
 function saveShareCard() {
+  if (typeof gtag === 'function') gtag('event', 'share_card', { event_category: 'sharing', method: 'image_save' });
   const card = document.getElementById('share-card');
   if (!card || typeof html2canvas === 'undefined') {
     showToast('잠시 후 다시 시도해주세요');
@@ -2870,6 +2888,7 @@ function saveShareCard() {
 }
 
 function copyShareURL() {
+  if (typeof gtag === 'function') gtag('event', 'share_link', { event_category: 'sharing', method: 'link_copy' });
   const url = window.location.origin + window.location.pathname;
   navigator.clipboard.writeText(url + '\n\nSAJU — AI 사주명리 분석\n생년월일시만 입력하면 무료로 사주풀이를 받을 수 있어요!').then(() => {
     showToast('링크가 복사되었습니다! 📋');
@@ -2886,6 +2905,7 @@ function copyShareURL() {
 }
 
 function webShare() {
+  if (typeof gtag === 'function') gtag('event', 'share_web', { event_category: 'sharing', method: 'web_share_api' });
   if (navigator.share) {
     navigator.share({
       title: 'SAJU — AI 사주명리 분석',
