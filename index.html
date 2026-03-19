@@ -1900,7 +1900,7 @@ const 오행관계 = {
 };
 
 // 건강 분석 (강화)
-function getHealthAnalysis(elementCounts, dayElement) {
+function getHealthAnalysis(elementCounts, dayElement, yongsinInfo, dayJi, currentDaeunElement) {
   const analyses = [];
   const 오행순 = ['목','화','토','금','수'];
   const 건강상세 = {
@@ -1924,8 +1924,22 @@ function getHealthAnalysis(elementCounts, dayElement) {
     analyses.push({ type: 'balanced', text: '오행이 비교적 균형 잡혀 있어 체질적으로 큰 취약점은 없습니다. 다만 과로, 스트레스, 계절 변화에는 누구나 취약하므로 규칙적인 생활 리듬을 유지하는 것이 건강의 핵심입니다.' });
   }
 
-  // 추천 운동/음식 추가
-  const yongsinElement = Object.keys(건강상세).find(el => elementCounts[el] === Math.min(...오행순.map(e => elementCounts[e]))) || dayElement;
+  // 토 과다 + 수 부족 복합 경고
+  if (elementCounts['토'] >= 3 && elementCounts['수'] < 1) {
+    analyses.push({ type: 'excess', text: `<strong>토(土) 과다 + 수(水) 부족 복합</strong> — 소화기 과민과 신장·비뇨기 약화가 복합적으로 작용할 수 있습니다. 물을 하루 2리터 이상 의식적으로 마시고, 야식과 밀가루를 줄이세요. 야근·올나잇 후 수면 부족은 이 체질에 가장 위험한 패턴입니다.` });
+  }
+
+  // 일지 오행 + 대운 오행 중복 경고
+  if (dayJi !== undefined && currentDaeunElement) {
+    const jiElement = 지지오행[dayJi];
+    if (jiElement === currentDaeunElement) {
+      const 오행장부 = { '목':'간·담', '화':'심장·혈압·불면증', '토':'위장·소화기', '금':'폐·기관지·피부', '수':'신장·비뇨기·관절' };
+      analyses.push({ type: 'excess', text: `<strong>일지·대운 ${오행한자[jiElement]}(${jiElement}) 중복 주의</strong> — 일지와 현재 대운에 ${오행한자[jiElement]}가 겹쳐, ${오행장부[jiElement]}에 특히 주의가 필요한 시기입니다. 정기 건강검진을 받으세요.` });
+    }
+  }
+
+  // 추천 운동/음식 — 실제 용신 기반
+  const yongsinElement = (yongsinInfo && yongsinInfo.용신) ? yongsinInfo.용신 : (Object.keys(건강상세).find(el => elementCounts[el] === Math.min(...오행순.map(e => elementCounts[e]))) || dayElement);
   analyses.push({ type: 'tip', text: `<strong>추천 운동:</strong> ${건강상세[yongsinElement].운동}<br><strong>도움이 되는 음식:</strong> ${건강상세[yongsinElement].음식}` });
 
   return analyses;
@@ -2259,7 +2273,12 @@ function analyze() {
     const specialStructures = detectSpecialStructures(dayP.gan, pillars, elementCounts);
 
     // 건강 분석
-    const healthInfo = getHealthAnalysis(elementCounts, 천간오행[dayP.gan]);
+    // 현재 대운 천간 오행 계산
+    const userAge = currentYear - solarYear;
+    const currentDaeun = daeunList.find((d, i) => userAge >= d.age && (i === daeunList.length - 1 || userAge < daeunList[i+1].age));
+    const currentDaeunElement = currentDaeun ? 천간오행[currentDaeun.gan] : null;
+
+    const healthInfo = getHealthAnalysis(elementCounts, 천간오행[dayP.gan], yongsinInfo, dayP.ji, currentDaeunElement);
 
     // 재물운
     const wealthText = getWealthAnalysis(dayP.gan, elementCounts, yongsinInfo, pillars, specialStructures);
