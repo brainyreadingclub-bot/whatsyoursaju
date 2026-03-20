@@ -886,6 +886,94 @@ input::placeholder {
   color: var(--purple-light);
 }
 
+/* ─── 전문 용어 순화 뱃지 ─── */
+.saju-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  margin-left: 4px;
+  border-radius: 4px;
+  background: rgba(107,63,160,0.15);
+  border: 1px solid rgba(107,63,160,0.25);
+  color: var(--purple-light);
+  vertical-align: middle;
+  letter-spacing: 0.5px;
+  font-weight: 400;
+}
+.type-label {
+  display: inline-block;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(196,149,58,0.12);
+  border: 1px solid rgba(196,149,58,0.25);
+  color: var(--gold-light, #e8d5a3);
+  margin-right: 6px;
+}
+
+/* ─── 용어 사전 (접이식) ─── */
+.glossary-section {
+  margin-top: 32px;
+  border: 1px solid rgba(107,63,160,0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.glossary-toggle {
+  width: 100%;
+  background: rgba(10,6,16,0.5);
+  border: none;
+  color: var(--gold);
+  padding: 16px 24px;
+  font-size: 15px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: inherit;
+}
+.glossary-toggle:hover { background: rgba(107,63,160,0.1); }
+.glossary-toggle .arrow { transition: transform 0.3s; }
+.glossary-toggle.open .arrow { transform: rotate(180deg); }
+.glossary-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  background: rgba(10,6,16,0.3);
+}
+.glossary-body.open { max-height: 2000px; }
+.glossary-body-inner { padding: 20px 24px; }
+.glossary-category { margin-bottom: 20px; }
+.glossary-category-title {
+  font-size: 13px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(107,63,160,0.1);
+}
+.glossary-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.glossary-term {
+  color: var(--purple-light);
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 50px;
+}
+.glossary-arrow { color: var(--text-dim); }
+.glossary-easy {
+  color: var(--gold-light, #e8d5a3);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.glossary-desc { color: var(--text-secondary); }
+
 /* ─── Yin-Yang symbol ─── */
 .yinyang-section {
   text-align: center;
@@ -1487,6 +1575,67 @@ const 오행영문 = { '목':'wood', '화':'fire', '토':'earth', '금':'metal',
 const 오행색상 = { '목':'#4a9e6b', '화':'#d4534a', '토':'#c4953a', '금':'#b8b8cc', '수':'#4a7ec4' };
 
 const 십성 = ['비견','겁재','식신','상관','편재','정재','편관','정관','편인','정인'];
+
+// ── 전문 용어 순화 매핑 ──
+const 십신사전 = {
+  '비견': { 순화:'나와 같은 기운', 설명:'나와 비슷한 성질의 에너지. 자신감, 경쟁심, 독립심을 나타냅니다' },
+  '겁재': { 순화:'경쟁하는 기운', 설명:'나와 부딪치는 에너지. 동료와의 경쟁, 재물의 분산을 뜻합니다' },
+  '식신': { 순화:'표현하는 재능', 설명:'자연스럽게 흘러나오는 재능. 창작, 음식, 안정적 표현력을 의미합니다' },
+  '상관': { 순화:'파격적 재능', 설명:'기존 틀을 깨는 에너지. 혁신적 사고, 날카로운 통찰력입니다' },
+  '편재': { 순화:'움직이는 재물', 설명:'변동성 있는 돈. 투자, 사업, 유동적 수입을 나타냅니다' },
+  '정재': { 순화:'안정된 재물', 설명:'꾸준히 들어오는 돈. 월급, 저축, 안정적 자산입니다' },
+  '편관': { 순화:'예측 불가 도전', 설명:'외부에서 오는 돌발 압력. 강제적 성장, 돌발 변수를 의미합니다' },
+  '정관': { 순화:'사회적 책임', 설명:'체계적인 외부 규율. 승진, 인정, 사회적 역할을 뜻합니다' },
+  '편인': { 순화:'독학의 지혜', 설명:'비정규적 배움. 독학, 직관, 영감, 특이한 관심사입니다' },
+  '정인': { 순화:'든든한 후원', 설명:'정통적 배움과 지원. 부모, 멘토, 학업, 자격증을 나타냅니다' }
+};
+const 십신순화 = Object.fromEntries(Object.entries(십신사전).map(([k,v]) => [k, v.순화]));
+
+const 운성사전 = {
+  '장생': { 순화:'새싹 에너지', 설명:'새로운 시작의 기운. 가능성이 싹트는 시기입니다' },
+  '목욕': { 순화:'자유로운 변화', 설명:'변화와 파격의 기운. 자유분방하고 매력적입니다' },
+  '관대': { 순화:'자신감 상승', 설명:'자신감이 올라가는 시기. 사회적 활동이 활발해집니다' },
+  '건록': { 순화:'안정의 정점', 설명:'가장 안정적인 기운. 실력이 꽃피는 시기입니다' },
+  '제왕': { 순화:'카리스마 절정', 설명:'기운이 최고조에 달합니다. 리더십이 빛나는 시기입니다' },
+  '쇠':   { 순화:'원숙한 지혜', 설명:'에너지가 성숙해지는 시기. 경험에서 오는 깊이가 있습니다' },
+  '병':   { 순화:'내면의 성찰', 설명:'내면을 돌아보는 시기. 정신적 성장이 이루어집니다' },
+  '사':   { 순화:'극적 전환', 설명:'큰 변화의 기운. 한 단계가 마무리되고 전환됩니다' },
+  '묘':   { 순화:'잠재력 충전', 설명:'에너지를 저장하는 시기. 겉으로 드러나지 않는 힘이 쌓입니다' },
+  '절':   { 순화:'완전한 리셋', 설명:'완전히 새로워지는 기운. 과거를 내려놓고 리셋됩니다' },
+  '태':   { 순화:'새로운 시작', 설명:'새 생명이 잉태되는 기운. 새로운 가능성이 시작됩니다' },
+  '양':   { 순화:'조용한 성장', 설명:'조용히 자라나는 기운. 천천히 그러나 확실하게 성장합니다' }
+};
+const 운성순화 = Object.fromEntries(Object.entries(운성사전).map(([k,v]) => [k, v.순화]));
+
+const 구조순화 = {
+  '식신생재': '재능으로 돈 버는 타입',
+  '상관생재': '아이디어로 돈 버는 타입',
+  '편재 쌍': '큰 돈을 다루는 타입',
+  '관살혼잡': '멀티 포지션 타입',
+  '비겁 과다': '독립 개척 타입'
+};
+
+const 용어순화 = {
+  '신강': '에너지 강한 사주',
+  '신약': '에너지 섬세한 사주',
+  '용신': '나를 돕는 기운',
+  '희신': '용신을 돕는 기운',
+  '기신': '조심할 기운'
+};
+
+const 역할순화 = {
+  '비겁': '자기 에너지',
+  '인성': '후원 에너지',
+  '식상': '재능 에너지',
+  '재성': '재물 에너지',
+  '관성': '도전 에너지'
+};
+
+function 용어뱃지(원래, 매핑) {
+  const 순화 = 매핑[원래];
+  if (!순화) return 원래;
+  return `${순화} <span class="saju-badge">${원래}</span>`;
+}
 
 // 지지장간 (지지 안에 숨어 있는 천간들)
 const 지지장간 = {
@@ -2124,34 +2273,34 @@ function getWealthAnalysis(dayGanIdx, elementCounts, yongsin, pillars, specialSt
 
   let wealthTypeText = '';
   if (wealthType) {
-    wealthTypeText += `<span class="info">▸ 재성 유형:</span> `;
+    wealthTypeText += `<span class="info">▸ 재물 유형:</span> `;
     if (wealthType === '편재') {
-      wealthTypeText += `<span class="highlight">편재</span> — 투자, 사업, 유동적 재물에 강합니다. 모험적이고 스케일이 큰 돈의 흐름을 다룰 수 있는 기질입니다.<br><br>`;
+      wealthTypeText += `<span class="highlight">${십신순화['편재']}</span> <span class="saju-badge">편재</span> — 투자, 사업, 유동적 재물에 강합니다. 모험적이고 스케일이 큰 돈의 흐름을 다룰 수 있는 기질입니다.<br><br>`;
     } else {
-      wealthTypeText += `<span class="highlight">정재</span> — 근로소득, 저축, 안정적 자산에 강합니다. 꾸준히 모아가는 성실한 재물 관리가 체질입니다.<br><br>`;
+      wealthTypeText += `<span class="highlight">${십신순화['정재']}</span> <span class="saju-badge">정재</span> — 근로소득, 저축, 안정적 자산에 강합니다. 꾸준히 모아가는 성실한 재물 관리가 체질입니다.<br><br>`;
     }
   }
   let text = '';
   if (wealthCount >= 2.5) {
-    text = `재성(${오행한자[wealthElement]})이 강하여 <span class="highlight">타고난 재물 감각</span>이 있는 사주입니다. 돈의 흐름을 본능적으로 읽는 능력이 있어서, 투자나 사업에서 기회를 잘 포착합니다. 특히 <span class="highlight">${오행관계[wealthElement].계절}</span>에 재물운이 상승하므로 이 시기를 잘 활용하세요.`;
+    text = `재물 에너지(${오행한자[wealthElement]})가 강하여 <span class="highlight">타고난 재물 감각</span>이 있는 사주입니다. 돈의 흐름을 본능적으로 읽는 능력이 있어서, 투자나 사업에서 기회를 잘 포착합니다. 특히 <span class="highlight">${오행관계[wealthElement].계절}</span>에 재물운이 상승하므로 이 시기를 잘 활용하세요.`;
     if (신강여부 === '신강') {
-      text += `<br><br>일간이 강하면서 재성도 강하니, 돈을 벌 수도 있지만 쓸 줄도 아는 타입입니다. 사업이나 투자에 적극적으로 나서도 되지만, <span class="caution">과한 욕심은 오히려 손실</span>로 이어질 수 있으니 "70% 수익에 만족하기"를 원칙으로 삼으세요.`;
+      text += `<br><br>일간이 강하면서 재물 에너지도 강하니, 돈을 벌 수도 있지만 쓸 줄도 아는 타입입니다. 사업이나 투자에 적극적으로 나서도 되지만, <span class="caution">과한 욕심은 오히려 손실</span>로 이어질 수 있으니 "70% 수익에 만족하기"를 원칙으로 삼으세요.`;
     } else {
-      text += `<br><br>다만 일간이 약한 상태에서 재성이 강하면, 재물은 보이지만 잡기가 쉽지 않은 패턴이 될 수 있습니다. <span class="highlight">실력과 자기 역량을 먼저 키우고</span> 나서 재물을 추구하면 훨씬 안정적으로 부를 쌓을 수 있습니다.`;
+      text += `<br><br>다만 일간이 약한 상태에서 재물 에너지가 강하면, 재물은 보이지만 잡기가 쉽지 않은 패턴이 될 수 있습니다. <span class="highlight">실력과 자기 역량을 먼저 키우고</span> 나서 재물을 추구하면 훨씬 안정적으로 부를 쌓을 수 있습니다.`;
     }
   } else if (wealthCount >= 1) {
     if (wealthType === '편재') {
-      text = `재성이 편재 위주로 구성되어, 안정적 월급보다는 <span class="highlight">사업·투자·플랫폼에서 수익을 내는 구조</span>가 체질에 맞습니다. 여러 수입원을 동시에 운영하는 능력이 있지만, 에너지가 분산되지 않도록 핵심 1~2개에 집중하는 것이 중요합니다.`;
+      text = `재물 에너지가 움직이는 재물(편재) 위주로 구성되어, 안정적 월급보다는 <span class="highlight">사업·투자·플랫폼에서 수익을 내는 구조</span>가 체질에 맞습니다. 여러 수입원을 동시에 운영하는 능력이 있지만, 에너지가 분산되지 않도록 핵심 1~2개에 집중하는 것이 중요합니다.`;
     } else if (wealthType === '정재') {
-      text = `재성이 정재 위주로 구성되어, <span class="highlight">꾸준하고 안정적인 경제생활</span>이 가능한 사주입니다. 안정적인 월급 생활에 강점이 있으며, <span class="highlight">적금, 연금, 부동산</span> 같은 안전 자산에 꾸준히 투자하는 전략이 맞습니다.`;
+      text = `재물 에너지가 안정된 재물(정재) 위주로 구성되어, <span class="highlight">꾸준하고 안정적인 경제생활</span>이 가능한 사주입니다. 안정적인 월급 생활에 강점이 있으며, <span class="highlight">적금, 연금, 부동산</span> 같은 안전 자산에 꾸준히 투자하는 전략이 맞습니다.`;
     } else {
-      text = `재성이 적당하여 <span class="highlight">꾸준하고 안정적인 경제생활</span>이 가능한 사주입니다. 한 방에 큰 돈을 버는 타입보다는, 매달 차곡차곡 모아가는 스타일이 더 잘 맞습니다.`;
+      text = `재물 에너지가 적당하여 <span class="highlight">꾸준하고 안정적인 경제생활</span>이 가능한 사주입니다. 한 방에 큰 돈을 버는 타입보다는, 매달 차곡차곡 모아가는 스타일이 더 잘 맞습니다.`;
     }
     if (foodGodCount >= 2) {
-      text += `<br><br>식상(표현력)이 강하니, <span class="highlight">재능이나 기술을 돈으로 바꾸는 능력</span>이 뛰어납니다. 글쓰기, 강의, 콘텐츠 제작, 프리랜서 등 자기 능력을 직접 수익화하는 방향이 유리합니다.`;
+      text += `<br><br>재능 에너지(표현력)가 강하니, <span class="highlight">재능이나 기술을 돈으로 바꾸는 능력</span>이 뛰어납니다. 글쓰기, 강의, 콘텐츠 제작, 프리랜서 등 자기 능력을 직접 수익화하는 방향이 유리합니다.`;
     }
   } else {
-    text = `재성이 약하여 재물이 쉽게 모이지 않을 수 있습니다. 하지만 이것은 <span class="highlight">물질보다 정신적 가치를 추구하는 높은 기질</span>이기도 합니다.`;
+    text = `재물 에너지가 약하여 재물이 쉽게 모이지 않을 수 있습니다. 하지만 이것은 <span class="highlight">물질보다 정신적 가치를 추구하는 높은 기질</span>이기도 합니다.`;
     text += `<br><br>돈을 좇기보다 <span class="highlight">전문 기술이나 지식</span>을 먼저 쌓으세요. 당신의 실력이 곧 재물이 됩니다. 직접 돈을 벌려 하기보다, 당신이 좋아하는 것에 몰입하면 자연스럽게 경제적 보상이 따라올 타입입니다.`;
     if (신강여부 === '신강') {
       text += ` 특히 일간이 강하니 <span class="highlight">독립적인 사업이나 프리랜서</span> 형태가 월급 생활보다 더 잘 맞을 수 있습니다.`;
@@ -2161,10 +2310,10 @@ function getWealthAnalysis(dayGanIdx, elementCounts, yongsin, pillars, specialSt
   // 구조별 재물운 보충
   const ss = specialStructures || [];
   if (ss.some(s => s.type === '상관생재')) {
-    text += `<br><br><span class="highlight">▸ 상관생재(傷官生財):</span> 독창적인 아이디어나 서비스를 만들어서 수익화하는 것이 가장 자연스러운 돈벌이 경로입니다. 남이 만든 것을 유통하기보다, 자기가 직접 만든 콘텐츠·서비스·커뮤니티에서 수익을 내는 구조가 사주와 가장 잘 맞습니다.`;
+    text += `<br><br><span class="type-label">${구조순화['상관생재']}</span> <span class="saju-badge">상관생재</span> 독창적인 아이디어나 서비스를 만들어서 수익화하는 것이 가장 자연스러운 돈벌이 경로입니다. 남이 만든 것을 유통하기보다, 자기가 직접 만든 콘텐츠·서비스·커뮤니티에서 수익을 내는 구조가 사주와 가장 잘 맞습니다.`;
   }
   if (ss.some(s => s.type === '편재 쌍')) {
-    text += `<br><br><span class="highlight">▸ 편재 쌍:</span> 동시다발적 수입원을 자연스럽게 만드는 구조입니다. 다만 정재(正財)가 없거나 약하면 안정적인 현금 흐름이 구조적으로 부족할 수 있으니, 자동이체 저축이나 비상금 확보 같은 시스템으로 변동성을 완충하세요.`;
+    text += `<br><br><span class="type-label">${구조순화['편재 쌍']}</span> <span class="saju-badge">편재 쌍</span> 동시다발적 수입원을 자연스럽게 만드는 구조입니다. 다만 안정된 재물(정재)이 없거나 약하면 안정적인 현금 흐름이 구조적으로 부족할 수 있으니, 자동이체 저축이나 비상금 확보 같은 시스템으로 변동성을 완충하세요.`;
   }
 
   return wealthTypeText + text;
@@ -2180,11 +2329,11 @@ function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo, dayP, pi
   if (gender === 'female') {
     const 극아 = { '목':'금', '화':'수', '토':'목', '금':'화', '수':'토' };
     partnerElement = 극아[dayElement];
-    partnerLabel = '관성(남편성)';
+    partnerLabel = '이성 인연의 기운';
   } else {
     const 아극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
     partnerElement = 아극[dayElement];
-    partnerLabel = '재성(아내성)';
+    partnerLabel = '이성 인연의 기운';
   }
 
   const count = elementCounts[partnerElement];
@@ -2209,9 +2358,9 @@ function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo, dayP, pi
   if (count >= 2.5) {
     text += `${partnerLabel}인 ${오행한자[partnerElement]}(${partnerElement})이(가) 강하여 <span class="highlight">이성 인연이 풍부</span>합니다. 매력적인 상대를 만날 기회가 많지만, 오히려 선택지가 많아서 결정을 못하는 "연애 부자의 고민"이 있을 수 있습니다.`;
     if (gender === 'female' && 신강여부 === '신강') {
-      text += ` 신강한 여성이라 당당하고 독립적인 매력이 있어, 능력 있고 자신감 있는 남성과 인연이 잘 맞습니다.`;
+      text += ` 에너지가 강한 여성이라 당당하고 독립적인 매력이 있어, 능력 있고 자신감 있는 남성과 인연이 잘 맞습니다.`;
     } else if (gender === 'female') {
-      text += ` 배우자성이 강하니 인연 자체는 많지만, 자기 주관이 확실한 파트너를 만나야 안정감을 느낄 수 있습니다.`;
+      text += ` 이성 인연 에너지가 강하니 인연 자체는 많지만, 자기 주관이 확실한 파트너를 만나야 안정감을 느낄 수 있습니다.`;
     }
   } else if (count >= 1) {
     text += `${partnerLabel}이(가) 적당하여 <span class="highlight">깊고 안정적인 사랑</span>을 할 수 있는 사주입니다. 한 번 인연을 맺으면 오래 가며, 서로를 성장시키는 건강한 관계를 형성합니다. <span class="highlight">${오행관계[partnerElement].색} 계열</span>의 옷을 입으면 이성운이 상승합니다.`;
@@ -2225,7 +2374,7 @@ function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo, dayP, pi
   // 천간합 궁합 추가
   const hapInfo = getCheonganHap(dayGanIdx);
   if (hapInfo) {
-    text += `<br><span class="highlight">천간합 최고 궁합:</span> ${hapInfo.partner}(${천간한글[hapInfo.partnerIdx]}) 일간 — 만나면 ${오행한자[hapInfo.합화오행]}(${hapInfo.합화오행})의 조화를 이루는 천생연분`;
+    text += `<br><span class="highlight">최고의 궁합:</span> ${hapInfo.partner}(${천간한글[hapInfo.partnerIdx]}) 일간 — 만나면 ${오행한자[hapInfo.합화오행]}(${hapInfo.합화오행})의 조화를 이루는 천생연분 <span class="saju-badge">천간합</span>`;
   }
 
   text += `<br><span class="highlight">연애운 상승 컬러:</span> ${오행관계[partnerElement].색} 계열`;
@@ -2249,7 +2398,7 @@ function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo, dayP, pi
       '양': '배우자궁에 양이 있어, 따뜻하고 포용적인 파트너와 인연이 깊습니다. 서로를 성장시키는 관계입니다.',
     };
     if (배우자궁운성[spouseUnsung]) {
-      text += `<br><br><span class="highlight">▸ 배우자궁(${지지[dayP.ji]}) ${spouseUnsung}:</span> ${배우자궁운성[spouseUnsung]}`;
+      text += `<br><br><span class="highlight">▸ 배우자자리(${지지[dayP.ji]}) ${운성순화[spouseUnsung] || spouseUnsung}:</span> <span class="saju-badge">${spouseUnsung}</span> ${배우자궁운성[spouseUnsung]}`;
     }
   }
 
@@ -2260,7 +2409,7 @@ function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo, dayP, pi
     const 편재cnt = pillarGans.filter(g => 천간오행[g] === wealthEl && 천간음양[g] === dayYY).length;
     const 정재cnt = pillarGans.filter(g => 천간오행[g] === wealthEl && 천간음양[g] !== dayYY).length;
     if (편재cnt > 0 && 정재cnt === 0) {
-      text += `<br><br><span class="caution">▸ 편재만 있고 정재가 없는 구조:</span> 연애는 뜨겁지만 결혼 이후의 일상적·안정적 관계 유지에 의식적 노력이 필요합니다. '연애는 잘하는데 결혼은 어렵다'는 패턴이 되지 않도록, 일상 속 작은 배려와 표현을 연습하세요.`;
+      text += `<br><br><span class="caution">▸ 움직이는 재물만 있고 안정된 재물이 없는 구조:</span> 연애는 뜨겁지만 결혼 이후의 일상적·안정적 관계 유지에 의식적 노력이 필요합니다. '연애는 잘하는데 결혼은 어렵다'는 패턴이 되지 않도록, 일상 속 작은 배려와 표현을 연습하세요.`;
     }
   }
 
@@ -2531,7 +2680,7 @@ function analyze() {
           <div class="pillar-element el-${오행영문[천간오행[p.gan]]}">
             ${오행한자[천간오행[p.gan]]} · ${천간음양[p.gan]}
           </div>
-          <div class="pillar-sipsung" style="font-size:0.75rem; color:var(--gold); margin-top:4px">${sipsungLabel}</div>
+          <div class="pillar-sipsung" style="font-size:0.75rem; color:var(--gold); margin-top:4px">${십신순화[sipsungLabel] || sipsungLabel}</div>
         </div>`;
     });
 
@@ -2568,9 +2717,9 @@ function analyze() {
     const 용신역할 = 오행십신역할(yongsinInfo.용신);
     const 희신역할 = 오행십신역할(yongsinInfo.희신);
 
-    elAnalysis += `<br>일간 강약: <span class="highlight">${yongsinInfo.신강여부}</span>`;
-    elAnalysis += `<br>용신: <span class="highlight">${오행한자[yongsinInfo.용신]}·${오행한자[yongsinInfo.희신]}(${yongsinInfo.용신}·${yongsinInfo.희신})</span> — ${용신역할} + ${희신역할} 발산`;
-    elAnalysis += `<br>기신: <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신})</span>`;
+    elAnalysis += `<br>일간 강약: <span class="highlight">${용어순화[yongsinInfo.신강여부]}</span> <span class="saju-badge">${yongsinInfo.신강여부}</span>`;
+    elAnalysis += `<br>${용어순화['용신']}: <span class="highlight">${오행한자[yongsinInfo.용신]}·${오행한자[yongsinInfo.희신]}(${yongsinInfo.용신}·${yongsinInfo.희신})</span> — ${역할순화[용신역할] || 용신역할} + ${역할순화[희신역할] || 희신역할}`;
+    elAnalysis += `<br>${용어순화['기신']}: <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신})</span>`;
     if (johuInfo) {
       elAnalysis += `<br><span class="info">▸ 조후:</span> ${johuInfo.설명}`;
       if (johuInfo.johu !== yongsinInfo.용신) {
@@ -2598,9 +2747,9 @@ function analyze() {
       '수': '검은콩, 검은깨, 해조류 등 검은색 음식과 하루 2리터 이상 물이 필수입니다.',
     };
 
-    healthHTML += `<br><br><span class="info">▸</span> <strong>보양 원칙:</strong> <span class="highlight">${오행한자[yongsinInfo.용신]}(${yongsinInfo.용신}) 보충:</span> ${오행보충설명[yongsinInfo.용신] || 오행관계[yongsinInfo.용신].맛 + ' 음식을 자주 섭취하세요.'}`;
-    healthHTML += `<br><span class="info">▸</span> <span class="highlight">${오행한자[yongsinInfo.희신]}(${yongsinInfo.희신}) 보충:</span> ${오행보충설명[yongsinInfo.희신] || 오행관계[yongsinInfo.희신].맛 + ' 음식이 도움됩니다.'}`;
-    healthHTML += `<br><span class="caution">▸</span> <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신}) 줄이기:</span> ${오행관계[yongsinInfo.기신].맛}이 나는 음식을 과하게 먹지 마세요.`;
+    healthHTML += `<br><br><span class="info">▸</span> <strong>보양 원칙:</strong> <span class="highlight">${오행한자[yongsinInfo.용신]}(${yongsinInfo.용신}) 보충</span> <span class="saju-badge">${용어순화['용신']}</span> ${오행보충설명[yongsinInfo.용신] || 오행관계[yongsinInfo.용신].맛 + ' 음식을 자주 섭취하세요.'}`;
+    healthHTML += `<br><span class="info">▸</span> <span class="highlight">${오행한자[yongsinInfo.희신]}(${yongsinInfo.희신}) 보충</span> <span class="saju-badge">${용어순화['희신']}</span> ${오행보충설명[yongsinInfo.희신] || 오행관계[yongsinInfo.희신].맛 + ' 음식이 도움됩니다.'}`;
+    healthHTML += `<br><span class="caution">▸</span> <span class="caution">${오행한자[yongsinInfo.기신]}(${yongsinInfo.기신}) 줄이기</span> <span class="saju-badge">${용어순화['기신']}</span> ${오행관계[yongsinInfo.기신].맛}이 나는 음식을 과하게 먹지 마세요.`;
 
     const goodThings = [
       `${오행관계[yEl].색} 계열 컬러 (용신)`,
@@ -2656,13 +2805,13 @@ function analyze() {
     };
     specialStructures.forEach(s => {
       if (구조별직업[s.type]) {
-        careerText += `<br><br><span class="highlight">▸ ${s.type} 적성:</span> ${구조별직업[s.type]}`;
+        careerText += `<br><br><span class="type-label">${구조순화[s.type] || s.type}</span> <span class="saju-badge">${s.type}</span> ${구조별직업[s.type]}`;
       }
     });
 
     // 편인 과다 직업 인사이트
     if (elementCounts[인성오행] >= 3) {
-      careerText += `<br><br><span class="highlight">▸ 편인 과다:</span> 독학·자기주도 학습 능력이 비범합니다. 정규 교육보다 스스로 터득하는 분야에서 두각을 나타내며, AI·기술·연구 등 빠르게 변화하는 분야에서 강점이 있습니다.`;
+      careerText += `<br><br><span class="highlight">▸ 독학의 지혜 에너지 과다:</span> <span class="saju-badge">편인</span> 독학·자기주도 학습 능력이 비범합니다. 정규 교육보다 스스로 터득하는 분야에서 두각을 나타내며, AI·기술·연구 등 빠르게 변화하는 분야에서 강점이 있습니다.`;
     }
 
     // 12운성
@@ -2698,9 +2847,9 @@ function analyze() {
         <div class="pillars-grid">${pillarsHTML}</div>
         ${(hapChung.합.length || hapChung.충.length) ? `
         <div style="margin-top:12px; text-align:center; font-size:0.85rem; color:var(--text-dim)">
-          ${hapChung.합.length ? `<span class="good">합:</span> ${hapChung.합.join(', ')}` : ''}
+          ${hapChung.합.length ? `<span class="good">조화:</span> ${hapChung.합.map(h => h.replace('육합','조화로운 결합')).join(', ')}` : ''}
           ${hapChung.합.length && hapChung.충.length ? ' · ' : ''}
-          ${hapChung.충.length ? `<span class="caution">충:</span> ${hapChung.충.join(', ')}` : ''}
+          ${hapChung.충.length ? `<span class="caution">긴장:</span> ${hapChung.충.map(h => h.replace('상충','부딪치는 기운')).join(', ')}` : ''}
         </div>` : ''}
       </div>
 
@@ -2718,7 +2867,7 @@ function analyze() {
               return `
               <div class="daeun-item ${cls}">
                 <div class="daeun-hanja" style="color:${오행색상[천간오행[d.gan]]}">${천간[d.gan]}${지지[d.ji]}</div>
-                <div class="daeun-sipsung">${daeunSipsung}</div>
+                <div class="daeun-sipsung">${십신순화[daeunSipsung] || daeunSipsung}</div>
                 <div class="daeun-dot"></div>
                 <div class="daeun-line"></div>
                 <div class="daeun-age">${d.age}세~${d.age+9}세</div>
@@ -2735,8 +2884,8 @@ function analyze() {
             return `
             <div class="daeun-detail">
               <strong>현재 대운 ${천간[currentDaeun.gan]}${지지[currentDaeun.ji]} (${currentDaeun.age}세~${currentDaeun.age+9}세)</strong><br><br>
-              <span class="highlight">천간 ${cdGanSipsung}:</span> ${대운십신해석[cdGanSipsung] || ''}<br><br>
-              <span class="highlight">지지 ${cdJiSipsung}:</span> ${대운십신해석[cdJiSipsung] || ''}
+              <span class="highlight">천간 ${용어뱃지(cdGanSipsung, 십신순화)}:</span> ${대운십신해석[cdGanSipsung] || ''}<br><br>
+              <span class="highlight">지지 ${용어뱃지(cdJiSipsung, 십신순화)}:</span> ${대운십신해석[cdJiSipsung] || ''}
             </div>`;
           })()}
         </div>
@@ -2744,7 +2893,7 @@ function analyze() {
 
       <!-- 12운성 -->
       <div class="analysis-card" data-icon="星" data-accent="purple">
-        <div class="card-title">일주 12운성 — ${dayUnsung}</div>
+        <div class="card-title">일주 12운성 — ${운성순화[dayUnsung] || dayUnsung} <span class="saju-badge">${dayUnsung}</span></div>
         <div class="card-content">${unsungText}</div>
       </div>
 
@@ -2759,7 +2908,7 @@ function analyze() {
       <div class="analysis-card" data-icon="性" data-accent="purple">
         <div class="card-title">성격 및 기질</div>
         <div class="card-content">
-          <p>일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> — ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <span class="highlight">${yongsinInfo.신강여부}</span></p>
+          <p>일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> — ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <span class="highlight">${용어순화[yongsinInfo.신강여부]}</span> <span class="saju-badge">${yongsinInfo.신강여부}</span></p>
           <br>
           <p>${personalityInfo.기본}</p>
           <br>
@@ -2778,7 +2927,7 @@ function analyze() {
       <div class="analysis-card" data-icon="格" data-accent="fire">
         <div class="card-title">사주 특수 구조</div>
         <div class="card-content">
-          ${specialStructures.map(s => `<p><span class="highlight">▸ ${s.type}</span><br>${s.desc}</p>`).join('<br>')}
+          ${specialStructures.map(s => `<p><span class="type-label">${구조순화[s.type] || s.type}</span> <span class="saju-badge">${s.type}</span><br>${s.desc}</p>`).join('<br>')}
         </div>
       </div>` : ''}
 
@@ -2909,6 +3058,45 @@ function analyze() {
         <button class="premium-cta" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'premium_cta'})">
           ✦ 프리미엄 사전 신청하기 ✦
         </button>
+
+        <!-- 용어 사전 (접이식) -->
+        <div class="glossary-section">
+          <button class="glossary-toggle" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')">
+            사주 용어 쉽게 알기 <span class="arrow">▼</span>
+          </button>
+          <div class="glossary-body">
+            <div class="glossary-body-inner">
+              <div class="glossary-category">
+                <div class="glossary-category-title">십 신 (나와 세상의 관계)</div>
+                ${Object.entries(십신사전).map(([k,v]) => `
+                  <div class="glossary-item">
+                    <span class="glossary-term">${k}</span>
+                    <span class="glossary-arrow">→</span>
+                    <span class="glossary-easy">${v.순화}</span>
+                    <span class="glossary-desc">— ${v.설명}</span>
+                  </div>`).join('')}
+              </div>
+              <div class="glossary-category">
+                <div class="glossary-category-title">12 운 성 (에너지의 흐름)</div>
+                ${Object.entries(운성사전).map(([k,v]) => `
+                  <div class="glossary-item">
+                    <span class="glossary-term">${k}</span>
+                    <span class="glossary-arrow">→</span>
+                    <span class="glossary-easy">${v.순화}</span>
+                    <span class="glossary-desc">— ${v.설명}</span>
+                  </div>`).join('')}
+              </div>
+              <div class="glossary-category">
+                <div class="glossary-category-title">기 타 용 어</div>
+                <div class="glossary-item"><span class="glossary-term">용신</span><span class="glossary-arrow">→</span><span class="glossary-easy">${용어순화['용신']}</span><span class="glossary-desc">— 내 사주에서 가장 필요한 기운</span></div>
+                <div class="glossary-item"><span class="glossary-term">희신</span><span class="glossary-arrow">→</span><span class="glossary-easy">${용어순화['희신']}</span><span class="glossary-desc">— 용신을 보조하는 기운</span></div>
+                <div class="glossary-item"><span class="glossary-term">기신</span><span class="glossary-arrow">→</span><span class="glossary-easy">${용어순화['기신']}</span><span class="glossary-desc">— 내 사주에 부담을 주는 기운</span></div>
+                <div class="glossary-item"><span class="glossary-term">신강</span><span class="glossary-arrow">→</span><span class="glossary-easy">${용어순화['신강']}</span><span class="glossary-desc">— 일간의 에너지가 강한 상태</span></div>
+                <div class="glossary-item"><span class="glossary-term">신약</span><span class="glossary-arrow">→</span><span class="glossary-easy">${용어순화['신약']}</span><span class="glossary-desc">— 일간의 에너지가 약한 상태</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="yinyang-section">
@@ -2999,7 +3187,7 @@ function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, day
       <div class="sc-divider"></div>
       <div class="sc-summary">
         <strong>${천간[dayP.gan]}(${천간한글[dayP.gan]})</strong> 일간 · ${yongsinInfo.신강여부}<br>
-        12운성 <strong>${dayUnsung}</strong> · 용신 <strong>${오행한자[yongsinInfo.용신]}·${오행한자[yongsinInfo.희신]}</strong>
+        12운성 <strong>${운성순화[dayUnsung] || dayUnsung}</strong> · ${용어순화['용신']} <strong>${오행한자[yongsinInfo.용신]}·${오행한자[yongsinInfo.희신]}</strong>
       </div>
       <div class="sc-footer">whatsyoursaju.vercel.app</div>
     </div>

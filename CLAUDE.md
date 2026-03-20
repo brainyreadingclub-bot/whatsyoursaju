@@ -8,17 +8,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - 배포: Vercel (https://whatsyoursaju.vercel.app)
 - 외부 의존성: html2canvas (CDN), Google Fonts (Noto Serif KR, Cormorant Garamond, Nanum Myeongjo)
+- GA: G-LTFZ1YMVNM (gtag.js, 전환 이벤트 5종 + 사전예약 3종)
+- 사전 예약 폼: Formspree (https://formspree.io/f/mreyjvza)
 - 한국어 전용 서비스
 
 ## Architecture
 
-모든 코드가 `index.html` (약 2,700줄)에 인라인으로 포함되어 있음:
+모든 코드가 `index.html` (약 3,200줄)에 인라인으로 포함되어 있음:
 
 ### 구조 (순서대로)
 1. **HTML/CSS** (1~1050줄) — 입력 폼, 결과 표시 영역, 공유 카드, 로딩/파티클 애니메이션
 2. **파티클 생성 스크립트** (~938줄) — 배경 장식 효과
 3. **사주 분석 엔진** (~1053~1715줄) — 핵심 계산 로직
 4. **UI 로직** (~1719~2713줄) — 폼 초기화, `analyze()`, 공유 기능
+5. **사전 예약 모달** (~3160줄~) — 프리미엄 사전 신청 모달, Formspree 연동
+
+### 수익화 동선
+- 프리미엄 CTA 버튼 → `openPrelaunchModal()` → 이메일 수집 + 사주 정보 자동 채움
+- Formspree로 POST → 운영자 이메일 알림
+- 향후: Concierge MVP (카카오페이 결제) → AI 채팅 (Opus 사전분석 + Sonnet 대화)
 
 ### 핵심 계산 함수
 | 함수 | 역할 |
