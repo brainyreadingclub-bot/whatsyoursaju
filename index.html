@@ -1226,6 +1226,56 @@ input::placeholder {
 }
 .share-btn svg { width: 16px; height: 16px; fill: currentColor; }
 
+/* ─── Teaser Insight (충격의 한 줄) ─── */
+.teaser-insight {
+  position: relative;
+  text-align: center;
+  padding: 24px 20px;
+  margin: 16px 0;
+  background: linear-gradient(135deg, rgba(212,168,83,0.06) 0%, rgba(107,63,160,0.06) 100%);
+  border: 1px solid rgba(212,168,83,0.25);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.teaser-insight::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.teaser-insight-icon { font-size: 20px; margin-bottom: 8px; }
+.teaser-insight-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gold-light);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.teaser-insight-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+.teaser-insight-btn {
+  display: inline-block;
+  padding: 10px 28px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #0a0610;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 1px;
+}
+.teaser-insight-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(212,168,83,0.3);
+}
+
 /* ─── Premium Teaser ─── */
 .premium-section {
   position: relative;
@@ -1291,6 +1341,91 @@ input::placeholder {
   transform: translateY(-2px);
   box-shadow: 0 8px 32px rgba(212,168,83,0.25);
 }
+
+/* ─── Pricing Table ─── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+@media (min-width: 768px) {
+  .pricing-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.pricing-card {
+  background: linear-gradient(145deg, rgba(17,13,26,0.95), rgba(26,19,40,0.9));
+  border: 1px solid rgba(107,63,160,0.2);
+  border-radius: 20px;
+  padding: 28px 20px;
+  text-align: center;
+  position: relative;
+  transition: border-color 0.3s, transform 0.2s;
+}
+.pricing-card:hover { transform: translateY(-2px); }
+.pricing-card.best {
+  border-color: var(--gold);
+  box-shadow: 0 0 40px rgba(212,168,83,0.1);
+}
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #0a0610;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 16px;
+  border-radius: 20px;
+  letter-spacing: 2px;
+}
+.pricing-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 8px 0 4px;
+}
+.pricing-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin: 8px 0;
+}
+.pricing-price span {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+.pricing-features {
+  text-align: left;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 2;
+  color: var(--text-secondary);
+}
+.pricing-features .included { color: var(--text-primary); }
+.pricing-features .excluded { color: var(--text-dim); opacity: 0.5; text-decoration: line-through; }
+.pricing-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid rgba(107,63,160,0.4);
+  border-radius: 12px;
+  background: rgba(107,63,160,0.15);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.pricing-btn:hover { background: rgba(107,63,160,0.25); }
+.pricing-card.best .pricing-btn {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #0a0610;
+  border-color: var(--gold);
+}
+.pricing-card.best .pricing-btn:hover { box-shadow: 0 4px 16px rgba(212,168,83,0.3); }
 
 /* ─── Share Card (for html2canvas) ─── */
 /* ─── Share Card (Instagram Story 4:5) ─── */
@@ -2825,6 +2960,7 @@ function getYearFortune(dayGanIdx, yearGanIdx, yearJiIdx, yongsinInfo) {
     천간운: ganRel,
     지지운: jiRel,
     해석: 관계해석[ganRel],
+    등급: 운세등급,
     종합: `<strong>2026년 ${천간[yearGanIdx]}${지지[yearJiIdx]}년 — 종합 운세 ${별점}</strong><br><br>올해 천간은 <span class="highlight">${ganRel}</span>의 기운이, 지지는 <span class="highlight">${jiRel}</span>의 기운이 작용합니다.` +
       `<br><br>${관계해석[ganRel]}` + 월별조언
   };
@@ -2866,6 +3002,88 @@ function selectCalendar(el) {
   document.querySelectorAll('.cal-option').forEach(e => e.classList.remove('selected'));
   el.classList.add('selected');
   selectedCalendar = el.dataset.value;
+}
+
+// ── 전환 트리거: "충격의 한 줄" 생성 ──
+function generateTeaserInsight(dayGanIdx, yearFortune, currentDaeun, daeunList, yongsinInfo, specialStructures, sinsalList, elementCounts, userAge, currentYear) {
+  const insights = [];
+  const dayEl = 천간오행[dayGanIdx];
+  const {용신, 기신} = yongsinInfo;
+
+  // 1. 대운 전환기 감지 (5년 이내)
+  if (daeunList && daeunList.length > 0) {
+    const nextDaeun = daeunList.find(d => d.age > userAge && d.age <= userAge + 5);
+    if (nextDaeun) {
+      const nextEl = 천간오행[nextDaeun.gan];
+      const targetYear = currentYear + (nextDaeun.age - userAge);
+      if (nextEl === 용신) {
+        insights.push({ priority: 10, text: `${targetYear}년(${nextDaeun.age}세)부터 당신에게 가장 필요한 기운이 들어옵니다. 인생의 상승기가 시작됩니다.`, icon: '🚀' });
+      } else if (nextEl === 기신) {
+        insights.push({ priority: 9, text: `${targetYear}년(${nextDaeun.age}세)부터 주의가 필요한 대운이 시작됩니다. 미리 대비하면 위기를 기회로 바꿀 수 있습니다.`, icon: '⚡' });
+      } else {
+        insights.push({ priority: 6, text: `${targetYear}년(${nextDaeun.age}세)부터 새로운 10년 대운이 시작됩니다. 삶의 흐름이 크게 전환됩니다.`, icon: '🔄' });
+      }
+    }
+  }
+
+  // 2. 올해 운세 기반
+  if (yearFortune.등급 === '대길' || yearFortune.등급 === '상승') {
+    insights.push({ priority: 8, text: `${currentYear}년은 당신의 용신 기운이 강한 해입니다. 재물과 기회가 몰려오는 시기, 적극적으로 움직이세요.`, icon: '✨' });
+  } else if (yearFortune.등급 === '조심' || yearFortune.등급 === '주의') {
+    insights.push({ priority: 8, text: `${currentYear}년은 기신 기운이 강한 해입니다. 상세 분석에서 월별 주의 시기와 대처법을 확인하세요.`, icon: '🛡️' });
+  }
+
+  // 3. 특수 구조 기반
+  if (specialStructures.length > 0) {
+    const s = specialStructures[0];
+    if (s.type === '상관생재' || s.type === '식신생재') {
+      insights.push({ priority: 7, text: `당신의 사주에 '${s.type}' 구조가 있습니다. 타고난 돈 버는 재능의 구체적 활용법이 있습니다.`, icon: '💎' });
+    } else if (s.type === '관살혼잡') {
+      insights.push({ priority: 7, text: `당신의 사주에 '관살혼잡' 구조가 있습니다. 직업 전환의 타이밍이 성공의 열쇠입니다.`, icon: '🔑' });
+    } else {
+      insights.push({ priority: 7, text: `당신의 사주에 특수 구조 '${s.type}'이(가) 발견되었습니다. 이 구조의 숨겨진 잠재력을 확인하세요.`, icon: '💎' });
+    }
+  }
+
+  // 4. 오행 불균형 (빈 오행 존재)
+  const 오행목록 = ['목','화','토','금','수'];
+  const missingEl = 오행목록.find(e => (elementCounts[e] || 0) === 0);
+  if (missingEl) {
+    const elName = {목:'나무(木)',화:'불(火)',토:'흙(土)',금:'금속(金)',수:'물(水)'};
+    insights.push({ priority: 8, text: `당신의 사주에서 ${elName[missingEl]} 기운이 완전히 비어 있습니다. 건강·재물·인간관계에 미치는 영향과 보완법을 확인하세요.`, icon: '⚠️' });
+  }
+
+  // 5. 도화살 보유
+  const doHwa = sinsalList.find(s => s.name === '도화살');
+  if (doHwa) {
+    insights.push({ priority: 7, text: `당신은 타고난 '매력의 별(도화살)'을 가지고 있습니다. 이성을 끌어당기는 시기와 주의할 시기가 있습니다.`, icon: '💫' });
+  }
+
+  // 6. 역마살 보유
+  const yeokma = sinsalList.find(s => s.name === '역마살');
+  if (yeokma) {
+    insights.push({ priority: 6, text: `당신의 사주에 '이동의 별(역마살)'이 있습니다. 이직·이사·해외의 최적 타이밍을 확인하세요.`, icon: '🌍' });
+  }
+
+  // 7. 현재 대운 + 용신/기신 관계
+  if (currentDaeun) {
+    const cdEl = 천간오행[currentDaeun.gan];
+    if (cdEl === 용신) {
+      insights.push({ priority: 6, text: `현재 당신은 인생에서 가장 좋은 대운 중 하나를 지나고 있습니다. 이 기회를 최대한 활용하는 방법이 있습니다.`, icon: '🌟' });
+    } else if (cdEl === 기신) {
+      insights.push({ priority: 7, text: `현재 대운에서 주의가 필요한 기운이 흐르고 있습니다. 구체적인 대처 전략이 필요합니다.`, icon: '🛡️' });
+    }
+  }
+
+  // 8. 귀인 복수 보유
+  const guinCount = sinsalList.filter(s => s.name.includes('귀인')).length;
+  if (guinCount >= 2) {
+    insights.push({ priority: 5, text: `당신의 사주에 귀인(貴人)이 ${guinCount}개나 있습니다. 어떤 사람이 당신의 귀인이 될지 확인하세요.`, icon: '🤝' });
+  }
+
+  // 가장 높은 우선순위 선택
+  insights.sort((a, b) => b.priority - a.priority);
+  return insights.length > 0 ? insights[0] : { priority: 5, text: `당신의 사주에서 발견된 숨겨진 패턴이 있습니다. 프리미엄 분석에서 확인하세요.`, icon: '🔮' };
 }
 
 // ── 메인 분석 함수 ──
@@ -2961,6 +3179,9 @@ function analyze() {
 
     // 연애운
     const loveText = getLoveAnalysis(dayP.gan, selectedGender, elementCounts, yongsinInfo, dayP, pillars);
+
+    // 전환 트리거: "충격의 한 줄"
+    const teaserInsight = generateTeaserInsight(dayP.gan, yearFortune, currentDaeun, daeunList, yongsinInfo, specialStructures, sinsalList, elementCounts, userAge, currentYear);
 
     // 용신 오행 관련
     const yongsinEl = yongsinInfo.용신;
@@ -3231,6 +3452,14 @@ function analyze() {
         ${sinsalList.length > 0 ? ` · ${sinsalList.slice(0,3).map(s => 신살사전[s.name].아이콘 + ' ' + 신살사전[s.name].순화).join(' · ')}` : ''}
       </div>
 
+      <!-- 충격의 한 줄 (전환 트리거) -->
+      <div class="teaser-insight">
+        <div class="teaser-insight-icon">${teaserInsight.icon}</div>
+        <div class="teaser-insight-text">${teaserInsight.text}</div>
+        <div class="teaser-insight-sub">프리미엄 심층 분석에서 구체적인 시기와 대처법을 확인하세요</div>
+        <button class="teaser-insight-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'teaser_insight'})">상세 분석 확인하기</button>
+      </div>
+
       <!-- Early CTA -->
       <div class="early-cta">
         <button class="share-btn" onclick="saveShareCard()">
@@ -3241,9 +3470,6 @@ function analyze() {
           <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
           공유하기
         </button>
-        <div class="soft-premium-banner" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'soft_cta'})">
-          ✦ 더 깊은 분석이 궁금하다면 →
-        </div>
       </div>
 
       <!-- ═══ Tier 2: 탭 기반 상세 분석 ═══ -->
@@ -3262,7 +3488,7 @@ function analyze() {
           <div class="card-title">${currentYear}년 올해의 운세</div>
           <div class="card-content">${yearFortune.종합}</div>
         </div>
-        <div class="inline-premium-teaser">이 운세의 월별 상세 분석이 궁금하다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_올해'})">프리미엄에서 확인 →</a></div>
+        <div class="inline-premium-teaser">${currentYear}년 ${name}님의 월별 상세 분석 · 최적 행동 시기가 궁금하다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_올해'})">프리미엄에서 확인 →</a></div>
       </div>
 
       <!-- 탭: 사랑 -->
@@ -3271,7 +3497,7 @@ function analyze() {
           <div class="card-title">연애운 · 궁합</div>
           <div class="card-content">${loveText}</div>
         </div>
-        <div class="inline-premium-teaser">파트너와의 궁합 심층 분석이 궁금하다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">프리미엄에서 확인 →</a></div>
+        <div class="inline-premium-teaser">${name}님의 배우자궁 심층 분석 · 연애 패턴 · 결혼 최적 시기를 알고 싶다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">프리미엄에서 확인 →</a></div>
       </div>
 
       <!-- 탭: 재물 -->
@@ -3284,7 +3510,7 @@ function analyze() {
           <div class="card-title">직업운 및 적성</div>
           <div class="card-content">${careerText}</div>
         </div>
-        <div class="inline-premium-teaser">투자 최적 시기까지 알고 싶다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">프리미엄에서 확인 →</a></div>
+        <div class="inline-premium-teaser">${name}님의 재성 구조 해부 · 5대 리스크 · 투자 최적 시기를 알고 싶다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">프리미엄에서 확인 →</a></div>
       </div>
 
       <!-- 탭: 성격 -->
@@ -3441,49 +3667,71 @@ function analyze() {
         </button>
       </div>
 
-      <!-- 프리미엄 티저 -->
+      <!-- 프리미엄 가격표 -->
       <div class="premium-section">
-        <div class="premium-label">✦ 프 리 미 엄 분 석 ✦</div>
+        <div class="premium-label">✦ 프 리 미 엄 심 층 분 석 ✦</div>
 
+        <!-- 블러 미리보기 카드 (Zeigarnik 효과) -->
         <div class="premium-card">
           <div class="premium-card-blur">
-            <div class="card-title">🔮 파트너 궁합 심층 분석 + 관계 위기 예측</div>
+            <div class="card-title">🔮 ${name}님의 숨겨진 성격 패턴 3가지</div>
             <div class="card-content">
-              특정 파트너와의 천간합·지지합 궁합 점수, 대운별 관계 위기 시기 예측, 갈등 해결 전략, 결혼 최적 시기 분석을 포함한 심층 리포트입니다. "이 사람과 결혼해도 될까?"에 대한 구체적인 답을 드립니다...
+              <p><span class="good">패턴 1:</span> ${personalityInfo.기본.substring(0, 80)}...</p>
+              <p><span class="caution">패턴 2:</span> ████████ ████ ██████████ ████████ ██████ ████████████</p>
+              <p><span class="info">패턴 3:</span> ████████████ ████ ████████ ██████ ████████ ████████</p>
             </div>
           </div>
           <div class="premium-lock">
-            <div class="premium-lock-text">프리미엄에서 계속 읽기 →</div>
+            <div class="premium-lock-text">나머지 2개 패턴 보기 →</div>
           </div>
         </div>
 
-        <div class="premium-card">
-          <div class="premium-card-blur">
-            <div class="card-title">📊 대운별 연도별 월운 캘린더 + 최적 행동 가이드</div>
-            <div class="card-content">
-              각 대운 시기별 연도별·월별 운세 캘린더와 최적 행동 가이드를 제공합니다. 재물 상승기에 투자할 시점, 이직·창업 최적기, 건강 주의 월까지 구체적인 타이밍을 알려드립니다. ${name}님만을 위한 인생 내비게이션...
+        <!-- 가격 비교 테이블 -->
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <div class="pricing-name">인사이트</div>
+            <div class="pricing-price">9,900<span>원</span></div>
+            <div class="pricing-features">
+              <div class="included">✓ 원국 심층분석 (강점3/약점3)</div>
+              <div class="included">✓ AI 채팅 상담 5회</div>
+              <div class="excluded">✗ 재물·직업 분석</div>
+              <div class="excluded">✗ 연애·건강 분석</div>
+              <div class="excluded">✗ 월운 캘린더</div>
             </div>
+            <button class="pricing-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'pricing_A'})">사전 신청</button>
           </div>
-          <div class="premium-lock">
-            <div class="premium-lock-text">프리미엄에서 계속 읽기 →</div>
-          </div>
-        </div>
-
-        <div class="premium-card">
-          <div class="premium-card-blur">
-            <div class="card-title">💬 AI 사주 상담사와 1:1 대화</div>
-            <div class="card-content">
-              당신의 사주를 완벽히 이해한 AI 상담사에게 직접 질문하세요. "올해 이직해도 될까요?", "이 사람과 궁합이 맞을까요?", "사업을 시작하기 좋은 시기는?" 등 무엇이든 물어보세요...
+          <div class="pricing-card best">
+            <div class="pricing-badge">BEST</div>
+            <div class="pricing-name">마스터</div>
+            <div class="pricing-price">19,900<span>원</span></div>
+            <div class="pricing-features">
+              <div class="included">✓ 원국 심층분석 (강점5/약점5+빛과그림자)</div>
+              <div class="included">✓ 재물·직업 분석 + 리스크 5대</div>
+              <div class="included">✓ 연애·건강·체질 분석</div>
+              <div class="included">✓ ${currentYear}년 월운 캘린더 12개월</div>
+              <div class="included">✓ AI 채팅 상담 20회</div>
+              <div class="included">✓ PDF 리포트 다운로드</div>
             </div>
+            <button class="pricing-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'pricing_B'})">사전 신청</button>
           </div>
-          <div class="premium-lock">
-            <div class="premium-lock-text">프리미엄에서 계속 읽기 →</div>
+          <div class="pricing-card">
+            <div class="pricing-name">VIP</div>
+            <div class="pricing-price">39,900<span>원</span></div>
+            <div class="pricing-features">
+              <div class="included">✓ 마스터 전체 포함</div>
+              <div class="included">✓ 궁합 분석 1명</div>
+              <div class="included">✓ 주간 하이라이트 캘린더</div>
+              <div class="included">✓ 투자 타이밍 분석</div>
+              <div class="included">✓ AI 채팅 30일 무제한</div>
+              <div class="included">✓ 프리미엄 디자인 PDF</div>
+            </div>
+            <button class="pricing-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'pricing_C'})">사전 신청</button>
           </div>
         </div>
 
-        <button class="premium-cta" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'premium_cta'})">
-          ✦ 프리미엄 사전 신청하기 ✦
-        </button>
+        <div style="text-align:center; font-size:12px; color:var(--text-dim); margin-top:8px;">
+          💬 AI가 당신의 사주를 심층 분석한 후, 1:1 채팅으로 무엇이든 물어볼 수 있습니다
+        </div>
 
         <!-- 용어 사전 (접이식) -->
         <div class="glossary-section">
