@@ -891,6 +891,25 @@ input::placeholder {
   color: var(--purple-light);
 }
 
+/* ─── 장간(藏干) 표시 ─── */
+.janggan-wrap {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.janggan-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+.janggan-row.secondary { opacity: 0.7; font-size: 0.65rem; }
+.janggan-row.tertiary { opacity: 0.45; font-size: 0.6rem; }
+.janggan-char { font-weight: 600; }
+.janggan-label { color: var(--text-dim); font-size: 0.6rem; }
+
 /* ─── 전문 용어 순화 뱃지 ─── */
 .saju-badge {
   display: inline-block;
@@ -1676,6 +1695,23 @@ const 상충 = [
   ['子','午'], ['丑','未'], ['寅','申'], ['卯','酉'], ['辰','戌'], ['巳','亥']
 ];
 
+// 지지 삼형 (三刑)
+const 삼형 = [
+  { 지지s: ['寅','巳','申'], 이름: '무례지형' },  // 3개 모두 있어야 성립
+  { 지지s: ['丑','戌','未'], 이름: '지세지형' },
+  { 지지s: ['子','卯'], 이름: '무은지형' }          // 2개면 성립
+];
+
+// 지지 파 (破)
+const 파 = [
+  ['子','酉'], ['丑','辰'], ['寅','亥'], ['卯','午'], ['巳','申'], ['未','戌']
+];
+
+// 지지 해 (害/穿)
+const 해 = [
+  ['子','未'], ['丑','午'], ['寅','巳'], ['卯','辰'], ['申','亥'], ['酉','戌']
+];
+
 // 천간합 (甲己合土, 乙庚合金, 丙辛合水, 丁壬合木, 戊癸合火)
 const 천간합 = [
   ['甲','己','토'], ['乙','庚','금'], ['丙','辛','수'], ['丁','壬','목'], ['戊','癸','화']
@@ -1781,7 +1817,7 @@ function getDayPillar(year, month, day) {
 
 // ── 시주 계산 ──
 function getHourPillar(dayGan, hour) {
-  if (hour < 0) return null;
+  if (hour < 0 || hour === undefined || hour === null || isNaN(hour)) return null;
   // 시지는 입력값 그대로
   const hourJi = hour;
   // 시간에 따른 천간: 일간 × 2 + 시지
@@ -1900,11 +1936,12 @@ function getJohuYongsin(monthJi) {
 
 // ── 사주 내 합/충 감지 ──
 function findHapChung(pillars) {
-  const result = { 합: [], 충: [] };
+  const result = { 합: [], 충: [], 형: [], 파: [], 해: [] };
   const jiNames = pillars.filter(p => p).map((p, i) => ({
     name: ['년지','월지','일지','시지'][i],
     ji: 지지[p.ji]
   }));
+  const jiChars = jiNames.map(j => j.ji);
 
   for (let a = 0; a < jiNames.length; a++) {
     for (let b = a + 1; b < jiNames.length; b++) {
@@ -1912,17 +1949,45 @@ function findHapChung(pillars) {
       // 육합 체크
       for (const [x, y] of 육합) {
         if ((pair[0] === x && pair[1] === y) || (pair[0] === y && pair[1] === x)) {
-          result.합.push(`${jiNames[a].name}(${pair[0]})-${jiNames[b].name}(${pair[1]}) 육합`);
+          result.합.push(`${jiNames[a].name}(${pair[0]})-${jiNames[b].name}(${pair[1]}) 조화로운 결합`);
         }
       }
       // 상충 체크
       for (const [x, y] of 상충) {
         if ((pair[0] === x && pair[1] === y) || (pair[0] === y && pair[1] === x)) {
-          result.충.push(`${jiNames[a].name}(${pair[0]})-${jiNames[b].name}(${pair[1]}) 상충`);
+          result.충.push(`${jiNames[a].name}(${pair[0]})-${jiNames[b].name}(${pair[1]}) 부딪치는 기운`);
+        }
+      }
+      // 파 체크
+      for (const [x, y] of 파) {
+        if ((pair[0] === x && pair[1] === y) || (pair[0] === y && pair[1] === x)) {
+          result.파.push(`${jiNames[a].name}(${pair[0]})-${jiNames[b].name}(${pair[1]}) 깨지는 기운`);
+        }
+      }
+      // 해 체크
+      for (const [x, y] of 해) {
+        if ((pair[0] === x && pair[1] === y) || (pair[0] === y && pair[1] === x)) {
+          result.해.push(`${jiNames[a].name}(${pair[0]})-${jiNames[b].name}(${pair[1]}) 방해하는 기운`);
         }
       }
     }
   }
+
+  // 삼형 체크
+  for (const s of 삼형) {
+    if (s.지지s.length === 3) {
+      // 3개 모두 있어야 삼형 성립
+      if (s.지지s.every(j => jiChars.includes(j))) {
+        result.형.push(`${s.지지s.join('-')} 마찰의 기운 (${s.이름})`);
+      }
+    } else {
+      // 子卯 무은지형: 2개만 있으면 성립
+      if (s.지지s.every(j => jiChars.includes(j))) {
+        result.형.push(`${s.지지s.join('-')} 마찰의 기운 (${s.이름})`);
+      }
+    }
+  }
+
   return result;
 }
 
@@ -2011,6 +2076,130 @@ function detectJahyung(pillars) {
     }
   }
   return jiPairs;
+}
+
+// ── 신살(神殺) 계산 ──
+// 삼합국 → 도화살/역마살/화개살 조견표
+const 삼합국그룹 = {
+  '申': 0, '子': 0, '辰': 0,  // 수국
+  '寅': 1, '午': 1, '戌': 1,  // 화국
+  '巳': 2, '酉': 2, '丑': 2,  // 금국
+  '亥': 3, '卯': 3, '未': 3   // 목국
+};
+const 도화살표 = ['酉','卯','午','子'];  // 수국→酉, 화국→卯, 금국→午, 목국→子
+const 역마살표 = ['寅','申','亥','巳'];  // 수국→寅, 화국→申, 금국→亥, 목국→巳
+const 화개살표 = ['辰','戌','丑','未'];  // 수국→辰, 화국→戌, 금국→丑, 목국→未
+
+// 천을귀인 조견표 (일간 기준)
+const 천을귀인표 = {
+  '甲': ['丑','未'], '戊': ['丑','未'],
+  '乙': ['子','申'], '己': ['子','申'],
+  '丙': ['亥','酉'], '丁': ['亥','酉'],
+  '庚': ['午','寅'], '辛': ['午','寅'],
+  '壬': ['巳','卯'], '癸': ['巳','卯']
+};
+
+// 천덕귀인 조견표 (월지 기준, 지지인덱스 → 천간)
+const 천덕귀인표 = { 0:'巳', 1:'庚', 2:'丁', 3:'申', 4:'壬', 5:'辛', 6:'亥', 7:'甲', 8:'癸', 9:'寅', 10:'丙', 11:'乙' };
+// 寅월(2)=丁, 卯월(3)=申, 辰월(4)=壬, 巳월(5)=辛, 午월(6)=亥, 未월(7)=甲, 申월(8)=癸, 酉월(9)=寅, 戌월(10)=丙, 亥월(11)=乙, 子월(0)=巳, 丑월(1)=庚
+
+// 월덕귀인 조견표 (월지 기준, 지지인덱스 → 천간)
+const 월덕귀인표 = { 0:'壬', 1:'庚', 2:'丙', 3:'甲', 4:'壬', 5:'庚', 6:'丙', 7:'甲', 8:'壬', 9:'庚', 10:'丙', 11:'甲' };
+// 寅午戌월=丙, 申子辰월=壬, 亥卯未월=甲, 巳酉丑월=庚
+
+// 신살 사전 (순화 표현 + 설명)
+const 신살사전 = {
+  '도화살': {
+    순화: '매력의 별',
+    아이콘: '🌸',
+    설명: '타고난 매력과 인기의 기운! 사람을 끌어당기는 묘한 매력이 있어요. 연애운이 활발하고 대인관계에서 빛나는 타입.',
+    상세: '도화(桃花)는 복숭아꽃을 뜻합니다. 이성에게 매력적이며, 예술·엔터테인먼트·서비스업에서 재능을 발휘합니다.'
+  },
+  '역마살': {
+    순화: '이동의 별',
+    아이콘: '✈️',
+    설명: '한 곳에 가만히 있기 어려운 활동적 기운! 여행·이직·해외 인연이 많고 변화를 통해 성장해요.',
+    상세: '역마(驛馬)는 역참의 말을 뜻합니다. 이동과 변화가 많으며, 무역·유통·여행업·해외 관련 분야에서 기회가 옵니다.'
+  },
+  '화개살': {
+    순화: '예술의 별',
+    아이콘: '🎨',
+    설명: '예술적 감수성과 영적 깊이를 가진 특별한 기운! 창작·종교·학문에 탁월한 재능이 있어요.',
+    상세: '화개(華蓋)는 꽃 덮개를 뜻합니다. 예술·문학·종교·철학에 깊은 관심을 보이며, 독특한 세계관을 가집니다.'
+  },
+  '천을귀인': {
+    순화: '귀인의 별',
+    아이콘: '⭐',
+    설명: '어려울 때 반드시 도움이 찾아오는 행운의 기운! 주변에 좋은 사람이 모이고 위기에서도 귀인이 나타나요.',
+    상세: '천을(天乙)귀인은 가장 강력한 귀인성입니다. 위기 상황에서 예상치 못한 도움을 받으며, 사회적 신뢰가 높습니다.'
+  },
+  '천덕귀인': {
+    순화: '하늘의 보호',
+    아이콘: '🛡️',
+    설명: '하늘이 보호하는 특별한 기운! 재난을 피하고 복을 끌어당기는 힘이 있어요.',
+    상세: '천덕(天德)귀인은 하늘의 덕을 받는 별입니다. 큰 재앙을 면하고, 관재·구설을 풀어주며, 덕망이 있습니다.'
+  },
+  '월덕귀인': {
+    순화: '달의 보호',
+    아이콘: '🌙',
+    설명: '달처럼 은은하게 지켜주는 보호의 기운! 건강과 안전을 지켜주며 주변의 신망이 두터워요.',
+    상세: '월덕(月德)귀인은 계절의 덕을 받는 별입니다. 건강운이 좋고, 사람들의 존경을 받으며, 재앙을 피합니다.'
+  }
+};
+
+function detectSinsal(dayGanIdx, pillars, monthJiIdx) {
+  const results = [];
+  const allJi = pillars.filter(p => p).map(p => 지지[p.ji]);
+  const allGan = pillars.filter(p => p).map(p => 천간[p.gan]);
+
+  // 년지·일지 기준 삼합국
+  const yearJi = pillars[0] ? 지지[pillars[0].ji] : null;
+  const dayJi = pillars[2] ? 지지[pillars[2].ji] : null;
+  const 기준지지 = [yearJi, dayJi].filter(Boolean);
+
+  기준지지.forEach(baseJi => {
+    const groupIdx = 삼합국그룹[baseJi];
+    if (groupIdx === undefined) return;
+
+    // 도화살: 4주 중 해당 지지가 있는지
+    const 도화지지 = 도화살표[groupIdx];
+    if (allJi.includes(도화지지) && !results.find(r => r.name === '도화살')) {
+      results.push({ name: '도화살', 기준: baseJi, 해당: 도화지지, where: allJi.indexOf(도화지지) });
+    }
+    // 역마살
+    const 역마지지 = 역마살표[groupIdx];
+    if (allJi.includes(역마지지) && !results.find(r => r.name === '역마살')) {
+      results.push({ name: '역마살', 기준: baseJi, 해당: 역마지지, where: allJi.indexOf(역마지지) });
+    }
+    // 화개살
+    const 화개지지 = 화개살표[groupIdx];
+    if (allJi.includes(화개지지) && !results.find(r => r.name === '화개살')) {
+      results.push({ name: '화개살', 기준: baseJi, 해당: 화개지지, where: allJi.indexOf(화개지지) });
+    }
+  });
+
+  // 천을귀인: 일간 기준, 4주 지지 중 해당 지지 존재 여부
+  const dayGanChar = 천간[dayGanIdx];
+  const 귀인지지들 = 천을귀인표[dayGanChar] || [];
+  귀인지지들.forEach(gj => {
+    if (allJi.includes(gj) && !results.find(r => r.name === '천을귀인')) {
+      results.push({ name: '천을귀인', 기준: dayGanChar, 해당: gj });
+    }
+  });
+
+  // 천덕귀인: 월지 기준, 4주 천간·지지 중 해당 글자 존재 여부
+  const 천덕대상 = 천덕귀인표[monthJiIdx];
+  if (천덕대상 && (allGan.includes(천덕대상) || allJi.includes(천덕대상))) {
+    results.push({ name: '천덕귀인', 기준: 지지[monthJiIdx] + '월', 해당: 천덕대상 });
+  }
+
+  // 월덕귀인: 월지 기준, 4주 천간 중 해당 글자 존재 여부
+  const 월덕대상 = 월덕귀인표[monthJiIdx];
+  if (월덕대상 && allGan.includes(월덕대상)) {
+    results.push({ name: '월덕귀인', 기준: 지지[monthJiIdx] + '월', 해당: 월덕대상 });
+  }
+
+  return results;
 }
 
 // ── 일주(60간지) 성격 보충 텍스트 ──
@@ -2612,6 +2801,9 @@ function analyze() {
     // 특수 구조 감지
     const specialStructures = detectSpecialStructures(dayP.gan, pillars, elementCounts);
 
+    // 신살 감지
+    const sinsalList = detectSinsal(dayP.gan, pillars, monthP.ji);
+
     // 건강 분석
     // 현재 대운 천간 오행 계산
     const userAge = currentYear - solarYear;
@@ -2686,6 +2878,21 @@ function analyze() {
             ${오행한자[천간오행[p.gan]]} · ${천간음양[p.gan]}
           </div>
           <div class="pillar-sipsung" style="font-size:0.75rem; color:var(--gold); margin-top:4px">${십신순화[sipsungLabel] || sipsungLabel}</div>
+          ${(() => {
+            const jiChar = 지지[p.ji];
+            const jj = 지지장간[jiChar];
+            if (!jj) return '';
+            const classes = ['', 'secondary', 'tertiary'];
+            return `<div class="janggan-wrap">${jj.map((g, gi) => {
+              const gIdx = 천간.indexOf(g);
+              const ss = getSipsung(dayP.gan, gIdx);
+              const ssLabel = 십신순화[ss] || ss;
+              return `<div class="janggan-row ${classes[gi]}">
+                <span class="janggan-char" style="color:${오행색상[천간오행[gIdx]]}">${g}</span>
+                <span class="janggan-label">${ssLabel}</span>
+              </div>`;
+            }).join('')}</div>`;
+          })()}
         </div>`;
     });
 
@@ -2850,12 +3057,15 @@ function analyze() {
       <div class="pillars-section">
         <div class="pillars-title">사 주 팔 자</div>
         <div class="pillars-grid">${pillarsHTML}</div>
-        ${(hapChung.합.length || hapChung.충.length) ? `
-        <div style="margin-top:12px; text-align:center; font-size:0.85rem; color:var(--text-dim)">
-          ${hapChung.합.length ? `<span class="good">조화:</span> ${hapChung.합.map(h => h.replace('육합','조화로운 결합')).join(', ')}` : ''}
-          ${hapChung.합.length && hapChung.충.length ? ' · ' : ''}
-          ${hapChung.충.length ? `<span class="caution">긴장:</span> ${hapChung.충.map(h => h.replace('상충','부딪치는 기운')).join(', ')}` : ''}
-        </div>` : ''}
+        ${(() => {
+          const parts = [];
+          if (hapChung.합.length) parts.push(`<span class="good">조화:</span> ${hapChung.합.join(', ')}`);
+          if (hapChung.충.length) parts.push(`<span class="caution">긴장:</span> ${hapChung.충.join(', ')}`);
+          if (hapChung.형.length) parts.push(`<span class="caution">마찰:</span> ${hapChung.형.join(', ')}`);
+          if (hapChung.파.length) parts.push(`<span style="color:#c49a3a;">깨짐:</span> ${hapChung.파.join(', ')}`);
+          if (hapChung.해.length) parts.push(`<span style="color:#c49a3a;">방해:</span> ${hapChung.해.join(', ')}`);
+          return parts.length ? `<div style="margin-top:12px; text-align:center; font-size:0.82rem; color:var(--text-dim); line-height:1.8">${parts.join('<br>')}</div>` : '';
+        })()}
       </div>
 
       <!-- 대운 흐름 -->
@@ -2901,6 +3111,25 @@ function analyze() {
         <div class="card-title">일주 12운성 — ${운성순화[dayUnsung] || dayUnsung} <span class="saju-badge">${dayUnsung}</span></div>
         <div class="card-content">${unsungText}</div>
       </div>
+
+      <!-- 신살 (나의 특수한 별) -->
+      ${sinsalList.length > 0 ? `
+      <div class="analysis-card" data-icon="★" data-accent="gold">
+        <div class="card-title">나의 특수한 별</div>
+        <div class="card-content">
+          <div style="display:grid; gap:16px;">
+            ${sinsalList.map(s => {
+              const info = 신살사전[s.name];
+              return `<div style="padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:10px; border-left:3px solid var(--gold);">
+                <div style="font-size:1.1rem; margin-bottom:4px;">${info.아이콘} <strong>${info.순화}</strong> <span class="saju-badge">${s.name}</span></div>
+                <div style="font-size:0.88rem; color:var(--text-mid); line-height:1.6;">${info.설명}</div>
+                <div style="font-size:0.75rem; color:var(--text-dim); margin-top:6px; line-height:1.5;">${info.상세}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+      ` : ''}
 
       <!-- 오행 분석 -->
       <div class="elements-section" style="animation-delay: 0.2s">
@@ -3110,7 +3339,7 @@ function analyze() {
     `;
 
     // 공유카드 HTML 생성
-    createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, dayUnsung);
+    createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, dayUnsung, sinsalList);
 
     // 결과 표시
     document.getElementById('loading').classList.remove('active');
@@ -3155,7 +3384,7 @@ function analyze() {
 //  공유 기능
 // ═══════════════════════════════════════════════════════
 
-function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, dayUnsung) {
+function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, dayUnsung, sinsalList) {
   // 기존 공유카드 제거
   const old = document.getElementById('share-card');
   if (old) old.remove();
@@ -3193,6 +3422,7 @@ function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, day
       <div class="sc-summary">
         <strong>${천간[dayP.gan]}(${천간한글[dayP.gan]})</strong> 일간 · ${yongsinInfo.신강여부}<br>
         12운성 <strong>${운성순화[dayUnsung] || dayUnsung}</strong> · ${용어순화['용신']} <strong>${오행한자[yongsinInfo.용신]}·${오행한자[yongsinInfo.희신]}</strong>
+        ${(sinsalList || []).length > 0 ? `<br><span style="font-size:0.75rem; color:#e8d5a3;">${(sinsalList || []).slice(0, 3).map(s => 신살사전[s.name].아이콘 + ' ' + 신살사전[s.name].순화).join(' · ')}</span>` : ''}
       </div>
       <div class="sc-footer">whatsyoursaju.vercel.app</div>
     </div>
