@@ -22,6 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar@0.3.6/dist/korean-lunar-calendar.min.js" defer></script>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-LTFZ1YMVNM"></script>
 <script>
@@ -1145,11 +1146,12 @@ input::placeholder {
   color: var(--text-dim);
 }
 .inline-premium-teaser a {
-  color: var(--gold);
+  color: var(--text-dim);
   text-decoration: none;
   cursor: pointer;
+  transition: color 0.2s;
 }
-.inline-premium-teaser a:hover { text-decoration: underline; }
+.inline-premium-teaser a:hover { color: var(--gold); }
 
 /* ─── Mobile sticky CTA bar ─── */
 @media (max-width: 767px) {
@@ -1255,12 +1257,151 @@ input::placeholder {
 .teaser-insight-sub {
   font-size: 12px;
   color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.teaser-insight-arrow {
+  font-size: 18px;
+  color: var(--gold-dim);
+  opacity: 0.6;
+  animation: teaser-bounce 2s ease-in-out infinite;
+}
+@keyframes teaser-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(5px); opacity: 0.8; }
+}
+
+/* ─── Gongmang (空亡) ─── */
+.pillar-hanja.gongmang {
+  position: relative;
+  opacity: 0.55;
+}
+.gongmang-badge {
+  position: absolute;
+  top: -4px;
+  right: -14px;
+  font-size: 9px;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 1px 3px;
+  line-height: 1;
+}
+
+/* ─── 3-Year Seun Cards ─── */
+.seun-3year {
+  margin: 20px 0;
+  padding: 20px 16px;
+  background: rgba(107,63,160,0.04);
+  border: 1px solid rgba(107,63,160,0.12);
+  border-radius: 16px;
+}
+.seun-3year-title {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
   margin-bottom: 14px;
 }
-.teaser-insight-btn {
+.seun-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.seun-card {
+  text-align: center;
+  padding: 14px 8px;
+  background: rgba(17,13,26,0.6);
+  border: 1px solid rgba(107,63,160,0.15);
+  border-radius: 12px;
+  transition: border-color 0.2s;
+}
+.seun-card.current {
+  border-color: var(--gold-dim);
+  background: rgba(212,168,83,0.04);
+}
+.seun-year {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.seun-ganji {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 2px 0 8px;
+}
+.seun-grade {
   display: inline-block;
-  padding: 10px 28px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+.seun-grade-대길 { background: rgba(76,175,80,0.15); color: #66bb6a; }
+.seun-grade-상승 { background: rgba(76,175,80,0.1); color: #81c784; }
+.seun-grade-소길 { background: rgba(212,168,83,0.12); color: var(--gold); }
+.seun-grade-보통 { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+.seun-grade-주의 { background: rgba(255,152,0,0.1); color: #ffb74d; }
+.seun-grade-조심 { background: rgba(244,67,54,0.1); color: #ef5350; }
+.seun-rels {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* ─── Gunghap Mini Game ─── */
+.gunghap-section {
+  margin: 32px 0;
+  padding: 28px 20px;
+  background: linear-gradient(145deg, rgba(17,13,26,0.95), rgba(26,19,40,0.9));
+  border: 1px solid rgba(107,63,160,0.2);
+  border-radius: 20px;
+}
+.gunghap-section h3 {
+  text-align: center;
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.gunghap-subtitle {
+  text-align: center;
   font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+.gunghap-input-area {
+  max-width: 360px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gunghap-input-area input,
+.gunghap-input-area select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(107,63,160,0.3);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.gunghap-input-area input:focus,
+.gunghap-input-area select:focus {
+  border-color: var(--gold-dim);
+}
+.gunghap-birth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.gunghap-btn {
+  padding: 12px;
+  font-size: 14px;
   font-weight: 600;
   font-family: inherit;
   color: #0a0610;
@@ -1269,11 +1410,177 @@ input::placeholder {
   border-radius: 30px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  letter-spacing: 1px;
+  margin-top: 4px;
 }
-.teaser-insight-btn:hover {
+.gunghap-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(212,168,83,0.3);
+}
+.gunghap-result {
+  margin-top: 24px;
+  text-align: center;
+}
+.gunghap-score-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.gunghap-score-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--gold-dim);
+  background: rgba(212,168,83,0.05);
+}
+.gunghap-score-num {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--gold-light);
+  line-height: 1;
+}
+.gunghap-score-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+.gunghap-grade {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.gunghap-chemistry {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.gunghap-bars {
+  max-width: 320px;
+  margin: 0 auto 20px;
+}
+.gunghap-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.gunghap-bar-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  width: 50px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.gunghap-bar-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.gunghap-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  transition: width 0.8s ease;
+}
+.gunghap-bar-val {
+  font-size: 12px;
+  color: var(--gold-light);
+  width: 30px;
+  flex-shrink: 0;
+}
+.gunghap-deep-blur {
+  position: relative;
+  padding: 20px;
+  margin: 16px 0;
+  background: rgba(107,63,160,0.06);
+  border: 1px solid rgba(107,63,160,0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.gunghap-deep-blur .blur-content {
+  filter: blur(4px);
+  user-select: none;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+.gunghap-deep-blur .blur-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10,6,16,0.3);
+}
+.gunghap-deep-blur .blur-overlay span {
+  font-size: 13px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.gunghap-deep-blur .blur-overlay span:hover {
+  color: var(--gold);
+}
+.gunghap-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+.gunghap-share-btn {
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: rgba(107,63,160,0.2);
+  border: 1px solid rgba(107,63,160,0.3);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gunghap-share-btn:hover {
+  background: rgba(107,63,160,0.3);
+  border-color: var(--purple);
+}
+#gunghap-share-card {
+  position: absolute;
+  left: -9999px;
+  width: 400px;
+  padding: 32px;
+  background: linear-gradient(145deg, #0f0a1a, #1a1328);
+  border-radius: 20px;
+  text-align: center;
+  color: #e8e0f0;
+}
+#gunghap-share-card .share-title {
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: var(--gold-light);
+}
+#gunghap-share-card .share-score {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--gold);
+}
+#gunghap-share-card .share-chemistry {
+  font-size: 14px;
+  margin: 12px 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+#gunghap-share-card .share-url {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 16px;
 }
 
 /* ─── Premium Teaser ─── */
@@ -1797,6 +2104,9 @@ input::placeholder {
           <div class="cal-option selected" data-value="solar" onclick="selectCalendar(this)">양력 (陽曆)</div>
           <div class="cal-option" data-value="lunar" onclick="selectCalendar(this)">음력 (陰曆)</div>
         </div>
+        <label id="leap-month-label" style="display:none; margin-top:8px; font-size:13px; color:var(--text-dim); cursor:pointer;">
+          <input type="checkbox" id="leap-month" style="margin-right:6px; accent-color:var(--gold);"> 윤달
+        </label>
       </div>
 
       <div class="form-group">
@@ -1991,6 +2301,27 @@ const 해 = [
   ['子','未'], ['丑','午'], ['寅','巳'], ['卯','辰'], ['申','亥'], ['酉','戌']
 ];
 
+// 공망 (空亡) — 일주 기준 60갑자 순(旬)에서 빠진 2개 지지
+// 60갑자 번호 계산: 천간(10) × 지지(12) 조합에서 음양이 맞는 것만 60개
+// 순(旬)별 공망 지지 (지지 인덱스)
+const 공망순 = [
+  { start: [0, 0], 공망: [10, 11] },  // 甲子순 → 공망: 戌亥
+  { start: [0, 2], 공망: [0, 1] },    // 甲寅순 → 공망: 子丑
+  { start: [0, 4], 공망: [2, 3] },    // 甲辰순 → 공망: 寅卯
+  { start: [0, 6], 공망: [4, 5] },    // 甲午순 → 공망: 辰巳
+  { start: [0, 8], 공망: [6, 7] },    // 甲申순 → 공망: 午未
+  { start: [0, 10], 공망: [8, 9] },   // 甲戌순 → 공망: 申酉
+];
+
+function getGongmang(dayGanIdx, dayJiIdx) {
+  // 일주의 순(旬) 시작 지지 = (dayJiIdx - dayGanIdx + 12) % 12
+  const startJi = (dayJiIdx - dayGanIdx + 12) % 12;
+  // startJi가 짝수여야 정상 (甲은 양간이므로 양지와 짝)
+  const 순 = 공망순.find(s => s.start[1] === startJi);
+  if (!순) return [];
+  return 순.공망.map(ji => ({ 지지: 지지[ji], idx: ji }));
+}
+
 // 천간합 (甲己合土, 乙庚合金, 丙辛合水, 丁壬合木, 戊癸合火)
 const 천간합 = [
   ['甲','己','토'], ['乙','庚','금'], ['丙','辛','수'], ['丁','壬','목'], ['戊','癸','화']
@@ -2043,10 +2374,20 @@ function getSajuMonthJi(month, day) {
 }
 
 // ── 음력→양력 변환 ──
-// 음력 변환은 천문 데이터 기반 정밀 테이블 필요 — 현재 미지원
-// analyze()에서 음력 선택 시 경고 처리
-function lunarToSolar(y, m, d) {
-  return null;
+// korean-lunar-calendar 라이브러리 사용 (CDN, 1000-2050년 지원)
+function lunarToSolar(y, m, d, isLeapMonth) {
+  if (typeof KoreanLunarCalendar === 'undefined') {
+    alert('음력 변환 라이브러리를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+    return null;
+  }
+  const cal = new KoreanLunarCalendar();
+  const valid = cal.setLunarDate(y, m, d, !!isLeapMonth);
+  if (!valid) {
+    alert(`음력 ${y}년 ${m}월 ${d}일은 유효하지 않은 날짜입니다.\n날짜를 확인해주세요.`);
+    return null;
+  }
+  const solar = cal.getSolarCalendar();
+  return { year: solar.year, month: solar.month, day: solar.day };
 }
 
 // ── 년주 계산 (입춘 기준 적용) ──
@@ -2278,6 +2619,242 @@ function getCheonganHap(dayGanIdx) {
     if (b === dayGan) return { partner: a, partnerIdx: 천간.indexOf(a), 합화오행: el };
   }
   return null;
+}
+
+// ── 궁합 미니게임 ──
+// 오행 상생/상극 관계
+const 오행상생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
+const 오행상극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
+
+function analyzeGunghap() {
+  const partnerName = document.getElementById('partner-name').value.trim();
+  const pYear = parseInt(document.getElementById('partner-year').value);
+  const pMonth = parseInt(document.getElementById('partner-month').value);
+  const pDay = parseInt(document.getElementById('partner-day').value);
+
+  if (!partnerName) { alert('상대방 이름을 입력해주세요.'); return; }
+  if (!pYear || !pMonth || !pDay) { alert('상대방 생년월일을 모두 선택해주세요.'); return; }
+
+  // GA 이벤트
+  if (typeof gtag === 'function') gtag('event', 'gunghap_start', { event_category: 'engagement' });
+
+  // 나의 데이터 가져오기 (이미 분석된 결과에서)
+  const myResult = window._lastAnalysisResult;
+  if (!myResult) { alert('먼저 나의 사주를 분석해주세요.'); return; }
+
+  // 상대방 사주 계산
+  const partnerYearP = getYearPillar(pYear, pMonth, pDay);
+  const partnerDayP = getDayPillar(pYear, pMonth, pDay);
+
+  // 나의 데이터
+  const myDayGanIdx = myResult.dayP.gan;
+  const myDayJiIdx = myResult.dayP.ji;
+  const myDayEl = 천간오행[myDayGanIdx];
+  const myDayJi = 지지[myDayJiIdx];
+
+  // 상대 데이터
+  const pDayGanIdx = partnerDayP.gan;
+  const pDayJiIdx = partnerDayP.ji;
+  const pDayEl = 천간오행[pDayGanIdx];
+  const pDayJi = 지지[pDayJiIdx];
+
+  // ── 점수 계산 ──
+  let score = 50; // 기본 50점
+
+  // 1. 천간합 체크 (+30)
+  let hasCGHap = false;
+  for (const [a, b, el] of 천간합) {
+    if ((천간[myDayGanIdx] === a && 천간[pDayGanIdx] === b) ||
+        (천간[myDayGanIdx] === b && 천간[pDayGanIdx] === a)) {
+      hasCGHap = true;
+      break;
+    }
+  }
+  if (hasCGHap) score += 30;
+
+  // 2. 오행 관계 (+20 상생, +10 비화, -10 상극)
+  if (오행상생[myDayEl] === pDayEl || 오행상생[pDayEl] === myDayEl) {
+    score += 20;
+  } else if (myDayEl === pDayEl) {
+    score += 10;
+  } else if (오행상극[myDayEl] === pDayEl || 오행상극[pDayEl] === myDayEl) {
+    score -= 10;
+  }
+
+  // 3. 지지 육합/상충 체크
+  let hasYukhap = false;
+  let hasSangchung = false;
+  for (const [x, y] of 육합) {
+    if ((myDayJi === x && pDayJi === y) || (myDayJi === y && pDayJi === x)) {
+      hasYukhap = true; break;
+    }
+  }
+  for (const [x, y] of 상충) {
+    if ((myDayJi === x && pDayJi === y) || (myDayJi === y && pDayJi === x)) {
+      hasSangchung = true; break;
+    }
+  }
+  if (hasYukhap) score += 25;
+  if (hasSangchung) score -= 20;
+
+  // 4. 음양 조화 (+5)
+  if (천간음양[myDayGanIdx] !== 천간음양[pDayGanIdx]) score += 5;
+
+  // 클램핑 0-100
+  score = Math.max(5, Math.min(100, score));
+
+  // ── 등급 ──
+  let grade, gradeIcon;
+  if (score >= 85) { grade = '찰떡궁합'; gradeIcon = '💕'; }
+  else if (score >= 70) { grade = '좋은 인연'; gradeIcon = '💗'; }
+  else if (score >= 50) { grade = '괜찮은 사이'; gradeIcon = '💛'; }
+  else if (score >= 35) { grade = '노력이 필요한 관계'; gradeIcon = '🤝'; }
+  else { grade = '극과 극의 매력'; gradeIcon = '🔥'; }
+
+  // ── 한줄 케미 ──
+  let chemistry = '';
+  if (hasCGHap) {
+    chemistry = '하늘이 정해준 인연, 만나면 자연스럽게 통하는 천생연분입니다.';
+  } else if (hasYukhap && score >= 70) {
+    chemistry = '서로의 빈 곳을 채워주는 따뜻한 관계, 함께할수록 빛나는 인연입니다.';
+  } else if (hasSangchung) {
+    chemistry = '강렬한 끌림 뒤에 숨은 긴장감, 서로를 성장시키는 관계입니다.';
+  } else if (myDayEl === pDayEl) {
+    chemistry = '같은 기운을 가진 동질감, 말하지 않아도 이해하는 편안한 사이입니다.';
+  } else if (오행상생[myDayEl] === pDayEl) {
+    chemistry = `${myDayEl}이(가) ${pDayEl}을(를) 살리는 관계, 자연스럽게 서로를 키워주는 인연입니다.`;
+  } else if (오행상생[pDayEl] === myDayEl) {
+    chemistry = `상대가 나를 키워주는 관계, 함께 있으면 에너지가 채워지는 인연입니다.`;
+  } else {
+    chemistry = '서로 다른 매력이 만들어내는 독특한 케미, 의외의 조합이 빛날 수 있습니다.';
+  }
+
+  // ── 카테고리별 점수 ──
+  // 성격궁합: 오행 관계 + 음양 기반
+  let personalityScore = 50;
+  if (myDayEl === pDayEl) personalityScore += 20;
+  else if (오행상생[myDayEl] === pDayEl || 오행상생[pDayEl] === myDayEl) personalityScore += 15;
+  else if (오행상극[myDayEl] === pDayEl || 오행상극[pDayEl] === myDayEl) personalityScore -= 10;
+  if (천간음양[myDayGanIdx] !== 천간음양[pDayGanIdx]) personalityScore += 10;
+  if (hasCGHap) personalityScore += 15;
+  personalityScore = Math.max(10, Math.min(100, personalityScore));
+
+  // 연애궁합: 천간합 + 지지 관계 중심
+  let loveScore = 50;
+  if (hasCGHap) loveScore += 35;
+  if (hasYukhap) loveScore += 20;
+  if (hasSangchung) loveScore -= 15;
+  if (천간음양[myDayGanIdx] !== 천간음양[pDayGanIdx]) loveScore += 5;
+  loveScore = Math.max(10, Math.min(100, loveScore));
+
+  // 업무궁합: 상생 관계 + 상극은 긴장감
+  let workScore = 50;
+  if (오행상생[myDayEl] === pDayEl || 오행상생[pDayEl] === myDayEl) workScore += 20;
+  if (myDayEl === pDayEl) workScore += 5;
+  if (오행상극[myDayEl] === pDayEl || 오행상극[pDayEl] === myDayEl) workScore += 5; // 업무에서는 긴장이 동력
+  if (hasYukhap) workScore += 10;
+  workScore = Math.max(10, Math.min(100, workScore));
+
+  // ── 결과 저장 (공유용) ──
+  window._lastGunghapResult = {
+    myName: myResult.name,
+    partnerName,
+    score, grade, gradeIcon, chemistry,
+    personalityScore, loveScore, workScore
+  };
+
+  // ── 렌더링 ──
+  const resultEl = document.getElementById('gunghap-result');
+  resultEl.innerHTML = `
+    <div class="gunghap-score-wrap">
+      <div class="gunghap-score-circle">
+        <div class="gunghap-score-num">${score}</div>
+        <div class="gunghap-score-label">점</div>
+      </div>
+    </div>
+    <div class="gunghap-grade">${gradeIcon} ${grade}</div>
+    <div class="gunghap-chemistry">${chemistry}</div>
+    <div class="gunghap-bars">
+      <div class="gunghap-bar-item">
+        <span class="gunghap-bar-label">성격</span>
+        <div class="gunghap-bar-track"><div class="gunghap-bar-fill" style="width:${personalityScore}%"></div></div>
+        <span class="gunghap-bar-val">${personalityScore}</span>
+      </div>
+      <div class="gunghap-bar-item">
+        <span class="gunghap-bar-label">연애</span>
+        <div class="gunghap-bar-track"><div class="gunghap-bar-fill" style="width:${loveScore}%"></div></div>
+        <span class="gunghap-bar-val">${loveScore}</span>
+      </div>
+      <div class="gunghap-bar-item">
+        <span class="gunghap-bar-label">업무</span>
+        <div class="gunghap-bar-track"><div class="gunghap-bar-fill" style="width:${workScore}%"></div></div>
+        <span class="gunghap-bar-val">${workScore}</span>
+      </div>
+    </div>
+    <div class="gunghap-deep-blur">
+      <div class="blur-content">
+        <p>▸ 상세 상성 해석: ${천간한글[myDayGanIdx]}와 ${천간한글[pDayGanIdx]}의 관계는...</p>
+        <p>▸ 갈등 포인트 3가지: 첫째, 서로의 가치관에서...</p>
+        <p>▸ 관계 조언 5가지: 소통 방식을 바꾸면...</p>
+      </div>
+      <div class="blur-overlay">
+        <span onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','gunghap_deep_click',{event_category:'conversion'})">🔒 상세 궁합 분석 보기 →</span>
+      </div>
+    </div>
+    <div class="gunghap-actions">
+      <button class="gunghap-share-btn" onclick="shareGunghap()">📤 궁합 카드 공유</button>
+    </div>
+  `;
+  resultEl.style.display = 'block';
+
+  // GA 이벤트
+  if (typeof gtag === 'function') gtag('event', 'gunghap_complete', { event_category: 'engagement', event_label: grade });
+}
+
+function shareGunghap() {
+  const data = window._lastGunghapResult;
+  if (!data) return;
+
+  if (typeof gtag === 'function') gtag('event', 'gunghap_share', { event_category: 'engagement' });
+
+  // 공유 카드 생성
+  const card = document.getElementById('gunghap-share-card');
+  card.innerHTML = `
+    <div class="share-title">${data.myName} ♥ ${data.partnerName}</div>
+    <div class="share-score">${data.score}</div>
+    <div style="font-size:14px;color:var(--gold);margin:8px 0">${data.gradeIcon} ${data.grade}</div>
+    <div class="share-chemistry">${data.chemistry}</div>
+    <div style="display:flex;justify-content:center;gap:24px;margin:12px 0">
+      <div><div style="font-size:11px;color:var(--text-dim)">성격</div><div style="font-size:18px;color:var(--gold-light)">${data.personalityScore}</div></div>
+      <div><div style="font-size:11px;color:var(--text-dim)">연애</div><div style="font-size:18px;color:var(--gold-light)">${data.loveScore}</div></div>
+      <div><div style="font-size:11px;color:var(--text-dim)">업무</div><div style="font-size:18px;color:var(--gold-light)">${data.workScore}</div></div>
+    </div>
+    <div class="share-url">whatsyoursaju.vercel.app</div>
+  `;
+  card.style.left = '0';
+
+  if (typeof html2canvas === 'function') {
+    html2canvas(card, { backgroundColor: '#0f0a1a', scale: 2, useCORS: true }).then(canvas => {
+      card.style.left = '-9999px';
+      canvas.toBlob(blob => {
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'gunghap.png', { type: 'image/png' })] })) {
+          navigator.share({
+            title: `${data.myName} ♥ ${data.partnerName} 궁합`,
+            text: `궁합 점수 ${data.score}점! ${data.grade}`,
+            files: [new File([blob], 'gunghap.png', { type: 'image/png' })]
+          }).catch(() => {});
+        } else {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = `궁합_${data.myName}_${data.partnerName}.png`;
+          a.click(); URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+    });
+  } else {
+    card.style.left = '-9999px';
+    alert('공유 카드 생성 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+  }
 }
 
 // ── 특수 구조 감지 ──
@@ -2890,7 +3467,7 @@ function getLoveAnalysis(dayGanIdx, gender, elementCounts, yongsinInfo, dayP, pi
 }
 
 // 올해 운세 (강화)
-function getYearFortune(dayGanIdx, yearGanIdx, yearJiIdx, yongsinInfo) {
+function getYearFortune(dayGanIdx, yearGanIdx, yearJiIdx, yongsinInfo, targetYear) {
   const dayElement = 천간오행[dayGanIdx];
   const yearElement = 천간오행[yearGanIdx];
   const yearJiElement = 지지오행[yearJiIdx];
@@ -2961,8 +3538,10 @@ function getYearFortune(dayGanIdx, yearGanIdx, yearJiIdx, yongsinInfo) {
     지지운: jiRel,
     해석: 관계해석[ganRel],
     등급: 운세등급,
-    종합: `<strong>2026년 ${천간[yearGanIdx]}${지지[yearJiIdx]}년 — 종합 운세 ${별점}</strong><br><br>올해 천간은 <span class="highlight">${ganRel}</span>의 기운이, 지지는 <span class="highlight">${jiRel}</span>의 기운이 작용합니다.` +
-      `<br><br>${관계해석[ganRel]}` + 월별조언
+    종합: `<strong>${targetYear || new Date().getFullYear()}년 ${천간[yearGanIdx]}${지지[yearJiIdx]}년 — 종합 운세 ${별점}</strong><br><br>올해 천간은 <span class="highlight">${ganRel}</span>의 기운이, 지지는 <span class="highlight">${jiRel}</span>의 기운이 작용합니다.` +
+      `<br><br>${관계해석[ganRel]}` + 월별조언,
+    연도: targetYear || new Date().getFullYear(),
+    간지: `${천간[yearGanIdx]}${지지[yearJiIdx]}`
   };
 }
 
@@ -2977,7 +3556,7 @@ let selectedCalendar = 'solar';
 (function initSelects() {
   const yearSel = document.getElementById('year');
   yearSel.innerHTML = '<option value="">년 선택</option>';
-  for (let y = 2025; y >= 1940; y--) {
+  for (let y = new Date().getFullYear(); y >= 1940; y--) {
     yearSel.innerHTML += `<option value="${y}">${y}년</option>`;
   }
 
@@ -3002,6 +3581,8 @@ function selectCalendar(el) {
   document.querySelectorAll('.cal-option').forEach(e => e.classList.remove('selected'));
   el.classList.add('selected');
   selectedCalendar = el.dataset.value;
+  const leapLabel = document.getElementById('leap-month-label');
+  if (leapLabel) leapLabel.style.display = selectedCalendar === 'lunar' ? 'block' : 'none';
 }
 
 // ── 전환 트리거: "충격의 한 줄" 생성 ──
@@ -3100,9 +3681,15 @@ function analyze() {
 
   // 음력→양력 변환
   let solarYear = year, solarMonth = month, solarDay = day;
+  let lunarOriginal = null;
   if (selectedCalendar === 'lunar') {
-    alert('음력 입력은 현재 정확한 변환을 지원하지 않습니다.\n\n양력 생년월일을 입력해주세요.\n(네이버에서 "음력 양력 변환"을 검색하면 쉽게 변환할 수 있습니다.)');
-    return;
+    const isLeap = document.getElementById('leap-month')?.checked || false;
+    const converted = lunarToSolar(year, month, day, isLeap);
+    if (!converted) return;
+    lunarOriginal = { year, month, day, isLeap };
+    solarYear = converted.year;
+    solarMonth = converted.month;
+    solarDay = converted.day;
   }
 
   // 로딩 표시 — 이름 세팅 + 기둥 프레임 리셋
@@ -3135,12 +3722,21 @@ function analyze() {
     const 아극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
     const 극아 = { '목':'금', '화':'수', '토':'목', '금':'화', '수':'토' };
 
-    // 올해 운세 (동적 연도)
+    // 올해 + 내년 + 내후년 세운 (3년)
     const currentYear = new Date().getFullYear();
     const cyP = getYearPillar(currentYear, 6, 1);
-    const yearFortune = getYearFortune(dayP.gan, cyP.gan, cyP.ji, yongsinInfo);
+    const yearFortune = getYearFortune(dayP.gan, cyP.gan, cyP.ji, yongsinInfo, currentYear);
+
+    const yearFortunes3 = [yearFortune];
+    for (let fy = 1; fy <= 2; fy++) {
+      const futureYear = currentYear + fy;
+      const fyP = getYearPillar(futureYear, 6, 1);
+      yearFortunes3.push(getYearFortune(dayP.gan, fyP.gan, fyP.ji, yongsinInfo, futureYear));
+    }
 
     const dayGan = 천간[dayP.gan];
+    const gongmang = getGongmang(dayP.gan, dayP.ji);
+    const gongmangJiIdxs = gongmang.map(g => g.idx);
     const personalityInfo = 일간성격[dayGan];
 
     // 대운 계산
@@ -3237,7 +3833,7 @@ function analyze() {
         <div class="pillar" data-element="${ganEl}" style="animation-delay: ${i * 0.1}s">
           <div class="pillar-label">${pillarNames[i]}</div>
           <div class="pillar-hanja" style="color:${오행색상[천간오행[p.gan]]}">${천간[p.gan]}</div>
-          <div class="pillar-hanja" style="color:${오행색상[지지오행[p.ji]]}">${지지[p.ji]}</div>
+          <div class="pillar-hanja${gongmangJiIdxs.includes(p.ji) ? ' gongmang' : ''}" style="color:${오행색상[지지오행[p.ji]]}">${지지[p.ji]}${gongmangJiIdxs.includes(p.ji) ? '<span class="gongmang-badge">空</span>' : ''}</div>
           <div class="pillar-hangul">${천간한글[p.gan]}${지지한글[p.ji]}</div>
           <div class="pillar-element el-${오행영문[천간오행[p.gan]]}">
             ${오행한자[천간오행[p.gan]]} · ${천간음양[p.gan]}
@@ -3410,12 +4006,15 @@ function analyze() {
     };
     unsungText = 운성해석[dayUnsung] || '';
 
+    // 분석 결과 저장 (궁합 등에서 재사용)
+    window._lastAnalysisResult = { name, dayP, yearP, monthP, hourP, pillars, elementCounts, yongsinInfo };
+
     // 결과 HTML 조합
     const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = `
       <div class="result-header">
         <div class="result-name" id="result-name-typed"></div>
-        <div class="result-subtitle">${year}년 ${month}월 ${day}일 · ${selectedCalendar === 'solar' ? '양력' : '음력'} · ${selectedGender === 'female' ? '여성' : '남성'}</div>
+        <div class="result-subtitle">${lunarOriginal ? `음력 ${lunarOriginal.year}년 ${lunarOriginal.month}월 ${lunarOriginal.day}일${lunarOriginal.isLeap ? ' (윤달)' : ''} → 양력 ${solarYear}년 ${solarMonth}월 ${solarDay}일` : `${year}년 ${month}월 ${day}일 · 양력`} · ${selectedGender === 'female' ? '여성' : '남성'}</div>
       </div>
 
       <!-- ═══ Tier 1: 핵심 요약 (항상 펼침) ═══ -->
@@ -3456,8 +4055,8 @@ function analyze() {
       <div class="teaser-insight">
         <div class="teaser-insight-icon">${teaserInsight.icon}</div>
         <div class="teaser-insight-text">${teaserInsight.text}</div>
-        <div class="teaser-insight-sub">프리미엄 심층 분석에서 구체적인 시기와 대처법을 확인하세요</div>
-        <button class="teaser-insight-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'teaser_insight'})">상세 분석 확인하기</button>
+        <div class="teaser-insight-sub">아래에서 더 자세한 이야기를 만나보세요</div>
+        <div class="teaser-insight-arrow">▼</div>
       </div>
 
       <!-- Early CTA -->
@@ -3488,7 +4087,22 @@ function analyze() {
           <div class="card-title">${currentYear}년 올해의 운세</div>
           <div class="card-content">${yearFortune.종합}</div>
         </div>
-        <div class="inline-premium-teaser">${currentYear}년 ${name}님의 월별 상세 분석 · 최적 행동 시기가 궁금하다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_올해'})">프리미엄에서 확인 →</a></div>
+
+        <!-- 3년 세운 미리보기 -->
+        <div class="seun-3year">
+          <div class="seun-3year-title">3년 세운 흐름</div>
+          <div class="seun-cards">
+            ${yearFortunes3.map((yf, i) => `
+            <div class="seun-card ${i === 0 ? 'current' : ''}">
+              <div class="seun-year">${yf.연도}</div>
+              <div class="seun-ganji">${yf.간지}년</div>
+              <div class="seun-grade seun-grade-${yf.등급}">${yf.등급}</div>
+              <div class="seun-rels"><span>${yf.천간운}</span> · <span>${yf.지지운}</span></div>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <div class="inline-premium-teaser">${name}님의 ${currentYear}년, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_올해'})">더 알아보기 →</a></div>
       </div>
 
       <!-- 탭: 사랑 -->
@@ -3497,7 +4111,7 @@ function analyze() {
           <div class="card-title">연애운 · 궁합</div>
           <div class="card-content">${loveText}</div>
         </div>
-        <div class="inline-premium-teaser">${name}님의 배우자궁 심층 분석 · 연애 패턴 · 결혼 최적 시기를 알고 싶다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">프리미엄에서 확인 →</a></div>
+        <div class="inline-premium-teaser">${name}님의 인연, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">더 알아보기 →</a></div>
       </div>
 
       <!-- 탭: 재물 -->
@@ -3510,7 +4124,7 @@ function analyze() {
           <div class="card-title">직업운 및 적성</div>
           <div class="card-content">${careerText}</div>
         </div>
-        <div class="inline-premium-teaser">${name}님의 재성 구조 해부 · 5대 리스크 · 투자 최적 시기를 알고 싶다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">프리미엄에서 확인 →</a></div>
+        <div class="inline-premium-teaser">${name}님의 재물운, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">더 알아보기 →</a></div>
       </div>
 
       <!-- 탭: 성격 -->
@@ -3667,9 +4281,28 @@ function analyze() {
         </button>
       </div>
 
+      <!-- 궁합 미니게임 -->
+      <div class="gunghap-section">
+        <h3>💕 궁합 미니게임</h3>
+        <p class="gunghap-subtitle">친구, 연인, 가족과의 궁합을 무료로 확인해보세요</p>
+        <div class="gunghap-input-area">
+          <input type="text" placeholder="상대방 이름" id="partner-name" maxlength="10">
+          <div class="gunghap-birth-row">
+            <select id="partner-year"><option value="">년</option></select>
+            <select id="partner-month"><option value="">월</option></select>
+            <select id="partner-day"><option value="">일</option></select>
+          </div>
+          <button class="gunghap-btn" onclick="analyzeGunghap()">궁합 보기</button>
+        </div>
+        <div id="gunghap-result" style="display:none"></div>
+      </div>
+
+      <!-- 궁합 공유 카드 (offscreen) -->
+      <div id="gunghap-share-card"></div>
+
       <!-- 프리미엄 가격표 -->
       <div class="premium-section">
-        <div class="premium-label">✦ 프 리 미 엄 심 층 분 석 ✦</div>
+        <div class="premium-label">✦ 모든 분석을 한눈에, 나만의 사주 리포트 ✦</div>
 
         <!-- 블러 미리보기 카드 (Zeigarnik 효과) -->
         <div class="premium-card">
@@ -3693,10 +4326,10 @@ function analyze() {
             <div class="pricing-price">9,900<span>원</span></div>
             <div class="pricing-features">
               <div class="included">✓ 원국 심층분석 (강점3/약점3)</div>
+              <div class="included">✓ 상세 궁합 분석 3명</div>
               <div class="included">✓ AI 채팅 상담 5회</div>
               <div class="excluded">✗ 재물·직업 분석</div>
               <div class="excluded">✗ 연애·건강 분석</div>
-              <div class="excluded">✗ 월운 캘린더</div>
             </div>
             <button class="pricing-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'pricing_A'})">사전 신청</button>
           </div>
@@ -3708,6 +4341,7 @@ function analyze() {
               <div class="included">✓ 원국 심층분석 (강점5/약점5+빛과그림자)</div>
               <div class="included">✓ 재물·직업 분석 + 리스크 5대</div>
               <div class="included">✓ 연애·건강·체질 분석</div>
+              <div class="included">✓ 상세 궁합 5명 + 심층 1명</div>
               <div class="included">✓ ${currentYear}년 월운 캘린더 12개월</div>
               <div class="included">✓ AI 채팅 상담 20회</div>
               <div class="included">✓ PDF 리포트 다운로드</div>
@@ -3719,7 +4353,7 @@ function analyze() {
             <div class="pricing-price">39,900<span>원</span></div>
             <div class="pricing-features">
               <div class="included">✓ 마스터 전체 포함</div>
-              <div class="included">✓ 궁합 분석 1명</div>
+              <div class="included">✓ 궁합 무제한 + 심층 3명 + 그룹 궁합</div>
               <div class="included">✓ 주간 하이라이트 캘린더</div>
               <div class="included">✓ 투자 타이밍 분석</div>
               <div class="included">✓ AI 채팅 30일 무제한</div>
@@ -3784,6 +4418,18 @@ function analyze() {
     // 결과 표시
     document.getElementById('loading').classList.remove('active');
     resultsDiv.classList.add('visible');
+
+    // 궁합 미니게임 셀렉트 초기화
+    const pYearSel = document.getElementById('partner-year');
+    const pMonthSel = document.getElementById('partner-month');
+    const pDaySel = document.getElementById('partner-day');
+    if (pYearSel && pYearSel.options.length <= 1) {
+      for (let y = new Date().getFullYear(); y >= 1940; y--) pYearSel.innerHTML += `<option value="${y}">${y}</option>`;
+      for (let m = 1; m <= 12; m++) pMonthSel.innerHTML += `<option value="${m}">${m}</option>`;
+      for (let d = 1; d <= 31; d++) pDaySel.innerHTML += `<option value="${d}">${d}</option>`;
+    }
+    // 궁합 결과 초기화
+    document.getElementById('gunghap-result').style.display = 'none';
 
     // 타이프라이터 이름 효과
     const nameEl = document.getElementById('result-name-typed');
@@ -4068,7 +4714,7 @@ function openPrelaunchModal() {
   document.getElementById('pl-gender').value = genderVal;
 
   // 사주 요약 (결과가 있으면)
-  const resultSummary = document.querySelector('.result-summary');
+  const resultSummary = document.querySelector('.tier1-summary');
   if (resultSummary) {
     document.getElementById('pl-saju').value = resultSummary.textContent.substring(0, 200);
   }
