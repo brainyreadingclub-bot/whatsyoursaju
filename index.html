@@ -46,7 +46,7 @@
   --rose-light: #e8a0b4;
   --text-primary: #e8e0f0;
   --text-secondary: #a89bbf;
-  --text-dim: #6b5f80;
+  --text-dim: #8a7e9e;
   --wood: #4a9e6b;
   --fire: #d4534a;
   --earth: #c4953a;
@@ -134,7 +134,7 @@ body::before {
 .container {
   position: relative;
   z-index: 2;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
 }
@@ -637,7 +637,7 @@ input::placeholder {
   text-align: center;
   font-size: 14px;
   color: var(--text-secondary);
-  line-height: 2;
+  line-height: 1.75;
   padding: 16px 20px;
   background: rgba(10,6,16,0.4);
   border-radius: 12px;
@@ -649,8 +649,8 @@ input::placeholder {
   border: 1px solid rgba(107,63,160,0.15);
   border-left: 4px solid var(--purple-mid);
   border-radius: 4px 20px 20px 4px;
-  padding: 40px;
-  margin-bottom: 24px;
+  padding: 28px 24px;
+  margin-bottom: 16px;
   position: relative;
   overflow: hidden;
   opacity: 0;
@@ -677,7 +677,7 @@ input::placeholder {
 /* ─── 3-Tier Card Hierarchy ─── */
 /* Hero tier: 대운, 오행 — larger presence */
 .analysis-card.card-hero {
-  padding: 48px 44px;
+  padding: 32px 28px;
   border-left-width: 5px;
   background: linear-gradient(145deg, rgba(17,13,26,0.98), rgba(30,22,48,0.95));
 }
@@ -721,10 +721,9 @@ input::placeholder {
 /* ─── Daeun Timeline ─── */
 .daeun-timeline {
   display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  gap: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 0;
   padding: 20px 16px 16px;
   scrollbar-width: thin;
   scrollbar-color: var(--gold-dim) transparent;
@@ -817,9 +816,9 @@ input::placeholder {
 }
 
 .card-content {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-secondary);
-  line-height: 2;
+  line-height: 1.75;
 }
 
 .highlight {
@@ -1026,13 +1025,25 @@ input::placeholder {
 }
 
 /* ─── Responsive ─── */
+
+/* Desktop wide: 2-column Tier 1 */
+@media (min-width: 1200px) {
+  .tier1-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .form-section { max-width: 800px; margin-left: auto; margin-right: auto; }
+}
+
 @media (max-width: 1024px) {
-  .container { max-width: 720px; }
+  .container { max-width: 960px; }
 }
 @media (max-width: 768px) {
   .container { max-width: 100%; padding: 32px 20px; }
-  .analysis-card { padding: 32px 24px; }
-  .analysis-card.card-hero { padding: 36px 24px; }
+  .analysis-card { padding: 24px 20px; }
+  .analysis-card.card-hero { padding: 28px 20px; }
   .pillar-hanja { font-size: 38px; }
 }
 @media (max-width: 640px) {
@@ -1042,13 +1053,140 @@ input::placeholder {
   .title-chinese { font-size: 44px; letter-spacing: 12px; }
   .pillars-grid { grid-template-columns: repeat(2, 1fr); }
   .lucky-grid { grid-template-columns: 1fr; }
-  .analysis-card { padding: 24px 16px; }
-  .analysis-card.card-hero { padding: 28px 16px; }
+  .analysis-card { padding: 20px 16px; }
+  .analysis-card.card-hero { padding: 24px 16px; }
   .elements-chart { gap: 12px; }
   .pillar-hanja { font-size: 34px; }
   .loading-name { font-size: 24px; letter-spacing: 4px; }
   .loading-pillar-frame { width: 48px; height: 60px; font-size: 20px; }
   .daeun-item { min-width: 70px; }
+}
+
+/* ─── Tab UI ─── */
+.result-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(107,63,160,0.25);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-deep);
+  margin-bottom: 20px;
+  scrollbar-width: none;
+}
+.result-tabs::-webkit-scrollbar { display: none; }
+.result-tab {
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.3s, border-color 0.3s;
+  background: none;
+  border-top: none; border-left: none; border-right: none;
+  font-family: inherit;
+}
+.result-tab:hover { color: var(--text-secondary); }
+.result-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ─── Tier 1 summary line ─── */
+.tier1-summary {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: rgba(17,13,26,0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(107,63,160,0.1);
+}
+
+/* ─── Early CTA bar ─── */
+.early-cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.early-cta .share-btn { font-size: 13px; padding: 10px 20px; }
+.soft-premium-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  color: var(--gold);
+  background: rgba(212,168,83,0.08);
+  border: 1px solid rgba(212,168,83,0.2);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.soft-premium-banner:hover { background: rgba(212,168,83,0.15); }
+
+/* ─── Inline premium teaser (in tabs) ─── */
+.inline-premium-teaser {
+  text-align: center;
+  padding: 16px;
+  margin-top: 20px;
+  border-top: 1px solid rgba(107,63,160,0.15);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.inline-premium-teaser a {
+  color: var(--gold);
+  text-decoration: none;
+  cursor: pointer;
+}
+.inline-premium-teaser a:hover { text-decoration: underline; }
+
+/* ─── Mobile sticky CTA bar ─── */
+@media (max-width: 767px) {
+  .sticky-cta-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(10,6,16,0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(212,168,83,0.2);
+    z-index: 100;
+  }
+  .sticky-cta-bar.visible { display: flex; }
+  .sticky-cta-bar button {
+    flex: 1;
+    padding: 12px 8px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .sticky-cta-bar .sticky-premium {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color: #0a0610;
+  }
+  .sticky-cta-bar .sticky-share {
+    background: rgba(107,63,160,0.3);
+    color: var(--text-primary);
+    border: 1px solid rgba(107,63,160,0.4);
+  }
+  #results.visible ~ .footer { padding-bottom: 72px; }
 }
 
 /* ─── Stagger animations ─── */
@@ -1576,6 +1714,12 @@ input::placeholder {
   <div class="footer">
     SAJU · 사주명리 분석 · 참고용으로만 활용하세요
   </div>
+</div>
+
+<!-- 모바일 sticky CTA bar -->
+<div class="sticky-cta-bar" id="sticky-cta-bar">
+  <button class="sticky-premium" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'sticky_cta'})">✦ 프리미엄 신청</button>
+  <button class="sticky-share" onclick="webShare()">공유하기</button>
 </div>
 
 <script>
@@ -3053,185 +3197,233 @@ function analyze() {
         <div class="result-subtitle">${year}년 ${month}월 ${day}일 · ${selectedCalendar === 'solar' ? '양력' : '음력'} · ${selectedGender === 'female' ? '여성' : '남성'}</div>
       </div>
 
-      <!-- 사주팔자 -->
-      <div class="pillars-section">
-        <div class="pillars-title">사 주 팔 자</div>
-        <div class="pillars-grid">${pillarsHTML}</div>
-        ${(() => {
-          const parts = [];
-          if (hapChung.합.length) parts.push(`<span class="good">조화:</span> ${hapChung.합.join(', ')}`);
-          if (hapChung.충.length) parts.push(`<span class="caution">긴장:</span> ${hapChung.충.join(', ')}`);
-          if (hapChung.형.length) parts.push(`<span class="caution">마찰:</span> ${hapChung.형.join(', ')}`);
-          if (hapChung.파.length) parts.push(`<span style="color:#c49a3a;">깨짐:</span> ${hapChung.파.join(', ')}`);
-          if (hapChung.해.length) parts.push(`<span style="color:#c49a3a;">방해:</span> ${hapChung.해.join(', ')}`);
-          return parts.length ? `<div style="margin-top:12px; text-align:center; font-size:0.82rem; color:var(--text-dim); line-height:1.8">${parts.join('<br>')}</div>` : '';
-        })()}
+      <!-- ═══ Tier 1: 핵심 요약 (항상 펼침) ═══ -->
+      <div class="tier1-grid">
+        <div class="tier1-left">
+          <!-- 사주팔자 -->
+          <div class="pillars-section">
+            <div class="pillars-title">사 주 팔 자</div>
+            <div class="pillars-grid">${pillarsHTML}</div>
+            ${(() => {
+              const parts = [];
+              if (hapChung.합.length) parts.push(`<span class="good">조화:</span> ${hapChung.합.join(', ')}`);
+              if (hapChung.충.length) parts.push(`<span class="caution">긴장:</span> ${hapChung.충.join(', ')}`);
+              if (hapChung.형.length) parts.push(`<span class="caution">마찰:</span> ${hapChung.형.join(', ')}`);
+              if (hapChung.파.length) parts.push(`<span style="color:#c49a3a;">깨짐:</span> ${hapChung.파.join(', ')}`);
+              if (hapChung.해.length) parts.push(`<span style="color:#c49a3a;">방해:</span> ${hapChung.해.join(', ')}`);
+              return parts.length ? `<div style="margin-top:12px; text-align:center; font-size:0.82rem; color:var(--text-dim); line-height:1.7">${parts.join('<br>')}</div>` : '';
+            })()}
+          </div>
+        </div>
+        <div class="tier1-right">
+          <!-- 오행 분석 -->
+          <div class="elements-section" style="animation-delay: 0.2s">
+            <div class="section-label">오 행 분 석</div>
+            <div class="elements-chart">${chartHTML}</div>
+            <div class="elements-analysis">${elAnalysis}</div>
+          </div>
+        </div>
       </div>
 
-      <!-- 대운 흐름 -->
-      <div class="analysis-card card-hero" data-icon="運" data-accent="gold">
-        <div class="card-title">대운 흐름</div>
-        <div class="card-content">
-          <div class="daeun-timeline">
-            ${daeunList.map((d, i) => {
+      <!-- 일간 핵심 요약 -->
+      <div class="tier1-summary">
+        일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> · ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <strong>${용어순화[yongsinInfo.신강여부]}</strong> <span class="saju-badge">${yongsinInfo.신강여부}</span>
+        ${sinsalList.length > 0 ? ` · ${sinsalList.slice(0,3).map(s => 신살사전[s.name].아이콘 + ' ' + 신살사전[s.name].순화).join(' · ')}` : ''}
+      </div>
+
+      <!-- Early CTA -->
+      <div class="early-cta">
+        <button class="share-btn" onclick="saveShareCard()">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          카드 저장
+        </button>
+        <button class="share-btn" onclick="webShare()">
+          <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+          공유하기
+        </button>
+        <div class="soft-premium-banner" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'soft_cta'})">
+          ✦ 더 깊은 분석이 궁금하다면 →
+        </div>
+      </div>
+
+      <!-- ═══ Tier 2: 탭 기반 상세 분석 ═══ -->
+      <div class="result-tabs" id="result-tabs">
+        <button class="result-tab active" onclick="switchTab('올해')">올해</button>
+        <button class="result-tab" onclick="switchTab('사랑')">사랑</button>
+        <button class="result-tab" onclick="switchTab('재물')">재물</button>
+        <button class="result-tab" onclick="switchTab('성격')">성격</button>
+        <button class="result-tab" onclick="switchTab('건강')">건강</button>
+        <button class="result-tab" onclick="switchTab('심화')">심화</button>
+      </div>
+
+      <!-- 탭: 올해 -->
+      <div class="tab-panel active" data-tab="올해">
+        <div class="analysis-card" data-icon="歲" data-accent="gold">
+          <div class="card-title">${currentYear}년 올해의 운세</div>
+          <div class="card-content">${yearFortune.종합}</div>
+        </div>
+        <div class="inline-premium-teaser">이 운세의 월별 상세 분석이 궁금하다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_올해'})">프리미엄에서 확인 →</a></div>
+      </div>
+
+      <!-- 탭: 사랑 -->
+      <div class="tab-panel" data-tab="사랑">
+        <div class="analysis-card" data-icon="緣" data-accent="rose">
+          <div class="card-title">연애운 · 궁합</div>
+          <div class="card-content">${loveText}</div>
+        </div>
+        <div class="inline-premium-teaser">파트너와의 궁합 심층 분석이 궁금하다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">프리미엄에서 확인 →</a></div>
+      </div>
+
+      <!-- 탭: 재물 -->
+      <div class="tab-panel" data-tab="재물">
+        <div class="analysis-card" data-icon="財" data-accent="gold">
+          <div class="card-title">재물운</div>
+          <div class="card-content">${wealthText}</div>
+        </div>
+        <div class="analysis-card" data-icon="業" data-accent="metal">
+          <div class="card-title">직업운 및 적성</div>
+          <div class="card-content">${careerText}</div>
+        </div>
+        <div class="inline-premium-teaser">투자 최적 시기까지 알고 싶다면 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">프리미엄에서 확인 →</a></div>
+      </div>
+
+      <!-- 탭: 성격 -->
+      <div class="tab-panel" data-tab="성격">
+        <div class="analysis-card" data-icon="性" data-accent="purple">
+          <div class="card-title">성격 및 기질</div>
+          <div class="card-content">
+            <p>일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> — ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <span class="highlight">${용어순화[yongsinInfo.신강여부]}</span> <span class="saju-badge">${yongsinInfo.신강여부}</span></p>
+            <br>
+            <p>${personalityInfo.기본}</p>
+            <br>
+            <p>${yongsinInfo.신강여부 === '신강' ? personalityInfo.신강 : personalityInfo.신약}</p>
+            <br>
+            <p><span class="good">▸ 강점:</span> ${personalityInfo.장점}</p>
+            <p><span class="caution">▸ 주의점:</span> ${personalityInfo.단점}</p>
+            ${일주보충 ? `<br><br><p><span class="highlight">▸ 일주(${일주키}) 특성:</span><br>${일주보충}</p>` : ''}
+            ${구조성격추가.length ? `<br>${구조성격추가.map(t => `<p><span class="info">▸</span> ${t}</p>`).join('<br>')}` : ''}
+            ${자형결과.length ? `<br>${자형결과.map(j => `<p><span class="caution">▸ 자형(自刑):</span> ${자형성격보충[j] || j + ' 자형이 감지되었습니다.'}</p>`).join('')}` : ''}
+          </div>
+        </div>
+        ${specialStructures.length > 0 ? `
+        <div class="analysis-card" data-icon="格" data-accent="fire">
+          <div class="card-title">사주 특수 구조</div>
+          <div class="card-content">
+            ${specialStructures.map(s => `<p><span class="type-label">${구조순화[s.type] || s.type}</span> <span class="saju-badge">${s.type}</span><br>${s.desc}</p>`).join('<br>')}
+          </div>
+        </div>` : ''}
+      </div>
+
+      <!-- 탭: 건강 -->
+      <div class="tab-panel" data-tab="건강">
+        <div class="analysis-card" data-icon="壽" data-accent="wood">
+          <div class="card-title">건강 주의사항</div>
+          <div class="card-content">${healthHTML}</div>
+        </div>
+      </div>
+
+      <!-- 탭: 심화 -->
+      <div class="tab-panel" data-tab="심화">
+        <!-- 대운 흐름 -->
+        <div class="analysis-card card-hero" data-icon="運" data-accent="gold">
+          <div class="card-title">대운 흐름</div>
+          <div class="card-content">
+            <div class="daeun-timeline">
+              ${daeunList.map((d, i) => {
+                const userAge = currentYear - solarYear;
+                const isCurrent = userAge >= d.age && (i === daeunList.length - 1 || userAge < daeunList[i+1].age);
+                const isPast = userAge >= (daeunList[i+1] ? daeunList[i+1].age : d.age + 10);
+                const cls = isCurrent ? 'current' : (isPast ? 'past' : '');
+                const daeunSipsung = getSipsung(dayP.gan, d.gan);
+                return `
+                <div class="daeun-item ${cls}">
+                  <div class="daeun-hanja" style="color:${오행색상[천간오행[d.gan]]}">${천간[d.gan]}${지지[d.ji]}</div>
+                  <div class="daeun-sipsung">${십신순화[daeunSipsung] || daeunSipsung}</div>
+                  <div class="daeun-dot"></div>
+                  <div class="daeun-line"></div>
+                  <div class="daeun-age">${d.age}세~${d.age+9}세</div>
+                  ${isCurrent ? '<div class="daeun-current-badge">현재</div>' : ''}
+                </div>`;
+              }).join('')}
+            </div>
+            ${(() => {
               const userAge = currentYear - solarYear;
-              const isCurrent = userAge >= d.age && (i === daeunList.length - 1 || userAge < daeunList[i+1].age);
-              const isPast = userAge >= (daeunList[i+1] ? daeunList[i+1].age : d.age + 10);
-              const cls = isCurrent ? 'current' : (isPast ? 'past' : '');
-              const daeunSipsung = getSipsung(dayP.gan, d.gan);
+              const currentDaeun = daeunList.find((d, i) => userAge >= d.age && (i === daeunList.length - 1 || userAge < daeunList[i+1].age));
+              if (!currentDaeun) return '';
+              const cdGanSipsung = getSipsung(dayP.gan, currentDaeun.gan);
+              const cdJiSipsung = getSipsung(dayP.gan, (() => { const jiElement = 지지오행[currentDaeun.ji]; const jiYY = ['양','음','양','음','양','음','양','음','양','음','양','음'][currentDaeun.ji]; const 오행순 = ['목','화','토','금','수']; const idx = 오행순.indexOf(jiElement); for (let g = 0; g < 10; g++) { if (천간오행[g] === jiElement && 천간음양[g] === jiYY) return g; } return 0; })());
               return `
-              <div class="daeun-item ${cls}">
-                <div class="daeun-hanja" style="color:${오행색상[천간오행[d.gan]]}">${천간[d.gan]}${지지[d.ji]}</div>
-                <div class="daeun-sipsung">${십신순화[daeunSipsung] || daeunSipsung}</div>
-                <div class="daeun-dot"></div>
-                <div class="daeun-line"></div>
-                <div class="daeun-age">${d.age}세~${d.age+9}세</div>
-                ${isCurrent ? '<div class="daeun-current-badge">현재</div>' : ''}
+              <div class="daeun-detail">
+                <strong>현재 대운 ${천간[currentDaeun.gan]}${지지[currentDaeun.ji]} (${currentDaeun.age}세~${currentDaeun.age+9}세)</strong><br><br>
+                <span class="highlight">천간 ${용어뱃지(cdGanSipsung, 십신순화)}:</span> ${대운십신해석[cdGanSipsung] || ''}<br><br>
+                <span class="highlight">지지 ${용어뱃지(cdJiSipsung, 십신순화)}:</span> ${대운십신해석[cdJiSipsung] || ''}
               </div>`;
-            }).join('')}
-          </div>
-          ${(() => {
-            const userAge = currentYear - solarYear;
-            const currentDaeun = daeunList.find((d, i) => userAge >= d.age && (i === daeunList.length - 1 || userAge < daeunList[i+1].age));
-            if (!currentDaeun) return '';
-            const cdGanSipsung = getSipsung(dayP.gan, currentDaeun.gan);
-            const cdJiSipsung = getSipsung(dayP.gan, (() => { const jiElement = 지지오행[currentDaeun.ji]; const jiYY = ['양','음','양','음','양','음','양','음','양','음','양','음'][currentDaeun.ji]; const 오행순 = ['목','화','토','금','수']; const idx = 오행순.indexOf(jiElement); for (let g = 0; g < 10; g++) { if (천간오행[g] === jiElement && 천간음양[g] === jiYY) return g; } return 0; })());
-            return `
-            <div class="daeun-detail">
-              <strong>현재 대운 ${천간[currentDaeun.gan]}${지지[currentDaeun.ji]} (${currentDaeun.age}세~${currentDaeun.age+9}세)</strong><br><br>
-              <span class="highlight">천간 ${용어뱃지(cdGanSipsung, 십신순화)}:</span> ${대운십신해석[cdGanSipsung] || ''}<br><br>
-              <span class="highlight">지지 ${용어뱃지(cdJiSipsung, 십신순화)}:</span> ${대운십신해석[cdJiSipsung] || ''}
-            </div>`;
-          })()}
-        </div>
-      </div>
-
-      <!-- 12운성 -->
-      <div class="analysis-card" data-icon="星" data-accent="purple">
-        <div class="card-title">일주 12운성 — ${운성순화[dayUnsung] || dayUnsung} <span class="saju-badge">${dayUnsung}</span></div>
-        <div class="card-content">${unsungText}</div>
-      </div>
-
-      <!-- 신살 (나의 특수한 별) -->
-      ${sinsalList.length > 0 ? `
-      <div class="analysis-card" data-icon="★" data-accent="gold">
-        <div class="card-title">나의 특수한 별</div>
-        <div class="card-content">
-          <div style="display:grid; gap:16px;">
-            ${sinsalList.map(s => {
-              const info = 신살사전[s.name];
-              return `<div style="padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:10px; border-left:3px solid var(--gold);">
-                <div style="font-size:1.1rem; margin-bottom:4px;">${info.아이콘} <strong>${info.순화}</strong> <span class="saju-badge">${s.name}</span></div>
-                <div style="font-size:0.88rem; color:var(--text-mid); line-height:1.6;">${info.설명}</div>
-                <div style="font-size:0.75rem; color:var(--text-dim); margin-top:6px; line-height:1.5;">${info.상세}</div>
-              </div>`;
-            }).join('')}
+            })()}
           </div>
         </div>
-      </div>
-      ` : ''}
 
-      <!-- 오행 분석 -->
-      <div class="elements-section" style="animation-delay: 0.2s">
-        <div class="section-label">오 행 분 석</div>
-        <div class="elements-chart">${chartHTML}</div>
-        <div class="elements-analysis">${elAnalysis}</div>
-      </div>
-
-      <!-- 성격 및 적성 -->
-      <div class="analysis-card" data-icon="性" data-accent="purple">
-        <div class="card-title">성격 및 기질</div>
-        <div class="card-content">
-          <p>일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> — ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <span class="highlight">${용어순화[yongsinInfo.신강여부]}</span> <span class="saju-badge">${yongsinInfo.신강여부}</span></p>
-          <br>
-          <p>${personalityInfo.기본}</p>
-          <br>
-          <p>${yongsinInfo.신강여부 === '신강' ? personalityInfo.신강 : personalityInfo.신약}</p>
-          <br>
-          <p><span class="good">▸ 강점:</span> ${personalityInfo.장점}</p>
-          <p><span class="caution">▸ 주의점:</span> ${personalityInfo.단점}</p>
-          ${일주보충 ? `<br><br><p><span class="highlight">▸ 일주(${일주키}) 특성:</span><br>${일주보충}</p>` : ''}
-          ${구조성격추가.length ? `<br>${구조성격추가.map(t => `<p><span class="info">▸</span> ${t}</p>`).join('<br>')}` : ''}
-          ${자형결과.length ? `<br>${자형결과.map(j => `<p><span class="caution">▸ 자형(自刑):</span> ${자형성격보충[j] || j + ' 자형이 감지되었습니다.'}</p>`).join('')}` : ''}
+        <!-- 12운성 -->
+        <div class="analysis-card" data-icon="星" data-accent="purple">
+          <div class="card-title">일주 12운성 — ${운성순화[dayUnsung] || dayUnsung} <span class="saju-badge">${dayUnsung}</span></div>
+          <div class="card-content">${unsungText}</div>
         </div>
-      </div>
 
-      <!-- 특수 구조 -->
-      ${specialStructures.length > 0 ? `
-      <div class="analysis-card" data-icon="格" data-accent="fire">
-        <div class="card-title">사주 특수 구조</div>
-        <div class="card-content">
-          ${specialStructures.map(s => `<p><span class="type-label">${구조순화[s.type] || s.type}</span> <span class="saju-badge">${s.type}</span><br>${s.desc}</p>`).join('<br>')}
-        </div>
-      </div>` : ''}
-
-      <!-- 재물운 -->
-      <div class="analysis-card" data-icon="財" data-accent="gold">
-        <div class="card-title">재물운</div>
-        <div class="card-content">${wealthText}</div>
-      </div>
-
-      <!-- 직업운 -->
-      <div class="analysis-card" data-icon="業" data-accent="metal">
-        <div class="card-title">직업운 및 적성</div>
-        <div class="card-content">${careerText}</div>
-      </div>
-
-      <!-- 연애운 -->
-      <div class="analysis-card" data-icon="緣" data-accent="rose">
-        <div class="card-title">연애운 · 궁합</div>
-        <div class="card-content">${loveText}</div>
-      </div>
-
-      <!-- 건강 -->
-      <div class="analysis-card" data-icon="壽" data-accent="wood">
-        <div class="card-title">건강 주의사항</div>
-        <div class="card-content">${healthHTML}</div>
-      </div>
-
-      <!-- 올해 운세 -->
-      <div class="analysis-card" data-icon="歲" data-accent="gold">
-        <div class="card-title">${currentYear}년 올해의 운세</div>
-        <div class="card-content">${yearFortune.종합}</div>
-      </div>
-
-      <!-- 유틸리티 카드 2열 -->
-      <div class="utility-grid">
-      <!-- 가까이할 것 / 피할 것 -->
-      <div class="analysis-card" data-icon="道" data-accent="purple">
-        <div class="card-title">가까이할 것 · 피해야 할 것</div>
-        <div class="card-content">
-          <p style="margin-bottom: 12px; color: var(--gold);">✦ 가까이하면 좋은 것</p>
-          <div class="tag-list">
-            ${goodThings.map(t => `<span class="tag tag-good">${t}</span>`).join('')}
-          </div>
-          <br>
-          <p style="margin-bottom: 12px; color: var(--rose);">✧ 주의하거나 피할 것</p>
-          <div class="tag-list">
-            ${badThings.map(t => `<span class="tag tag-bad">${t}</span>`).join('')}
+        <!-- 신살 -->
+        ${sinsalList.length > 0 ? `
+        <div class="analysis-card" data-icon="★" data-accent="gold">
+          <div class="card-title">나의 특수한 별</div>
+          <div class="card-content">
+            <div style="display:grid; gap:16px;">
+              ${sinsalList.map(s => {
+                const info = 신살사전[s.name];
+                return `<div style="padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:10px; border-left:3px solid var(--gold);">
+                  <div style="font-size:1.1rem; margin-bottom:4px;">${info.아이콘} <strong>${info.순화}</strong> <span class="saju-badge">${s.name}</span></div>
+                  <div style="font-size:0.88rem; color:var(--text-mid); line-height:1.6;">${info.설명}</div>
+                  <div style="font-size:0.75rem; color:var(--text-dim); margin-top:6px; line-height:1.5;">${info.상세}</div>
+                </div>`;
+              }).join('')}
+            </div>
           </div>
         </div>
-      </div>
+        ` : ''}
 
-      <!-- 행운 아이템 -->
-      <div class="analysis-card" data-icon="福" data-accent="gold">
-        <div class="card-title">행운의 아이템</div>
-        <div class="lucky-grid">
-          <div class="lucky-item">
-            <div class="lucky-item-label">행운의 색</div>
-            <div class="lucky-item-value">${luckyColor}</div>
-          </div>
-          <div class="lucky-item">
-            <div class="lucky-item-label">행운의 숫자</div>
-            <div class="lucky-item-value">${luckyNumber}</div>
-          </div>
-          <div class="lucky-item">
-            <div class="lucky-item-label">행운의 방위</div>
-            <div class="lucky-item-value">${luckyDirection}</div>
+        <!-- 유틸리티 카드 2열 -->
+        <div class="utility-grid">
+        <div class="analysis-card" data-icon="道" data-accent="purple">
+          <div class="card-title">가까이할 것 · 피해야 할 것</div>
+          <div class="card-content">
+            <p style="margin-bottom: 12px; color: var(--gold);">✦ 가까이하면 좋은 것</p>
+            <div class="tag-list">
+              ${goodThings.map(t => `<span class="tag tag-good">${t}</span>`).join('')}
+            </div>
+            <br>
+            <p style="margin-bottom: 12px; color: var(--rose);">✧ 주의하거나 피할 것</p>
+            <div class="tag-list">
+              ${badThings.map(t => `<span class="tag tag-bad">${t}</span>`).join('')}
+            </div>
           </div>
         </div>
-      </div>
-      </div><!-- /utility-grid -->
+        <div class="analysis-card" data-icon="福" data-accent="gold">
+          <div class="card-title">행운의 아이템</div>
+          <div class="lucky-grid">
+            <div class="lucky-item">
+              <div class="lucky-item-label">행운의 색</div>
+              <div class="lucky-item-value">${luckyColor}</div>
+            </div>
+            <div class="lucky-item">
+              <div class="lucky-item-label">행운의 숫자</div>
+              <div class="lucky-item-value">${luckyNumber}</div>
+            </div>
+            <div class="lucky-item">
+              <div class="lucky-item-label">행운의 방위</div>
+              <div class="lucky-item-value">${luckyDirection}</div>
+            </div>
+          </div>
+        </div>
+        </div><!-- /utility-grid -->
+      </div><!-- /탭: 심화 -->
+
+      <!-- ═══ Tier 3: 하단 고정 ═══ -->
 
       <!-- 공유 버튼 -->
       <div class="share-bar" id="share-bar">
@@ -3429,6 +3621,26 @@ function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, day
   `;
   document.body.appendChild(card);
 }
+
+// ─── 탭 전환 ───
+function switchTab(tabName) {
+  document.querySelectorAll('.result-tab').forEach(t => t.classList.toggle('active', t.textContent.trim() === tabName));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.tab === tabName));
+  if (typeof gtag === 'function') gtag('event', 'tab_switch', { event_category: 'engagement', event_label: tabName });
+}
+
+// ─── 모바일 sticky CTA 표시/숨김 ───
+function initStickyCTA() {
+  const bar = document.getElementById('sticky-cta-bar');
+  const results = document.getElementById('results');
+  if (!bar || !results) return;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => bar.classList.toggle('visible', e.isIntersecting));
+  }, { threshold: 0.01 });
+  observer.observe(results);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initStickyCTA);
+else initStickyCTA();
 
 function saveShareCard() {
   if (typeof gtag === 'function') gtag('event', 'share_card', { event_category: 'sharing', method: 'image_save' });
