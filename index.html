@@ -4419,6 +4419,10 @@ function analyze() {
     document.getElementById('loading').classList.remove('active');
     resultsDiv.classList.add('visible');
 
+    // 모바일 sticky CTA 표시 (results가 visible로 바뀐 후)
+    const stickyBar = document.getElementById('sticky-cta-bar');
+    if (stickyBar && window.innerWidth < 768) stickyBar.classList.add('visible');
+
     // 궁합 미니게임 셀렉트 초기화
     const pYearSel = document.getElementById('partner-year');
     const pMonthSel = document.getElementById('partner-month');
