@@ -19,6 +19,8 @@
 <meta name="twitter:description" content="정밀 사주명리 분석. 무료 사주풀이.">
 <meta name="twitter:image" content="https://whatsyoursaju.com/og-image.png">
 <link rel="canonical" href="https://whatsyoursaju.com">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="theme-color" content="#0a0610">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" defer></script>
@@ -32,6 +34,7 @@
   gtag('config', 'G-LTFZ1YMVNM');
 </script>
 <style>
+h1, h2, h3 { margin: 0; font-weight: inherit; }
 :root {
   --bg-deep: #0a0610;
   --bg-card: #110d1a;
@@ -2029,6 +2032,78 @@ input::placeholder {
   .pl-title { font-size: 18px; }
 }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SAJU — 사주명리 분석",
+  "alternateName": "사주풀이",
+  "url": "https://whatsyoursaju.com",
+  "description": "정밀 사주명리 분석. 생년월일시만 입력하면 성격, 재물운, 연애운, 건강, 올해 운세까지 무료로 확인하세요.",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "ko",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW",
+    "description": "무료 사주 분석"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "SAJU",
+    "url": "https://whatsyoursaju.com"
+  },
+  "image": "https://whatsyoursaju.com/og-image.png"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "사주란 무엇인가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "사주(四柱)는 생년월일시를 기반으로 한 동양 철학 분석법입니다. 년주, 월주, 일주, 시주의 네 기둥(四柱)과 여덟 글자(八字)로 개인의 성격, 적성, 운세를 분석합니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "무료 사주 분석은 어떻게 하나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SAJU 사이트에서 이름, 성별, 생년월일시를 입력하고 '운명 풀이' 버튼을 누르면 됩니다. 성격, 재물운, 연애운, 건강, 올해 운세까지 무료로 확인할 수 있습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "사주에서 양력과 음력 중 어떤 것을 입력하나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "양력 또는 음력 어느 쪽이든 입력 가능합니다. 음력을 선택하면 자동으로 양력으로 변환하여 정확한 사주를 계산합니다. 윤달인 경우 윤달 체크박스를 선택하세요."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "SAJU 사주명리 분석",
+      "item": "https://whatsyoursaju.com"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -2068,7 +2143,7 @@ input::placeholder {
   <div class="loading-text" id="loading-text">사주를 풀어보고 있습니다</div>
 </div>
 
-<div class="container">
+<main class="container">
   <!-- Header -->
   <header class="header">
     <div class="header-ornament">
@@ -2077,13 +2152,13 @@ input::placeholder {
       <div class="ornament-line"></div>
     </div>
     <div class="title-chinese">SAJU</div>
-    <div class="title-korean">사 주 명 리 분 석</div>
+    <h1 class="title-korean">사 주 명 리 분 석</h1>
     <div class="subtitle">Discover Your Four Pillars of Destiny</div>
   </header>
 
   <!-- Input Form -->
-  <div class="form-section">
-    <div class="section-title">생 년 월 일 시</div>
+  <section class="form-section" aria-label="생년월일시 입력">
+    <h2 class="section-title">생 년 월 일 시</h2>
     <div class="form-grid">
       <div class="form-group full-width">
         <label>이 름</label>
@@ -2092,17 +2167,17 @@ input::placeholder {
 
       <div class="form-group full-width">
         <label>성 별</label>
-        <div class="gender-select">
-          <div class="gender-option" data-value="female" onclick="selectGender(this)">여성 ♀</div>
-          <div class="gender-option" data-value="male" onclick="selectGender(this)">남성 ♂</div>
+        <div class="gender-select" role="radiogroup" aria-label="성별 선택">
+          <div class="gender-option" data-value="female" onclick="selectGender(this)" role="radio" aria-checked="false" tabindex="0">여성 ♀</div>
+          <div class="gender-option" data-value="male" onclick="selectGender(this)" role="radio" aria-checked="false" tabindex="0">남성 ♂</div>
         </div>
       </div>
 
       <div class="form-group full-width">
         <label>양 력 / 음 력</label>
-        <div class="calendar-toggle">
-          <div class="cal-option selected" data-value="solar" onclick="selectCalendar(this)">양력 (陽曆)</div>
-          <div class="cal-option" data-value="lunar" onclick="selectCalendar(this)">음력 (陰曆)</div>
+        <div class="calendar-toggle" role="radiogroup" aria-label="양력/음력 선택">
+          <div class="cal-option selected" data-value="solar" onclick="selectCalendar(this)" role="radio" aria-checked="true" tabindex="0">양력 (陽曆)</div>
+          <div class="cal-option" data-value="lunar" onclick="selectCalendar(this)" role="radio" aria-checked="false" tabindex="0">음력 (陰曆)</div>
         </div>
         <label id="leap-month-label" style="display:none; margin-top:8px; font-size:13px; color:var(--text-dim); cursor:pointer;">
           <input type="checkbox" id="leap-month" style="margin-right:6px; accent-color:var(--gold);"> 윤달
@@ -2148,18 +2223,25 @@ input::placeholder {
       </div>
 
       <div class="submit-wrap">
-        <button class="submit-btn" onclick="analyze()">운명 풀이</button>
+        <button class="submit-btn" onclick="analyze()" aria-label="사주 분석 시작">운명 풀이</button>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Results -->
-  <div id="results"></div>
+  <section id="results" aria-label="사주 분석 결과" aria-live="polite">
+    <noscript>
+      <div style="padding:40px 20px; text-align:center; color:#a09080;">
+        <h2>무료 사주명리 분석</h2>
+        <p>생년월일시를 입력하면 사주팔자, 오행, 십신, 12운성, 대운, 궁합까지 무료로 분석합니다.</p>
+      </div>
+    </noscript>
+  </section>
 
-  <div class="footer">
+  <footer class="footer">
     SAJU · 사주명리 분석 · 참고용으로만 활용하세요
-  </div>
-</div>
+  </footer>
+</main>
 
 <!-- 모바일 sticky CTA bar -->
 <div class="sticky-cta-bar" id="sticky-cta-bar">
@@ -3572,14 +3654,16 @@ let selectedCalendar = 'solar';
 })();
 
 function selectGender(el) {
-  document.querySelectorAll('.gender-option').forEach(e => e.classList.remove('selected'));
+  document.querySelectorAll('.gender-option').forEach(e => { e.classList.remove('selected'); e.setAttribute('aria-checked', 'false'); });
   el.classList.add('selected');
+  el.setAttribute('aria-checked', 'true');
   selectedGender = el.dataset.value;
 }
 
 function selectCalendar(el) {
-  document.querySelectorAll('.cal-option').forEach(e => e.classList.remove('selected'));
+  document.querySelectorAll('.cal-option').forEach(e => { e.classList.remove('selected'); e.setAttribute('aria-checked', 'false'); });
   el.classList.add('selected');
+  el.setAttribute('aria-checked', 'true');
   selectedCalendar = el.dataset.value;
   const leapLabel = document.getElementById('leap-month-label');
   if (leapLabel) leapLabel.style.display = selectedCalendar === 'lunar' ? 'block' : 'none';
@@ -4022,7 +4106,7 @@ function analyze() {
         <div class="tier1-left">
           <!-- 사주팔자 -->
           <div class="pillars-section">
-            <div class="pillars-title">사 주 팔 자</div>
+            <h2 class="pillars-title">사 주 팔 자</h2>
             <div class="pillars-grid">${pillarsHTML}</div>
             ${(() => {
               const parts = [];
@@ -4038,7 +4122,7 @@ function analyze() {
         <div class="tier1-right">
           <!-- 오행 분석 -->
           <div class="elements-section" style="animation-delay: 0.2s">
-            <div class="section-label">오 행 분 석</div>
+            <h2 class="section-label">오 행 분 석</h2>
             <div class="elements-chart">${chartHTML}</div>
             <div class="elements-analysis">${elAnalysis}</div>
           </div>
@@ -4072,25 +4156,25 @@ function analyze() {
       </div>
 
       <!-- ═══ Tier 2: 탭 기반 상세 분석 ═══ -->
-      <div class="result-tabs" id="result-tabs">
-        <button class="result-tab active" onclick="switchTab('올해')">올해</button>
-        <button class="result-tab" onclick="switchTab('사랑')">사랑</button>
-        <button class="result-tab" onclick="switchTab('재물')">재물</button>
-        <button class="result-tab" onclick="switchTab('성격')">성격</button>
-        <button class="result-tab" onclick="switchTab('건강')">건강</button>
-        <button class="result-tab" onclick="switchTab('심화')">심화</button>
-      </div>
+      <nav class="result-tabs" id="result-tabs" aria-label="분석 카테고리">
+        <button class="result-tab active" onclick="switchTab('올해')" role="tab" aria-selected="true">올해</button>
+        <button class="result-tab" onclick="switchTab('사랑')" role="tab" aria-selected="false">사랑</button>
+        <button class="result-tab" onclick="switchTab('재물')" role="tab" aria-selected="false">재물</button>
+        <button class="result-tab" onclick="switchTab('성격')" role="tab" aria-selected="false">성격</button>
+        <button class="result-tab" onclick="switchTab('건강')" role="tab" aria-selected="false">건강</button>
+        <button class="result-tab" onclick="switchTab('심화')" role="tab" aria-selected="false">심화</button>
+      </nav>
 
       <!-- 탭: 올해 -->
       <div class="tab-panel active" data-tab="올해">
         <div class="analysis-card" data-icon="歲" data-accent="gold">
-          <div class="card-title">${currentYear}년 올해의 운세</div>
+          <h3 class="card-title">${currentYear}년 올해의 운세</h3>
           <div class="card-content">${yearFortune.종합}</div>
         </div>
 
         <!-- 3년 세운 미리보기 -->
         <div class="seun-3year">
-          <div class="seun-3year-title">3년 세운 흐름</div>
+          <h3 class="seun-3year-title">3년 세운 흐름</h3>
           <div class="seun-cards">
             ${yearFortunes3.map((yf, i) => `
             <div class="seun-card ${i === 0 ? 'current' : ''}">
@@ -4108,7 +4192,7 @@ function analyze() {
       <!-- 탭: 사랑 -->
       <div class="tab-panel" data-tab="사랑">
         <div class="analysis-card" data-icon="緣" data-accent="rose">
-          <div class="card-title">연애운 · 궁합</div>
+          <h3 class="card-title">연애운 · 궁합</h3>
           <div class="card-content">${loveText}</div>
         </div>
         <div class="inline-premium-teaser">${name}님의 인연, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">더 알아보기 →</a></div>
@@ -4117,11 +4201,11 @@ function analyze() {
       <!-- 탭: 재물 -->
       <div class="tab-panel" data-tab="재물">
         <div class="analysis-card" data-icon="財" data-accent="gold">
-          <div class="card-title">재물운</div>
+          <h3 class="card-title">재물운</h3>
           <div class="card-content">${wealthText}</div>
         </div>
         <div class="analysis-card" data-icon="業" data-accent="metal">
-          <div class="card-title">직업운 및 적성</div>
+          <h3 class="card-title">직업운 및 적성</h3>
           <div class="card-content">${careerText}</div>
         </div>
         <div class="inline-premium-teaser">${name}님의 재물운, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">더 알아보기 →</a></div>
@@ -4130,7 +4214,7 @@ function analyze() {
       <!-- 탭: 성격 -->
       <div class="tab-panel" data-tab="성격">
         <div class="analysis-card" data-icon="性" data-accent="purple">
-          <div class="card-title">성격 및 기질</div>
+          <h3 class="card-title">성격 및 기질</h3>
           <div class="card-content">
             <p>일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> — ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <span class="highlight">${용어순화[yongsinInfo.신강여부]}</span> <span class="saju-badge">${yongsinInfo.신강여부}</span></p>
             <br>
@@ -4147,7 +4231,7 @@ function analyze() {
         </div>
         ${specialStructures.length > 0 ? `
         <div class="analysis-card" data-icon="格" data-accent="fire">
-          <div class="card-title">사주 특수 구조</div>
+          <h3 class="card-title">사주 특수 구조</h3>
           <div class="card-content">
             ${specialStructures.map(s => `<p><span class="type-label">${구조순화[s.type] || s.type}</span> <span class="saju-badge">${s.type}</span><br>${s.desc}</p>`).join('<br>')}
           </div>
@@ -4157,7 +4241,7 @@ function analyze() {
       <!-- 탭: 건강 -->
       <div class="tab-panel" data-tab="건강">
         <div class="analysis-card" data-icon="壽" data-accent="wood">
-          <div class="card-title">건강 주의사항</div>
+          <h3 class="card-title">건강 주의사항</h3>
           <div class="card-content">${healthHTML}</div>
         </div>
       </div>
@@ -4166,7 +4250,7 @@ function analyze() {
       <div class="tab-panel" data-tab="심화">
         <!-- 대운 흐름 -->
         <div class="analysis-card card-hero" data-icon="運" data-accent="gold">
-          <div class="card-title">대운 흐름</div>
+          <h3 class="card-title">대운 흐름</h3>
           <div class="card-content">
             <div class="daeun-timeline">
               ${daeunList.map((d, i) => {
@@ -4204,14 +4288,14 @@ function analyze() {
 
         <!-- 12운성 -->
         <div class="analysis-card" data-icon="星" data-accent="purple">
-          <div class="card-title">일주 12운성 — ${운성순화[dayUnsung] || dayUnsung} <span class="saju-badge">${dayUnsung}</span></div>
+          <h3 class="card-title">일주 12운성 — ${운성순화[dayUnsung] || dayUnsung} <span class="saju-badge">${dayUnsung}</span></h3>
           <div class="card-content">${unsungText}</div>
         </div>
 
         <!-- 신살 -->
         ${sinsalList.length > 0 ? `
         <div class="analysis-card" data-icon="★" data-accent="gold">
-          <div class="card-title">나의 특수한 별</div>
+          <h3 class="card-title">나의 특수한 별</h3>
           <div class="card-content">
             <div style="display:grid; gap:16px;">
               ${sinsalList.map(s => {
@@ -4230,7 +4314,7 @@ function analyze() {
         <!-- 유틸리티 카드 2열 -->
         <div class="utility-grid">
         <div class="analysis-card" data-icon="道" data-accent="purple">
-          <div class="card-title">가까이할 것 · 피해야 할 것</div>
+          <h3 class="card-title">가까이할 것 · 피해야 할 것</h3>
           <div class="card-content">
             <p style="margin-bottom: 12px; color: var(--gold);">✦ 가까이하면 좋은 것</p>
             <div class="tag-list">
@@ -4244,7 +4328,7 @@ function analyze() {
           </div>
         </div>
         <div class="analysis-card" data-icon="福" data-accent="gold">
-          <div class="card-title">행운의 아이템</div>
+          <h3 class="card-title">행운의 아이템</h3>
           <div class="lucky-grid">
             <div class="lucky-item">
               <div class="lucky-item-label">행운의 색</div>
@@ -4522,7 +4606,7 @@ function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, day
 
 // ─── 탭 전환 ───
 function switchTab(tabName) {
-  document.querySelectorAll('.result-tab').forEach(t => t.classList.toggle('active', t.textContent.trim() === tabName));
+  document.querySelectorAll('.result-tab').forEach(t => { t.classList.toggle('active', t.textContent.trim() === tabName); t.setAttribute('aria-selected', t.textContent.trim() === tabName ? 'true' : 'false'); });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.tab === tabName));
   if (typeof gtag === 'function') gtag('event', 'tab_switch', { event_category: 'engagement', event_label: tabName });
 }
@@ -4808,7 +4892,7 @@ document.addEventListener('keydown', (e) => {
 </script>
 
 <!-- Prelaunch Modal -->
-<div id="prelaunch-modal">
+<div id="prelaunch-modal" role="dialog" aria-modal="true" aria-label="프리미엄 사전 신청">
   <div class="pl-backdrop" onclick="closePrelaunchModal()"></div>
   <div class="pl-container">
     <button class="pl-close" onclick="closePrelaunchModal()">&times;</button>
