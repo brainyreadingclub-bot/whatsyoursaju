@@ -1,65 +1,37 @@
 # 다음 세션 핸드오프
 
-> 최종 갱신: 2026-03-27
+> 최종 갱신: 2026-03-27 (구독 모델 전환 + MZ 조사 반영)
 
 ## 현재 진행 상태
 
 ### 완료된 것
-- 코어 문서 3개 전면 재설계 완료 (서비스_개요, PRD, 기술_스택_및_시스템_구조)
-- CORE/TODO.md 실행 계획 문서 생성 (Phase 0.5 ~ Phase 3 상세 태스크)
-- 도메인 연결 완료 (whatsyoursaju.com — GoDaddy DNS + Vercel)
-- SEO 전면 구현 완료:
-  - robots.txt, sitemap.xml 생성
-  - JSON-LD 3종 (WebApplication, FAQPage, BreadcrumbList)
-  - 시맨틱 HTML (main/section/footer/nav/h1/h2/h3)
-  - ARIA 접근성 (radiogroup, tab, dialog)
-  - noscript 폴백, meta robots, theme-color
-  - 네이버 사이트 소유확인 메타 태그
-- Google Search Console 등록 + sitemap 제출
-- Naver Search Advisor 등록 + sitemap 제출
-- 메모리 시스템 초기화 (memory/ 디렉토리)
+- 무료 분석 서비스 전체 (index.html, 83개 테스트)
+- 코어 문서 4개 전면 재설계 (구독 모델 + MZ 패턴 + 관계 그래프 반영)
+- 도메인 연결 (whatsyoursaju.com)
+- SEO 전면 구현 (robots.txt, sitemap.xml, JSON-LD, 시맨틱 HTML, ARIA)
+- Google/Naver 검색 등록 + sitemap 제출
+- 사주유형 20종 + 카드 공유 버튼 + 대운 신강/신약 분기
+- 연애스타일 스코프 오류 수정
+- 가격 모델 전면 전환: 건당 → 구독 (월 6,900 / 연 39,900)
+- 전문가 3인 토론 + MZ세대 사용 패턴 조사 완료
 
-### 진행 중인 것
-- 없음 (인프라 세팅 완료, Phase 0.5 코드 작업 미시작)
+### 핵심 결정사항 (이번 세션)
+- **건당 과금 폐기 → 구독 모델**: 월 6,900 / 연 39,900(주력) / 그룹 별도 단건
+- **무료 AI 3회**: 월 3회가 아닌 "첫 방문 1회성" (IP+fingerprint)
+- **관계 등록**: 무료 3명(점수만), 구독자 무제한+심층분석
+- **카카오 로그인**: Phase 3 → Phase 1로 앞당김 (관계 저장 필요)
+- **핵심 유료 가치**: "뭔지" 무료, "왜 그런지 + 어떻게" 유료
 
-## 다음 할 일 (우선순위 순)
+## 다음 할 일
 
-### 1. Phase 0.5: AI 상담 프롬프트 설계 (최우선)
+### Phase 0.5: AI 상담 프롬프트 설계 (최우선)
 - 명리학 해석 프레임워크 시스템 프롬프트 작성
-- 기준 테스트 케이스(1994-10-11 남자)로 품질 검증
-- 실제 질문 테스트: "이직해야 할까?", "이 사람과 결혼해도 될까?"
-- 검증 기준: "와, 이걸 어떻게 알지?" 반응 유도
-
-### 2. Phase 0.5: 사주 컨텍스트 직렬화
-- window._lastAnalysisResult 확장 (hapChung, sinsalList, specialStructures, daeunList 추가)
-- AI에 전달할 JSON 형식 확정 (기술_스택 문서 §4 참조)
-
-### 3. Phase 0.5: 베타 테스트 + 가격 검증
-- Formspree 이메일 리스트에서 베타 초대 (10~20명)
-- 가격 민감도 조사 (1,900 vs 3,900원)
-
-### 4. Phase 1: Vercel Functions + 결제 연동
-- /api/ 디렉토리 생성
-- PortOne 결제 연동
-- AI 상담 엔드포인트 (/api/counsel)
-
-## 블로커 / 사용자 액션 필요
-
-- **사업자 등록**: PortOne 실서비스에는 사업자등록 필요 (테스트 모드는 가능)
-- **Anthropic API 키**: AI 상담 구현 시 환경변수로 설정 필요
-- **베타 테스터**: Formspree 이메일 리스트에서 10~20명 초대 필요
-- **가격 확정**: Phase 0.5 검증 후 A/B 테스트로 확정 (1,900 vs 3,900원)
-
-## 주의사항
-
-- `getYearFortune()`은 연단위 전용 — 월운 캘린더에는 사용 불가, `getMonthFortune()` 신규 개발 필요 (Phase 2)
-- 테스트 파일과 index.html 계산 함수는 독립 복사본 — 한쪽 수정 시 동기화 필수
-- 현재 블러 카드 내용은 더미(████) — 프리미엄 궁합 콘텐츠는 AI 생성으로 채워야 함
-- AI 원가 ~40원/건 (Sonnet 기준) — 건당 마진 97%+
+- 사주 컨텍스트 직렬화 (window._lastAnalysisResult 확장)
+- 기준 케이스 품질 검증 → 프롬프트 v3까지 튜닝
+- 베타 테스트 10~20명 + 구독 가격 검증 (6,900 vs 39,900)
 
 ## 참조 문서
-
-- `CORE/TODO.md` — **전체 계획 문서 (Phase 0.5~3 상세 태스크)**
-- `CORE/서비스_개요.md` — 비전, 경쟁 포지셔닝, 로드맵
-- `CORE/PRD.md` — 사용자 스토리, 유료 상품 정의, 전환 퍼널, 품질 기준
-- `CORE/기술_스택_및_시스템_구조.md` — 아키텍처, API 설계, AI 연동, 비용 구조
+- `CORE/TODO.md` — 전체 실행 계획 (Phase 0.5~3 상세 태스크)
+- `CORE/PRD.md` — 구독 상품 정의, 전환 퍼널, 품질 기준
+- `CORE/서비스_개요.md` — 비전, MZ 패턴, 수익화 철학
+- `CORE/기술_스택_및_시스템_구조.md` — API 설계, AI 연동, 운영 비용
