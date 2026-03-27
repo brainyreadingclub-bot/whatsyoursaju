@@ -1,6 +1,6 @@
 # TODO — SAJU 수익화 실행 계획
 
-> 최종 업데이트: 2026-03-25
+> 최종 업데이트: 2026-03-27
 > 참조 문서: 서비스_개요.md, PRD.md, 기술_스택_및_시스템_구조.md
 
 ---
@@ -15,6 +15,10 @@
 - [x] 모바일 sticky CTA bar + 반응형 UI
 - [x] GA 전환 이벤트 추적 (premium_click, prelaunch_submit 등)
 - [x] 코어 문서 3개 전면 재설계 (관계 기반 플랫폼 전환)
+- [x] 도메인 연결 (whatsyoursaju.com — GoDaddy DNS + Vercel)
+- [x] SEO 전면 구현 (robots.txt, sitemap.xml, JSON-LD 3종, 시맨틱 HTML, heading 계층, ARIA 접근성, noscript 폴백)
+- [x] Google Search Console 등록 + sitemap 제출
+- [x] Naver Search Advisor 등록 + sitemap 제출
 
 ---
 

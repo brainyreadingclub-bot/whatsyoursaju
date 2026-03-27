@@ -1,21 +1,26 @@
 # 다음 세션 핸드오프
 
-> 최종 갱신: 2026-03-26
+> 최종 갱신: 2026-03-27
 
 ## 현재 진행 상태
 
 ### 완료된 것
 - 코어 문서 3개 전면 재설계 완료 (서비스_개요, PRD, 기술_스택_및_시스템_구조)
-  - 비전: "나를 알고, 관계를 읽는 사주 인텔리전스 플랫폼"
-  - 경쟁사 분석 (점신 978억, 포스텔러 509억, 헬로우봇, 척척사주)
-  - 차별점: AI 관계 사주 인텔리전스 (개인→궁합→그룹→시간축)
-  - 가격 체계: AI 단일 1,900~3,900원 / 세션 5,900원 / 프리미엄궁합 9,900원 / 그룹 19,900~39,900원
 - CORE/TODO.md 실행 계획 문서 생성 (Phase 0.5 ~ Phase 3 상세 태스크)
-- CLAUDE.md 최신화 (파일 구조 반영)
-- 전체 push 완료 (branch: claude/gracious-swirles)
+- 도메인 연결 완료 (whatsyoursaju.com — GoDaddy DNS + Vercel)
+- SEO 전면 구현 완료:
+  - robots.txt, sitemap.xml 생성
+  - JSON-LD 3종 (WebApplication, FAQPage, BreadcrumbList)
+  - 시맨틱 HTML (main/section/footer/nav/h1/h2/h3)
+  - ARIA 접근성 (radiogroup, tab, dialog)
+  - noscript 폴백, meta robots, theme-color
+  - 네이버 사이트 소유확인 메타 태그
+- Google Search Console 등록 + sitemap 제출
+- Naver Search Advisor 등록 + sitemap 제출
+- 메모리 시스템 초기화 (memory/ 디렉토리)
 
 ### 진행 중인 것
-- 없음 (문서 작업 완료, 코드 작업 미시작)
+- 없음 (인프라 세팅 완료, Phase 0.5 코드 작업 미시작)
 
 ## 다음 할 일 (우선순위 순)
 
@@ -29,14 +34,14 @@
 - window._lastAnalysisResult 확장 (hapChung, sinsalList, specialStructures, daeunList 추가)
 - AI에 전달할 JSON 형식 확정 (기술_스택 문서 §4 참조)
 
-### 3. Phase 1: Vercel Functions 셋업
-- /api/ 디렉토리 생성
-- /api/counsel (AI 상담), /api/create-order (결제), /api/verify-payment (검증)
-- PortOne SDK 연동
+### 3. Phase 0.5: 베타 테스트 + 가격 검증
+- Formspree 이메일 리스트에서 베타 초대 (10~20명)
+- 가격 민감도 조사 (1,900 vs 3,900원)
 
-### 4. Phase 1: 결제 → 콘텐츠 언락 UX
-- openPrelaunchModal() → 결제 플로우 전환
-- AI 맛보기 1회 무료 (이메일 인증)
+### 4. Phase 1: Vercel Functions + 결제 연동
+- /api/ 디렉토리 생성
+- PortOne 결제 연동
+- AI 상담 엔드포인트 (/api/counsel)
 
 ## 블로커 / 사용자 액션 필요
 
@@ -54,7 +59,7 @@
 
 ## 참조 문서
 
+- `CORE/TODO.md` — **전체 계획 문서 (Phase 0.5~3 상세 태스크)**
 - `CORE/서비스_개요.md` — 비전, 경쟁 포지셔닝, 로드맵
 - `CORE/PRD.md` — 사용자 스토리, 유료 상품 정의, 전환 퍼널, 품질 기준
 - `CORE/기술_스택_및_시스템_구조.md` — 아키텍처, API 설계, AI 연동, 비용 구조
-- `CORE/TODO.md` — Phase별 상세 태스크 목록
