@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 index.html          ← 전체 서비스 (CSS+HTML+JS, ~4,850줄)
 og-image.png        ← OG 이미지 (1200×630)
-CORE/               ← 기획 문서 (서비스개요, PRD, 기술스택)
+CORE/               ← 기획 문서 (서비스개요, PRD, 기술스택, TODO)
 검토문서/            ← 해석 품질 개선 등 검토 자료
 test_step1~3.js     ← 단계별 검증 테스트 (계산 함수 복사본)
 test_review.js      ← 버그 수정 검증
