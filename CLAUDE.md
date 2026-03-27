@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **SAJU (사주명리 분석)** — 생년월일시 기반 사주명리 분석 웹 서비스. 단일 `index.html` (~4,850줄)로 구성된 프론트엔드 전용 정적 사이트.
 
-- 배포: Vercel (https://whatsyoursaju.vercel.app)
+- 배포: Vercel (https://whatsyoursaju.com)
 - 외부 의존성 (모두 CDN): html2canvas, korean-lunar-calendar (v0.3.6), Google Fonts, GA (G-LTFZ1YMVNM)
 - 사전 예약 폼: Formspree (https://formspree.io/f/mreyjvza)
 - 한국어 전용 서비스
