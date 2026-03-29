@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**SAJU (사주명리 분석)** — 생년월일시 기반 사주명리 분석 웹 서비스. 단일 `index.html` (~4,850줄)로 구성된 프론트엔드 전용 정적 사이트.
+**SAJU (사주명리 분석)** — 생년월일시 기반 사주명리 분석 웹 서비스. 단일 `index.html` (~5,100줄)로 구성된 프론트엔드 전용 정적 사이트.
 
 - 배포: Vercel (https://whatsyoursaju.com)
 - 외부 의존성 (모두 CDN): html2canvas, korean-lunar-calendar (v0.3.6), Google Fonts, GA (G-LTFZ1YMVNM)
@@ -17,27 +17,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 파일 구조
 ```
-index.html          ← 전체 서비스 (CSS+HTML+JS, ~4,850줄)
+index.html          ← 전체 서비스 (CSS+HTML+JS, ~5,100줄)
 og-image.png        ← OG 이미지 (1200×630)
+robots.txt          ← 크롤러 허용 + sitemap 경로
+sitemap.xml         ← SEO sitemap (whatsyoursaju.com)
 CORE/               ← 기획 문서 (서비스개요, PRD, 기술스택, TODO)
 검토문서/            ← 해석 품질 개선 등 검토 자료
 test_step1~3.js     ← 단계별 검증 테스트 (계산 함수 복사본)
 test_review.js      ← 버그 수정 검증
+mockup-*.html       ← UI 리디자인 목업 (redesign 브랜치)
 ```
 
 ### index.html 섹션 (순서대로)
 | 줄 범위 | 내용 |
 |---------|------|
-| 1–33 | `<head>` (meta, fonts, CDN scripts, GA) |
-| 34–2031 | `<style>` CSS (~2,000줄) |
-| 2032–2170 | HTML body (입력 폼, 로딩, 결과 영역, 모달, sticky CTA) |
-| 2171–2355 | JS 데이터 상수 (천간/지지/오행/절기/합충형파해/공망/신살 조견표) |
-| 2356–2620 | JS 핵심 계산 (4주, 십신, 12운성, 오행, 용신, 대운, 합충형파해) |
-| 2621–2860 | JS 궁합 미니게임 (analyzeGunghap, shareGunghap) |
-| 2861–3550 | JS 분석 텍스트 (특수구조, 신살, 건강/재물/연애/운세) |
-| 3550–3670 | JS 폼 초기화, 전환 트리거 |
-| 3671–4470 | JS analyze() 메인 함수 (2.5초 setTimeout 내 렌더링) |
-| 4470–4850 | JS 공유/탭/sticky CTA/프리미엄 모달 |
+| 1–36 | `<head>` (meta, fonts, CDN scripts, GA) |
+| 37–2077 | `<style>` CSS (~2,040줄) |
+| 2078–2294 | HTML body (입력 폼, 파티클, 로딩, 결과 영역, 모달, sticky CTA) |
+| 2295–2440 | JS 데이터 상수 (천간/지지/오행/절기/합충형파해/공망/신살 조견표) |
+| 2441–2753 | JS 핵심 계산 (공망, 4주, 십신, 12운성, 오행, 용신, 합충형파해) |
+| 2754–2985 | JS 궁합 미니게임 (analyzeGunghap, shareGunghap) |
+| 2986–3746 | JS 분석 텍스트 (특수구조, 신살, 건강/재물/연애/세운) |
+| 3747–3863 | JS 폼 초기화, 충격의 한 줄 생성 (generateTeaserInsight) |
+| 3864–4712 | JS analyze() 메인 함수 (2.5초 setTimeout 내 렌더링) |
+| 4713–5055 | JS 공유/탭/sticky CTA/프리미엄 모달/runTests() |
 
 ### 결과 화면 3-Tier 구조
 ```
@@ -80,6 +83,10 @@ Tier 3: 프리미엄 블러 카드 2개 + 프라이싱 테이블
 | `shareGunghap()` | 궁합 공유 카드 (html2canvas) |
 | `detectSpecialStructures()` | 특수 구조 (식신생재, 관살혼잡 등) |
 | `getHealthAnalysis/WealthAnalysis/LoveAnalysis()` | 영역별 풀이 텍스트 |
+| `generateTeaserInsight()` | "충격의 한 줄" 전환 트리거 텍스트 생성 |
+| `getCheonganHap()` | 천간합 상대 찾기 (궁합용) |
+| `용어뱃지()` | 전문용어→순화 뱃지 변환 헬퍼 |
+| `runTests()` | 브라우저 내장 테스트 러너 (콘솔 출력) |
 
 ### 주요 데이터 구조
 - 기둥(Pillar): `{ gan: number, ji: number }` — 천간/지지 인덱스 (0-indexed)
@@ -115,7 +122,12 @@ node test_step3.js   # 16개: 십신, 풀이 텍스트, 합충 케이스, 동적
 node test_review.js  #  9개: 편재/정재 판별, 재물 분석, null 시주
 ```
 
-**주의:** 테스트 파일은 `index.html`의 계산 함수를 **독립 복사**하여 사용. 한쪽 수정 시 다른 쪽도 동기화 필요.
+전체 실행:
+```bash
+node test_step1.js && node test_step2.js && node test_step3.js && node test_review.js
+```
+
+**주의:** 테스트 파일은 `index.html`의 계산 함수를 **독립 복사**하여 사용. `index.html` 계산 로직 수정 시 반드시 해당 테스트 파일도 동기화할 것. 반대도 마찬가지.
 
 ### 계산 파이프라인
 
