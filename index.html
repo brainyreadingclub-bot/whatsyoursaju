@@ -1397,6 +1397,121 @@ input::placeholder {
   color: var(--text-dim);
 }
 
+/* ─── AI 상담 ─── */
+.ai-counsel-section {
+  margin: 48px 0;
+  padding: 32px 20px;
+  background: linear-gradient(145deg, rgba(17,13,26,0.95), rgba(26,19,40,0.9));
+  border: 1px solid rgba(107,63,160,0.3);
+  border-radius: 20px;
+}
+.ai-counsel-section h3 {
+  text-align: center;
+  color: var(--gold);
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.ai-counsel-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+.ai-counsel-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  justify-content: center;
+}
+.ai-counsel-preset {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(107,63,160,0.25);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ai-counsel-preset:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+  background: rgba(212,168,83,0.08);
+}
+.ai-counsel-input-wrap {
+  position: relative;
+}
+.ai-counsel-input {
+  width: 100%;
+  padding: 14px 50px 14px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: rgba(17,13,26,0.95);
+  border: 1px solid rgba(107,63,160,0.3);
+  border-radius: 14px;
+  outline: none;
+  resize: none;
+  min-height: 48px;
+  max-height: 120px;
+  box-sizing: border-box;
+  color-scheme: dark;
+}
+.ai-counsel-input::placeholder { color: var(--text-dim); }
+.ai-counsel-input:focus { border-color: var(--gold-dim); }
+.ai-counsel-send {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #0a0610;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+.ai-counsel-send:hover { transform: scale(1.05); }
+.ai-counsel-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.ai-counsel-response {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(107,63,160,0.15);
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  display: none;
+}
+.ai-counsel-response.visible { display: block; }
+.ai-counsel-loading {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-dim);
+  font-size: 14px;
+  display: none;
+}
+.ai-counsel-loading.visible { display: block; }
+.ai-counsel-loading .dots::after {
+  content: '';
+  animation: dots 1.5s steps(4) infinite;
+}
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
 /* ─── Gunghap Mini Game ─── */
 .gunghap-section {
   margin: 48px 0;
@@ -4657,6 +4772,24 @@ function analyze() {
         </button>
       </div>
 
+      <!-- AI 사주 상담 -->
+      <div class="ai-counsel-section" id="ai-counsel-section" style="display:none">
+        <h3>🔮 AI 사주 상담</h3>
+        <p class="ai-counsel-subtitle">당신의 사주를 바탕으로 궁금한 것을 물어보세요</p>
+        <div class="ai-counsel-presets">
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 이직해도 될까요?</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">재물운 좋은 시기는?</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">나의 강점과 약점</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 건강 주의사항</button>
+        </div>
+        <div class="ai-counsel-input-wrap">
+          <textarea class="ai-counsel-input" id="ai-counsel-input" placeholder="예: 내년에 결혼하면 좋을까요?" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>
+          <button class="ai-counsel-send" id="ai-counsel-send" onclick="askAI()">➤</button>
+        </div>
+        <div class="ai-counsel-loading" id="ai-counsel-loading">사주를 읽고 있습니다<span class="dots"></span></div>
+        <div class="ai-counsel-response" id="ai-counsel-response"></div>
+      </div>
+
       <!-- 궁합 미니게임 -->
       <div class="gunghap-section">
         <h3>💕 궁합 미니게임</h3>
@@ -4835,6 +4968,9 @@ function analyze() {
       });
     }
 
+    // AI 상담 섹션 표시
+    document.getElementById('ai-counsel-section').style.display = 'block';
+
     // IntersectionObserver로 카드 스크롤 등장
     setTimeout(() => observeResultCards(), 100);
 
@@ -4844,6 +4980,53 @@ function analyze() {
     }, 200);
 
   }, 2500); // 로딩 효과를 위한 딜레이
+}
+
+// ═══════════════════════════════════════════════════════
+//  AI 상담
+// ═══════════════════════════════════════════════════════
+
+async function askAI(presetQuestion) {
+  const input = document.getElementById('ai-counsel-input');
+  const question = presetQuestion || input.value.trim();
+  if (!question) return;
+
+  const result = window._lastAnalysisResult;
+  if (!result) { alert('먼저 사주 분석을 실행해주세요.'); return; }
+
+  // UI 상태
+  input.value = question;
+  const sendBtn = document.getElementById('ai-counsel-send');
+  const loading = document.getElementById('ai-counsel-loading');
+  const responseEl = document.getElementById('ai-counsel-response');
+  sendBtn.disabled = true;
+  loading.classList.add('visible');
+  responseEl.classList.remove('visible');
+
+  // 사주 컨텍스트 직렬화
+  const sajuContext = serializeSajuContext(result);
+
+  try {
+    const res = await fetch('/api/counsel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sajuContext, question })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    responseEl.textContent = data.answer;
+    responseEl.classList.add('visible');
+    input.value = '';
+
+    if (typeof gtag === 'function') gtag('event', 'ai_counsel', { event_category: 'engagement', event_label: question.substring(0, 50) });
+  } catch (err) {
+    responseEl.textContent = '죄송합니다. 상담 응답 생성에 실패했습니다. 잠시 후 다시 시도해주세요.';
+    responseEl.classList.add('visible');
+  } finally {
+    sendBtn.disabled = false;
+    loading.classList.remove('visible');
+  }
 }
 
 // ═══════════════════════════════════════════════════════
