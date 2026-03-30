@@ -24,8 +24,8 @@
 <meta name="theme-color" content="#0a0610">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar@0.3.6/dist/korean-lunar-calendar.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar@0.3.6/dist/korean-lunar-calendar.min.js" integrity="sha384-j2B3PtxdEJouApN6GZLZXajab489KytFYmY/gDo6Dp3afstT7oZmYu0YvIik1OoV" crossorigin="anonymous" defer></script>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-LTFZ1YMVNM"></script>
 <script>
@@ -2489,6 +2489,11 @@ const 역할순화 = {
   '관성': '도전 에너지'
 };
 
+// HTML 이스케이프 (XSS 방어)
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function 용어뱃지(원래, 매핑) {
   const 순화 = 매핑[원래];
   if (!순화) return 원래;
@@ -2872,18 +2877,18 @@ function serializeSajuContext(result) {
   if (!result) return '';
 
   const r = result;
-  const fmtPillar = (p) => `${천간[p.gan]}(${천간한글[p.gan]})`;
-  const fmtJi = (p) => `${지지[p.ji]}(${지지한글[p.ji]})`;
+  const fmtPillar = (p) => p ? `${천간[p.gan]}(${천간한글[p.gan]})` : '—';
+  const fmtJi = (p) => p ? `${지지[p.ji]}(${지지한글[p.ji]})` : '—';
 
-  // 시진 이름
-  const 시진명 = ['자시','축시','축시','인시','인시','묘시','묘시','진시','진시','사시','사시','오시',
-                  '오시','미시','미시','신시','신시','유시','유시','술시','술시','해시','해시','자시'];
-  const hourName = r.birthHour != null ? `${시진명[r.birthHour]}(${지지[r.hourP.ji]}時)` : '시간 미입력';
+  // 시진 이름 (0-11 인덱스, 12지지 대응)
+  const 시진명 = ['자시','축시','인시','묘시','진시','사시','오시','미시','신시','유시','술시','해시'];
+  const hourName = (r.birthHour != null && r.birthHour >= 0 && r.hourP) ? `${시진명[r.birthHour]}(${지지[r.hourP.ji]}時)` : '시간 미입력';
 
   // 사주 원국 테이블
   const pillarNames = ['년주', '월주', '일주', '시주'];
   let table = '        천간    지지    십신    12운성\n';
   r.pillars.forEach((p, i) => {
+    if (!p) { table += `${pillarNames[i]}:   —  —  —    —\n`; return; }
     const sipsung = r.sipsung[i];
     const unsung = r.unsung12[i];
     table += `${pillarNames[i]}:   ${fmtPillar(p)}  ${fmtJi(p)}  ${sipsung}    ${unsung}\n`;
@@ -2935,7 +2940,7 @@ function serializeSajuContext(result) {
     : '(없음)';
 
   // 조후용신
-  const johuStr = r.johuInfo ? `${r.johuInfo}(${오행한자[r.johuInfo]})` : '해당없음';
+  const johuStr = r.johuInfo ? `${r.johuInfo.johu}(${오행한자[r.johuInfo.johu]})` : '해당없음';
 
   return `사주 분석 컨텍스트
 ━━━━━━━━━━━━━━━━━
@@ -3164,7 +3169,7 @@ function shareGunghap() {
   // 공유 카드 생성
   const card = document.getElementById('gunghap-share-card');
   card.innerHTML = `
-    <div class="share-title">${data.myName} ♥ ${data.partnerName}</div>
+    <div class="share-title">${escHtml(data.myName)} ♥ ${escHtml(data.partnerName)}</div>
     <div class="share-score">${data.score}</div>
     <div style="font-size:14px;color:var(--gold);margin:8px 0">${data.gradeIcon} ${data.grade}</div>
     <div class="share-chemistry">${data.chemistry}</div>
@@ -4105,6 +4110,15 @@ function analyze() {
   if (!selectedGender) { alert('성별을 선택해주세요.'); return; }
   if (!year || !month || !day) { alert('생년월일을 모두 선택해주세요.'); return; }
 
+  // 날짜 유효성 검증
+  const maxDays = new Date(year, month, 0).getDate();
+  if (day > maxDays) { alert(`${month}월은 ${maxDays}일까지만 있습니다.`); return; }
+
+  // 중복 클릭 방지
+  const analyzeBtn = document.querySelector('.submit-btn');
+  if (analyzeBtn.disabled) return;
+  analyzeBtn.disabled = true;
+
   // 음력→양력 변환
   let solarYear = year, solarMonth = month, solarDay = day;
   let lunarOriginal = null;
@@ -4130,7 +4144,7 @@ function analyze() {
     setTimeout(() => { frames[i].classList.add('filled'); }, 900 + i * 200);
   });
 
-  setTimeout(() => {
+  setTimeout(() => { try {
     // 사주 계산
     const yearP = getYearPillar(solarYear, solarMonth, solarDay);
     const monthP = getMonthPillar(solarYear, solarMonth, solarDay);
@@ -4561,7 +4575,7 @@ function analyze() {
           </div>
         </div>
 
-        <div class="inline-premium-teaser">${name}님의 ${currentYear}년, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_올해'})">더 알아보기 →</a></div>
+        <div class="inline-premium-teaser">${escHtml(name)}님의 ${currentYear}년, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_올해'})">더 알아보기 →</a></div>
       </div>
 
       <!-- 탭: 사랑 -->
@@ -4569,13 +4583,13 @@ function analyze() {
         <div class="analysis-card" data-icon="緣" data-accent="rose">
           <h3 class="card-title">연애운 · 궁합</h3>
           <div class="card-content">${loveText}
-            <div class="card-share-btn" onclick="shareCardSnippet('${name}님의 연애 유형: ' + '${연애스타일[천간[dayP.gan]] ? 연애스타일[천간[dayP.gan]].substring(0, 50) : ''}...')">
+            <div class="card-share-btn" onclick="shareCardSnippet('${escHtml(name)}님의 연애 유형: ' + '${연애스타일[천간[dayP.gan]] ? 연애스타일[천간[dayP.gan]].substring(0, 50) : ''}...')">
               <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
               이 분석 공유하기
             </div>
           </div>
         </div>
-        <div class="inline-premium-teaser">${name}님의 인연, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">더 알아보기 →</a></div>
+        <div class="inline-premium-teaser">${escHtml(name)}님의 인연, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">더 알아보기 →</a></div>
       </div>
 
       <!-- 탭: 재물 -->
@@ -4593,7 +4607,7 @@ function analyze() {
           <h3 class="card-title">직업운 및 적성</h3>
           <div class="card-content">${careerText}</div>
         </div>
-        <div class="inline-premium-teaser">${name}님의 재물운, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">더 알아보기 →</a></div>
+        <div class="inline-premium-teaser">${escHtml(name)}님의 재물운, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">더 알아보기 →</a></div>
       </div>
 
       <!-- 탭: 성격 -->
@@ -4816,7 +4830,7 @@ function analyze() {
         <!-- 블러 미리보기 카드 (Zeigarnik 효과) -->
         <div class="premium-card">
           <div class="premium-card-blur">
-            <div class="card-title">🔮 ${name}님의 숨겨진 성격 패턴 3가지</div>
+            <div class="card-title">🔮 ${escHtml(name)}님의 숨겨진 성격 패턴 3가지</div>
             <div class="card-content">
               <p><span class="good">패턴 1:</span> ${personalityInfo.기본.substring(0, 80)}...</p>
               <p><span class="caution">패턴 2:</span> ████████ ████ ██████████ ████████ ██████ ████████████</p>
@@ -4979,6 +4993,14 @@ function analyze() {
       resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 200);
 
+  } catch(err) {
+    console.error('분석 오류:', err);
+    document.getElementById('loading').classList.remove('active');
+    alert('분석 중 오류가 발생했습니다. 다시 시도해주세요.');
+  } finally {
+    const btn = document.querySelector('.submit-btn');
+    if (btn) btn.disabled = false;
+  }
   }, 2500); // 로딩 효과를 위한 딜레이
 }
 
@@ -5064,7 +5086,7 @@ function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, day
     <div class="sc-bg-char">${dayGanChar}</div>
     <div class="sc-inner">
       <div class="sc-brand">S A J U</div>
-      <div class="sc-name">${name}</div>
+      <div class="sc-name">${escHtml(name)}</div>
       ${(() => { const tk = `${천간[dayP.gan]}_${yongsinInfo.신강여부}`; const ti = 사주유형[tk]; return ti ? `<div style="font-family:'Nanum Myeongjo',serif; font-size:1.1rem; color:#f0d48a; letter-spacing:2px; margin:4px 0;">${ti.라벨}</div><div style="font-size:0.7rem; color:#a89bbf; font-style:italic; margin-bottom:4px;">${ti.캐치}</div>` : ''; })()}
       <div class="sc-date">${year}. ${month}. ${day} · ${오행한자[천간오행[dayP.gan]]}의 사주</div>
       <div class="sc-pillars">${pillarsHTML}</div>
