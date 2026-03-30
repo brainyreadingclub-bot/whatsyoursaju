@@ -2746,6 +2746,123 @@ function getCheonganHap(dayGanIdx) {
   return null;
 }
 
+// ── AI 상담용 사주 컨텍스트 직렬화 ──
+function serializeSajuContext(result) {
+  if (!result) result = window._lastAnalysisResult;
+  if (!result) return '';
+
+  const r = result;
+  const fmtPillar = (p) => `${천간[p.gan]}(${천간한글[p.gan]})`;
+  const fmtJi = (p) => `${지지[p.ji]}(${지지한글[p.ji]})`;
+
+  // 시진 이름
+  const 시진명 = ['자시','축시','축시','인시','인시','묘시','묘시','진시','진시','사시','사시','오시',
+                  '오시','미시','미시','신시','신시','유시','유시','술시','술시','해시','해시','자시'];
+  const hourName = r.birthHour != null ? `${시진명[r.birthHour]}(${지지[r.hourP.ji]}時)` : '시간 미입력';
+
+  // 사주 원국 테이블
+  const pillarNames = ['년주', '월주', '일주', '시주'];
+  let table = '        천간    지지    십신    12운성\n';
+  r.pillars.forEach((p, i) => {
+    const sipsung = r.sipsung[i];
+    const unsung = r.unsung12[i];
+    table += `${pillarNames[i]}:   ${fmtPillar(p)}  ${fmtJi(p)}  ${sipsung}    ${unsung}\n`;
+  });
+
+  // 합충형파해 + 궁위
+  const 궁위명 = { 0: '사회궁(년)', 1: '사업궁(월)', 2: '자아궁(일)', 3: '자녀궁(시)' };
+  const 궁위조합 = {
+    '년지-월지': '사회궁-사업궁', '년지-일지': '사회궁-자아궁', '년지-시지': '사회궁-자녀궁',
+    '월지-일지': '사업궁-자아궁', '월지-시지': '사업궁-자녀궁', '일지-시지': '자아궁-자녀궁'
+  };
+
+  const formatHapChung = (items) => {
+    if (!items || items.length === 0) return '(없음)';
+    return items.join(' / ');
+  };
+
+  // 궁위 요약 생성
+  let gungwiNotes = [];
+  const hcAll = [...(r.hapChung.합||[]), ...(r.hapChung.충||[]), ...(r.hapChung.형||[]), ...(r.hapChung.파||[]), ...(r.hapChung.해||[])];
+  for (const item of hcAll) {
+    for (const [key, label] of Object.entries(궁위조합)) {
+      if (item.includes(key.split('-')[0].replace('지','')) && item.includes(key.split('-')[1].replace('지',''))) {
+        // Simple heuristic: match position names from hapChung strings
+      }
+    }
+  }
+
+  // 오행 분포 포맷
+  const elCounts = r.elementCounts;
+  const elStr = `목 ${elCounts['목']?.toFixed?.(1) || elCounts['목']} | 화 ${elCounts['화']?.toFixed?.(1) || elCounts['화']} | 토 ${elCounts['토']?.toFixed?.(1) || elCounts['토']} | 금 ${elCounts['금']?.toFixed?.(1) || elCounts['금']} | 수 ${elCounts['수']?.toFixed?.(1) || elCounts['수']}`;
+
+  // 대운 전체 포맷
+  const daeunStr = r.daeunList.map(d =>
+    `${천간[d.gan]}${지지[d.ji]}(${d.age}세)`
+  ).join(' → ');
+
+  // 현재 대운
+  let currentDaeunStr = '(계산 불가)';
+  if (r.currentDaeun) {
+    const cd = r.currentDaeun;
+    const cdIdx = r.daeunList.indexOf(cd);
+    const cdSipsung = getSipsung(r.dayP.gan, cd.gan);
+    const nextAge = cdIdx < r.daeunList.length - 1 ? r.daeunList[cdIdx + 1].age : cd.age + 10;
+    currentDaeunStr = `${cdIdx + 1}번째, ${cd.age}~${nextAge - 1}세): ${천간[cd.gan]}${지지[cd.ji]} 대운 — ${cdSipsung}운`;
+  }
+
+  // 세운 3년 포맷
+  const fortuneStr = r.yearFortunes3.map(yf => {
+    const sipsung = getSipsung(r.dayP.gan, getYearPillar(yf.연도, 6, 1).gan);
+    return `  ${yf.연도} ${yf.간지}: 등급 ${yf.등급} (${sipsung}운)`;
+  }).join('\n');
+
+  // 신살 포맷
+  const sinsalStr = r.sinsalList.length > 0
+    ? r.sinsalList.map(s => `${s.name}(${s.해당 || s.where || ''})`).join(', ')
+    : '(없음)';
+
+  // 특수구조 포맷
+  const structStr = r.specialStructures.length > 0
+    ? r.specialStructures.map(s => s.type).join(', ')
+    : '(없음)';
+
+  // 공망 포맷
+  const gongmangStr = r.gongmang.length > 0
+    ? r.gongmang.map(g => g.지지).join('') + ` (${천간[r.dayP.gan]}${지지[r.dayP.ji]}순)`
+    : '(없음)';
+
+  // 조후용신
+  const johuStr = r.johuInfo ? `${r.johuInfo}(${오행한자[r.johuInfo]})` : '해당없음';
+
+  return `사주 분석 컨텍스트
+━━━━━━━━━━━━━━━━━
+이름: ${r.name} | 성별: ${r.gender} | 생년월일: ${r.birthDate} | 시: ${hourName}
+
+■ 사주 원국
+${table}
+■ 오행 분포: ${elStr}
+■ 신강/신약: ${r.yongsinInfo.신강여부} | 용신: ${r.yongsinInfo.용신}(${오행한자[r.yongsinInfo.용신]}) | 희신: ${r.yongsinInfo.희신}(${오행한자[r.yongsinInfo.희신]}) | 기신: ${r.yongsinInfo.기신}(${오행한자[r.yongsinInfo.기신]})
+■ 조후용신: ${johuStr}
+
+■ 합충형파해
+  합: ${formatHapChung(r.hapChung.합)}
+  충: ${formatHapChung(r.hapChung.충)}
+  형: ${formatHapChung(r.hapChung.형)}
+  파: ${formatHapChung(r.hapChung.파)}
+  해: ${formatHapChung(r.hapChung.해)}
+
+■ 특수구조: ${structStr}
+■ 신살: ${sinsalStr}
+■ 공망: ${gongmangStr}
+
+■ 현재 대운 (${currentDaeunStr}
+■ 대운 전체: ${daeunStr}
+
+■ 세운 3년
+${fortuneStr}`.trim();
+}
+
 // ── 궁합 미니게임 ──
 // 오행 상생/상극 관계
 const 오행상생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
@@ -4199,8 +4316,30 @@ function analyze() {
     };
     unsungText = 운성해석[dayUnsung] || '';
 
-    // 분석 결과 저장 (궁합 등에서 재사용)
-    window._lastAnalysisResult = { name, dayP, yearP, monthP, hourP, pillars, elementCounts, yongsinInfo };
+    // 분석 결과 저장 (궁합 + AI 상담에서 재사용)
+    window._lastAnalysisResult = {
+      // 기존
+      name, dayP, yearP, monthP, hourP, pillars, elementCounts, yongsinInfo,
+      // 인적 정보
+      gender: selectedGender === 'female' ? '여' : '남',
+      birthDate: `${solarYear}-${String(solarMonth).padStart(2,'0')}-${String(solarDay).padStart(2,'0')}`,
+      birthHour: hour,
+      // 분석 결과
+      specialStructures,
+      sinsalList,
+      hapChung,
+      daeunList,
+      yearFortune,
+      yearFortunes3,
+      currentDaeun: currentDaeun || null,
+      johuInfo,
+      // 십신 배치 (4주 천간)
+      sipsung: [sipsung년, sipsung월, '—', sipsung시],
+      // 12운성 배치 (4주 지지)
+      unsung12: pillars.map(p => get12Unsung(dayP.gan, p.ji)),
+      // 공망
+      gongmang
+    };
 
     // 결과 HTML 조합
     const resultsDiv = document.getElementById('results');
