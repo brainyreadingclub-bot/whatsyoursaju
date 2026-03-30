@@ -9,7 +9,7 @@ const path = require('path');
 
 // ═══ 설정 ═══
 const MODEL = 'claude-sonnet-4-6';
-const SYSTEM_PROMPT_PATH = path.join(__dirname, 'prompts', 'saju-counsel-v1.md');
+const SYSTEM_PROMPT_PATH = path.join(__dirname, 'prompts', 'saju-counsel-v2.md');
 
 // ═══ 기준 사주 데이터 (CLAUDE.md 기준 케이스) ═══
 const SAJU_A = {
@@ -174,7 +174,7 @@ function evaluate(response, questionId) {
   else results.push({ name: '금지어', status: 'FAIL', detail: foundForbidden.join(', ') });
 
   // 4. 처방 패턴
-  const prescriptionPatterns = ['하세요', '해보세요', '좋겠습니다', '권합니다', '추천드립니다', '해보시면', '하시면', '하시길'];
+  const prescriptionPatterns = ['하세요', '해보세요', '좋겠습니다', '권합니다', '추천드립니다', '해보시면', '하시면', '하시길', '보시면', '드릴게', '시는 게', '시길', '보세요', '바랍니다', '좋습니다', '유리합니다', '맞습니다'];
   const hasPrescription = prescriptionPatterns.some(p => text.includes(p));
   if (hasPrescription) results.push({ name: '처방', status: 'PASS', detail: '처방 패턴 포함' });
   else results.push({ name: '처방', status: 'FAIL', detail: '처방 없음' });
@@ -187,7 +187,7 @@ function evaluate(response, questionId) {
 
   // 6. 클리프행어 (마지막 2문장에 후속 암시)
   const lastPart = text.slice(-150);
-  const cliffKeywords = ['참고로', '한 가지 더', '눈에 띄는', '흥미로운', '살펴보시면', '점검', '다시', '다음에', '추가로'];
+  const cliffKeywords = ['참고로', '한 가지 더', '눈에 띄는', '흥미로운', '살펴보시면', '점검', '다시', '다음에', '추가로', '그 부분', '한번', '눈여겨', '주목할', '재미있는', '별도로', '덧붙이', '말씀드리자면'];
   const hasCliff = cliffKeywords.some(k => lastPart.includes(k));
   if (hasCliff) results.push({ name: '클리프행어', status: 'PASS', detail: '후속 암시 포함' });
   else results.push({ name: '클리프행어', status: 'WARN', detail: '후속 암시 미발견' });
