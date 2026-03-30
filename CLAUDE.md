@@ -102,6 +102,20 @@ Tier 3: 프리미엄 블러 카드 2개 + 프라이싱 테이블
 - analyze() 내부에 **2.5초 setTimeout** — 로딩 애니메이션 후 계산+렌더링 실행
 - `window._lastAnalysisResult`에 마지막 분석 결과 저장 (궁합에서 재사용)
 
+### AI 상담 아키텍처
+- `/api/counsel.js`: Vercel Serverless Function (Claude Sonnet 4.6)
+- 시스템 프롬프트: `prompts/saju-counsel-v2.md` (6단계 해석 프로토콜)
+- 클라이언트: `askAI()` 함수 → `serializeSajuContext()` → POST `/api/counsel`
+- `serializeSajuContext()`: `_lastAnalysisResult` → 한글/한자 텍스트 변환 (궁위 포함)
+- `_lastAnalysisResult`: 22개 필드 (기존 8 + 인적정보 3 + 분석 8 + 십신/운성/공망 3)
+- 환경변수: `ANTHROPIC_API_KEY` (Vercel 대시보드 설정)
+- **주의**: 현재 일일 제한 없음 → Phase A에서 즉시 추가 필요
+
+### 수익 모델
+- **현재**: 광고 수익 우선 (AdSense 준비 중)
+- **향후**: 구독 모델 (Phase E, 트래픽 달성 후)
+- 상세 로드맵: `CORE/TODO.md` (Phase A→B→C→D→E)
+
 ## Development
 
 빌드/번들러 없음. 로컬 서버로 직접 개발:
