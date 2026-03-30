@@ -2769,28 +2769,10 @@ function serializeSajuContext(result) {
     table += `${pillarNames[i]}:   ${fmtPillar(p)}  ${fmtJi(p)}  ${sipsung}    ${unsung}\n`;
   });
 
-  // 합충형파해 + 궁위
-  const 궁위명 = { 0: '사회궁(년)', 1: '사업궁(월)', 2: '자아궁(일)', 3: '자녀궁(시)' };
-  const 궁위조합 = {
-    '년지-월지': '사회궁-사업궁', '년지-일지': '사회궁-자아궁', '년지-시지': '사회궁-자녀궁',
-    '월지-일지': '사업궁-자아궁', '월지-시지': '사업궁-자녀궁', '일지-시지': '자아궁-자녀궁'
-  };
-
   const formatHapChung = (items) => {
     if (!items || items.length === 0) return '(없음)';
     return items.join(' / ');
   };
-
-  // 궁위 요약 생성
-  let gungwiNotes = [];
-  const hcAll = [...(r.hapChung.합||[]), ...(r.hapChung.충||[]), ...(r.hapChung.형||[]), ...(r.hapChung.파||[]), ...(r.hapChung.해||[])];
-  for (const item of hcAll) {
-    for (const [key, label] of Object.entries(궁위조합)) {
-      if (item.includes(key.split('-')[0].replace('지','')) && item.includes(key.split('-')[1].replace('지',''))) {
-        // Simple heuristic: match position names from hapChung strings
-      }
-    }
-  }
 
   // 오행 분포 포맷
   const elCounts = r.elementCounts;
