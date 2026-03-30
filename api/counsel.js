@@ -1,5 +1,31 @@
 const Anthropic = require('@anthropic-ai/sdk');
 
+// ═══ 일일 사용량 제한 (메모리 기반, 서버리스 재시작 시 리셋) ═══
+const DAILY_LIMIT = 3;
+const usageMap = new Map(); // IP → { date: 'YYYY-MM-DD', count: number }
+
+function getClientIP(req) {
+  return req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+    || req.headers['x-real-ip']
+    || req.connection?.remoteAddress
+    || 'unknown';
+}
+
+function checkRateLimit(ip) {
+  const today = new Date().toISOString().slice(0, 10);
+  const usage = usageMap.get(ip);
+  if (!usage || usage.date !== today) {
+    usageMap.set(ip, { date: today, count: 1 });
+    return { allowed: true, remaining: DAILY_LIMIT - 1 };
+  }
+  if (usage.count >= DAILY_LIMIT) {
+    return { allowed: false, remaining: 0 };
+  }
+  usage.count++;
+  return { allowed: true, remaining: DAILY_LIMIT - usage.count };
+}
+
+// ═══ 시스템 프롬프트 ═══
 const SYSTEM_PROMPT = `# 사주명리 AI 상담 시스템 프롬프트 v2
 
 ## 역할
@@ -68,6 +94,18 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  // 일일 사용량 체크
+  const ip = getClientIP(req);
+  const rateCheck = checkRateLimit(ip);
+  res.setHeader('X-RateLimit-Remaining', rateCheck.remaining);
+
+  if (!rateCheck.allowed) {
+    return res.status(429).json({
+      error: '오늘의 무료 상담 횟수(3회)를 모두 사용하셨습니다. 내일 다시 이용해 주세요!',
+      remaining: 0
+    });
+  }
+
   const { sajuContext, question } = req.body;
   if (!sajuContext || !question) {
     return res.status(400).json({ error: '사주 데이터와 질문이 필요합니다.' });
@@ -90,7 +128,7 @@ module.exports = async function handler(req, res) {
     });
 
     const answer = response.content[0].text;
-    return res.status(200).json({ answer });
+    return res.status(200).json({ answer, remaining: rateCheck.remaining });
   } catch (err) {
     console.error('Claude API error:', err.message);
     return res.status(500).json({ error: '상담 응답 생성에 실패했습니다. 잠시 후 다시 시도해주세요.' });

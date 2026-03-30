@@ -2402,6 +2402,11 @@ input::placeholder {
   </section>
 
   <footer class="footer">
+    <div style="margin-bottom:8px">
+      <a href="/about.html" style="color:#8a7a9a;margin:0 8px;font-size:12px;text-decoration:none">서비스 소개</a>
+      <a href="/privacy.html" style="color:#8a7a9a;margin:0 8px;font-size:12px;text-decoration:none">개인정보 처리방침</a>
+      <a href="/terms.html" style="color:#8a7a9a;margin:0 8px;font-size:12px;text-decoration:none">이용약관</a>
+    </div>
     SAJU · 사주명리 분석 · 참고용으로만 활용하세요
   </footer>
 </main>
@@ -5041,12 +5046,16 @@ async function askAI(presetQuestion) {
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\n/g, '<br>');
     responseEl.innerHTML = safeHtml;
+    if (data.remaining != null) {
+      responseEl.innerHTML += `<div style="margin-top:16px;font-size:12px;color:var(--text-dim)">오늘 남은 무료 상담: ${data.remaining}회</div>`;
+    }
     responseEl.classList.add('visible');
     input.value = '';
 
     if (typeof gtag === 'function') gtag('event', 'ai_counsel', { event_category: 'engagement', event_label: question.substring(0, 50) });
   } catch (err) {
-    responseEl.textContent = '죄송합니다. 상담 응답 생성에 실패했습니다. 잠시 후 다시 시도해주세요.';
+    const msg = err.message.includes('무료 상담 횟수') ? err.message : '죄송합니다. 상담 응답 생성에 실패했습니다. 잠시 후 다시 시도해주세요.';
+    responseEl.textContent = msg;
     responseEl.classList.add('visible');
   } finally {
     sendBtn.disabled = false;
