@@ -1009,12 +1009,14 @@ input::placeholder {
 }
 .yinyang {
   display: inline-block;
-  width: 48px; height: 48px;
-  background: conic-gradient(from 0deg, var(--gold) 0deg 180deg, var(--purple-mid) 180deg 360deg);
+  width: 40px; height: 40px;
   border-radius: 50%;
   position: relative;
-  opacity: 0.4;
-  animation: yinyangSpin 20s linear infinite;
+  opacity: 0.25;
+  background: radial-gradient(circle at 50% 25%, var(--gold-dim) 6px, transparent 6px),
+              radial-gradient(circle at 50% 75%, var(--purple-mid) 6px, transparent 6px),
+              linear-gradient(to bottom, var(--gold-dim) 50%, var(--purple-mid) 50%);
+  animation: yinyangSpin 30s linear infinite;
 }
 @keyframes yinyangSpin {
   to { transform: rotate(360deg); }
@@ -1397,8 +1399,8 @@ input::placeholder {
 
 /* ─── Gunghap Mini Game ─── */
 .gunghap-section {
-  margin: 32px 0;
-  padding: 28px 20px;
+  margin: 48px 0;
+  padding: 32px 20px;
   background: linear-gradient(145deg, rgba(17,13,26,0.95), rgba(26,19,40,0.9));
   border: 1px solid rgba(107,63,160,0.2);
   border-radius: 20px;
@@ -1429,12 +1431,13 @@ input::placeholder {
   font-size: 14px;
   font-family: inherit;
   color: var(--text-primary);
-  background: rgba(255,255,255,0.05);
+  background: rgba(17,13,26,0.95);
   border: 1px solid rgba(107,63,160,0.3);
   border-radius: 10px;
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
+  color-scheme: dark;
 }
 .gunghap-input-area input:focus,
 .gunghap-input-area select:focus {
@@ -1647,19 +1650,20 @@ input::placeholder {
   border: 1px solid rgba(212,168,83,0.15);
   border-radius: 20px;
   padding: 40px;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
   position: relative;
   overflow: hidden;
 }
 .premium-card-blur {
-  -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
-  mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+  position: relative;
   user-select: none;
   pointer-events: none;
 }
-.premium-card-blur .card-content {
-  line-height: 2;
+.premium-card-blur .card-content p:nth-child(n+2) {
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
   color: var(--text-secondary);
+  line-height: 2;
 }
 .premium-lock {
   text-align: center;
@@ -3060,19 +3064,33 @@ function shareGunghap() {
   if (typeof html2canvas === 'function') {
     html2canvas(card, { backgroundColor: '#0f0a1a', scale: 2, useCORS: true }).then(canvas => {
       card.style.left = '-9999px';
-      canvas.toBlob(blob => {
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'gunghap.png', { type: 'image/png' })] })) {
-          navigator.share({
-            title: `${data.myName} ♥ ${data.partnerName} 궁합`,
-            text: `궁합 점수 ${data.score}점! ${data.grade}`,
-            files: [new File([blob], 'gunghap.png', { type: 'image/png' })]
-          }).catch(() => {});
-        } else {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url; a.download = `궁합_${data.myName}_${data.partnerName}.png`;
-          a.click(); URL.revokeObjectURL(url);
+      canvas.toBlob(async blob => {
+        const file = new File([blob], 'gunghap.png', { type: 'image/png' });
+        // 1순위: 모바일 공유시트 (카카오톡 등)
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: `${data.myName} ♥ ${data.partnerName} 궁합`,
+              text: `궁합 점수 ${data.score}점! ${data.grade}\nhttps://whatsyoursaju.com`,
+              files: [file]
+            });
+            return;
+          } catch(e) { /* 사용자 취소 등 — fallback */ }
         }
+        // 2순위: 클립보드 이미지 복사
+        if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+          try {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            if (typeof showToast === 'function') showToast('궁합 카드가 클립보드에 복사되었습니다!');
+            return;
+          } catch(e) { /* clipboard 실패 — fallback */ }
+        }
+        // 3순위: 파일 다운로드
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `궁합_${data.myName}_${data.partnerName}.png`;
+        a.click(); URL.revokeObjectURL(url);
+        if (typeof showToast === 'function') showToast('궁합 카드가 저장되었습니다!');
       }, 'image/png');
     });
   } else {
