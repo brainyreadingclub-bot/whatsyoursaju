@@ -5037,7 +5037,10 @@ async function askAI(presetQuestion) {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
-    responseEl.textContent = data.answer;
+    const safeHtml = escHtml(data.answer)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    responseEl.innerHTML = safeHtml;
     responseEl.classList.add('visible');
     input.value = '';
 
