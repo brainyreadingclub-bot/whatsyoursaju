@@ -1511,6 +1511,56 @@ input::placeholder {
   50% { content: '..'; }
   75% { content: '...'; }
 }
+.ai-counsel-share-wrap {
+  text-align: center;
+  margin-top: 16px;
+  display: none;
+}
+.ai-counsel-share-wrap.visible { display: block; }
+.ai-counsel-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--gold);
+  background: rgba(212,168,83,0.08);
+  border: 1px solid rgba(212,168,83,0.2);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ai-counsel-share-btn:hover {
+  background: rgba(212,168,83,0.15);
+  border-color: var(--gold-dim);
+}
+#ai-counsel-share-card {
+  position: absolute;
+  left: -9999px;
+  width: 400px;
+  padding: 32px;
+  background: #0f0a1a;
+  color: #e8e0d0;
+  font-family: 'Noto Serif KR', serif;
+}
+#ai-counsel-share-card .sc-header {
+  text-align: center;
+  color: #d4a853;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+#ai-counsel-share-card .sc-body {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #b8b0a0;
+}
+#ai-counsel-share-card .sc-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 11px;
+  color: #6b5a7a;
+}
 
 /* ─── Gunghap Mini Game ─── */
 .gunghap-section {
@@ -2413,7 +2463,7 @@ input::placeholder {
 
 <!-- 모바일 sticky CTA bar -->
 <div class="sticky-cta-bar" id="sticky-cta-bar">
-  <button class="sticky-premium" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'sticky_cta'})">✦ 프리미엄 신청</button>
+  <button class="sticky-premium" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'sticky_cta'})">✦ 출시 알림</button>
   <button class="sticky-share" onclick="webShare()">공유하기</button>
 </div>
 
@@ -4810,6 +4860,10 @@ function analyze() {
         </div>
         <div class="ai-counsel-loading" id="ai-counsel-loading">사주를 읽고 있습니다<span class="dots"></span></div>
         <div class="ai-counsel-response" id="ai-counsel-response"></div>
+        <div class="ai-counsel-share-wrap" id="ai-counsel-share-wrap">
+          <button class="ai-counsel-share-btn" onclick="shareAIResponse()">📤 이 인사이트 공유하기</button>
+        </div>
+        <div id="ai-counsel-share-card"></div>
       </div>
 
       <!-- 궁합 미니게임 -->
@@ -5015,16 +5069,66 @@ async function askAI(presetQuestion) {
       responseEl.innerHTML += `<div style="margin-top:16px;font-size:12px;color:var(--text-dim)">오늘 남은 무료 상담: ${data.remaining}회</div>`;
     }
     responseEl.classList.add('visible');
+    document.getElementById('ai-counsel-share-wrap').classList.add('visible');
+    window._lastAIResponse = data.answer;
     input.value = '';
 
-    if (typeof gtag === 'function') gtag('event', 'ai_counsel', { event_category: 'engagement', event_label: question.substring(0, 50) });
+    if (typeof gtag === 'function') {
+      gtag('event', 'ai_counsel', { event_category: 'engagement', event_label: question.substring(0, 50) });
+      if (data.remaining === 0) gtag('event', 'ai_limit_reached', { event_category: 'conversion' });
+    }
   } catch (err) {
     const msg = err.message.includes('무료 상담 횟수') ? err.message : '죄송합니다. 상담 응답 생성에 실패했습니다. 잠시 후 다시 시도해주세요.';
     responseEl.textContent = msg;
     responseEl.classList.add('visible');
+    document.getElementById('ai-counsel-share-wrap').classList.remove('visible');
   } finally {
     sendBtn.disabled = false;
     loading.classList.remove('visible');
+  }
+}
+
+// AI 응답 공유 카드 생성
+function shareAIResponse() {
+  const answer = window._lastAIResponse;
+  const result = window._lastAnalysisResult;
+  if (!answer || !result) return;
+
+  // 첫 줄(핑거프린트) + 2문장 추출
+  const lines = answer.split('\n').filter(l => l.trim());
+  const fingerprint = lines[0] || '';
+  const teaser = lines.slice(1, 3).join(' ').substring(0, 120) + '...';
+
+  const card = document.getElementById('ai-counsel-share-card');
+  card.innerHTML = `
+    <div class="sc-header">🔮 AI 사주 상담 인사이트</div>
+    <div class="sc-body">
+      <div style="color:#d4a853;font-size:13px;margin-bottom:12px">${escHtml(fingerprint)}</div>
+      <div>${escHtml(teaser)}</div>
+    </div>
+    <div class="sc-footer">whatsyoursaju.com에서 무료 사주 분석</div>
+  `;
+  card.style.left = '0';
+
+  if (typeof html2canvas === 'function') {
+    html2canvas(card, { backgroundColor: '#0f0a1a', scale: 2, useCORS: true }).then(canvas => {
+      card.style.left = '-9999px';
+      canvas.toBlob(async blob => {
+        const file = new File([blob], 'saju-insight.png', { type: 'image/png' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ title: 'AI 사주 인사이트', text: fingerprint + '\nhttps://whatsyoursaju.com', files: [file] });
+          } catch(e) {}
+        } else {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = 'saju-insight.png';
+          a.click(); URL.revokeObjectURL(url);
+          if (typeof showToast === 'function') showToast('인사이트 카드가 저장되었습니다!');
+        }
+        if (typeof gtag === 'function') gtag('event', 'ai_share', { event_category: 'engagement' });
+      }, 'image/png');
+    });
   }
 }
 
