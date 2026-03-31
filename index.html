@@ -4537,6 +4537,9 @@ function analyze() {
         <div class="teaser-insight-arrow">▼</div>
       </div>
 
+      <!-- 광고 슬롯 1: 충격의 한 줄 아래 -->
+      <div class="ad-slot" id="ad-slot-1" style="min-height:90px;text-align:center;margin:24px 0"></div>
+
       <!-- Early CTA -->
       <div class="early-cta">
         <button class="share-btn" onclick="saveShareCard()">
@@ -4828,6 +4831,9 @@ function analyze() {
       <!-- 궁합 공유 카드 (offscreen) -->
       <div id="gunghap-share-card"></div>
 
+      <!-- 광고 슬롯 2: 궁합 아래 -->
+      <div class="ad-slot" id="ad-slot-2" style="min-height:90px;text-align:center;margin:24px 0"></div>
+
       <!-- 프리미엄 가격표 -->
       <div class="premium-section">
         <div class="premium-label">✦ 모든 분석을 한눈에, 나만의 사주 리포트 ✦</div>
@@ -4847,52 +4853,11 @@ function analyze() {
           </div>
         </div>
 
-        <!-- 가격 비교 테이블 -->
-        <div class="pricing-grid">
-          <div class="pricing-card">
-            <div class="pricing-name">인사이트</div>
-            <div class="pricing-price">9,900<span>원</span></div>
-            <div class="pricing-features">
-              <div class="included">✓ 원국 심층분석 (강점3/약점3)</div>
-              <div class="included">✓ 상세 궁합 분석 3명</div>
-              <div class="included">✓ AI 채팅 상담 5회</div>
-              <div class="excluded">✗ 재물·직업 분석</div>
-              <div class="excluded">✗ 연애·건강 분석</div>
-            </div>
-            <button class="pricing-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'pricing_A'})">사전 신청</button>
-          </div>
-          <div class="pricing-card best">
-            <div class="pricing-badge">BEST</div>
-            <div class="pricing-name">마스터</div>
-            <div class="pricing-price">19,900<span>원</span></div>
-            <div class="pricing-features">
-              <div class="included">✓ 원국 심층분석 (강점5/약점5+빛과그림자)</div>
-              <div class="included">✓ 재물·직업 분석 + 리스크 5대</div>
-              <div class="included">✓ 연애·건강·체질 분석</div>
-              <div class="included">✓ 상세 궁합 5명 + 심층 1명</div>
-              <div class="included">✓ ${currentYear}년 월운 캘린더 12개월</div>
-              <div class="included">✓ AI 채팅 상담 20회</div>
-              <div class="included">✓ PDF 리포트 다운로드</div>
-            </div>
-            <button class="pricing-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'pricing_B'})">사전 신청</button>
-          </div>
-          <div class="pricing-card">
-            <div class="pricing-name">VIP</div>
-            <div class="pricing-price">39,900<span>원</span></div>
-            <div class="pricing-features">
-              <div class="included">✓ 마스터 전체 포함</div>
-              <div class="included">✓ 궁합 무제한 + 심층 3명 + 그룹 궁합</div>
-              <div class="included">✓ 주간 하이라이트 캘린더</div>
-              <div class="included">✓ 투자 타이밍 분석</div>
-              <div class="included">✓ AI 채팅 30일 무제한</div>
-              <div class="included">✓ 프리미엄 디자인 PDF</div>
-            </div>
-            <button class="pricing-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'pricing_C'})">사전 신청</button>
-          </div>
-        </div>
-
-        <div style="text-align:center; font-size:12px; color:var(--text-dim); margin-top:8px;">
-          💬 AI가 당신의 사주를 심층 분석한 후, 1:1 채팅으로 무엇이든 물어볼 수 있습니다
+        <!-- 프리미엄 대기 안내 -->
+        <div style="text-align:center;padding:32px 20px;background:rgba(212,168,83,0.03);border:1px solid rgba(212,168,83,0.12);border-radius:16px;margin-top:24px">
+          <div style="font-size:16px;color:var(--gold);font-weight:700;margin-bottom:8px">프리미엄 분석 준비 중</div>
+          <div style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">무제한 AI 상담, 심층 궁합 분석, 월운 캘린더, PDF 리포트 등<br>더 깊은 분석 기능을 곧 만나보실 수 있습니다.</div>
+          <button class="pricing-btn" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'waitlist'})">출시 알림 받기</button>
         </div>
 
         <!-- 용어 사전 (접이식) -->
