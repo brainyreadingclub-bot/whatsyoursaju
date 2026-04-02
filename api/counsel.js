@@ -86,8 +86,12 @@ const BAD_GOOD_EXAMPLE = `
 요즘 조직의 규율과 본인의 자유로운 성향 사이에서 갈등을 느끼고 계시죠? 정관(丁) 대운이 경금 일간을 제어하면서 편재적 기질이 억눌리는 시기입니다. 편재가 아닌 정재 구조였다면 이 대운이 승진 기회가 되었겠지만, 쌍편재인 당신에게는 틀에 갇힌 느낌이 더 클 수 있어요. 2026년 하반기보다 상반기에 움직이시는 게 유리합니다. 참고로 39세부터 시작되는 戊寅 대운에서 흥미로운 전환이 보입니다."`;
 
 module.exports = async function handler(req, res) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS — 자사 도메인만 허용 (BC-2 수정)
+  const allowedOrigin = 'https://whatsyoursaju.com';
+  const origin = req.headers.origin;
+  if (origin === allowedOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -109,6 +113,14 @@ module.exports = async function handler(req, res) {
   const { sajuContext, question } = req.body;
   if (!sajuContext || !question) {
     return res.status(400).json({ error: '사주 데이터와 질문이 필요합니다.' });
+  }
+
+  // 입력 길이 제한 (BC-3: Prompt Injection 부분 완화)
+  if (typeof question !== 'string' || question.length > 500) {
+    return res.status(400).json({ error: '질문은 500자 이내로 입력해 주세요.' });
+  }
+  if (typeof sajuContext !== 'string' || sajuContext.length > 3000) {
+    return res.status(400).json({ error: '사주 데이터가 너무 깁니다.' });
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;

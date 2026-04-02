@@ -4259,7 +4259,7 @@ function analyze() {
   if (selectedCalendar === 'lunar') {
     const isLeap = document.getElementById('leap-month')?.checked || false;
     const converted = lunarToSolar(year, month, day, isLeap);
-    if (!converted) return;
+    if (!converted) { analyzeBtn.disabled = false; return; }
     lunarOriginal = { year, month, day, isLeap };
     solarYear = converted.year;
     solarMonth = converted.month;
