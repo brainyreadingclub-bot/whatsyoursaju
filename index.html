@@ -4719,13 +4719,13 @@ function analyze() {
 
       <!-- 사주 유형 라벨 (AI 읽기 아래 미니 요약) -->
       ${(() => {
-        const typeKey = \`\${dayGan}_\${yongsinInfo.신강여부}\`;
+        const typeKey = `${dayGan}_${yongsinInfo.신강여부}`;
         const typeInfo = 사주유형[typeKey];
-        return typeInfo ? \`
+        return typeInfo ? `
         <div class="saju-type-label">
-          <div class="saju-type-name">\${typeInfo.라벨}</div>
-          <div class="saju-type-catch">\${typeInfo.캐치}</div>
-        </div>\` : '';
+          <div class="saju-type-name">${typeInfo.라벨}</div>
+          <div class="saju-type-catch">${typeInfo.캐치}</div>
+        </div>` : '';
       })()}
 
       <!-- 일간 핵심 요약 한 줄 -->
