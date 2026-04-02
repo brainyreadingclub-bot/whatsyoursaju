@@ -5523,28 +5523,6 @@ function analyze() {
         </button>
       </div>
 
-      <!-- ═══ AI 사주 상담 (탭 위로 이동) ═══ -->
-      <div class="ai-counsel-section" id="ai-counsel-section" style="display:none">
-        <h3>🔮 사주 상담</h3>
-        <p class="ai-counsel-subtitle">무엇이든 물어보세요</p>
-        <div class="ai-counsel-presets">
-          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 이직해도 될까요?</button>
-          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">재물운 좋은 시기는?</button>
-          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">나의 강점과 약점</button>
-          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 건강 주의사항</button>
-        </div>
-        <div class="ai-counsel-input-wrap">
-          <textarea class="ai-counsel-input" id="ai-counsel-input" placeholder="예: 내년에 결혼하면 좋을까요?" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>
-          <button class="ai-counsel-send" id="ai-counsel-send" onclick="askAI()">➤</button>
-        </div>
-        <div class="ai-counsel-loading" id="ai-counsel-loading">분석 중입니다<span class="dots"></span></div>
-        <div class="ai-counsel-response" id="ai-counsel-response"></div>
-        <div class="ai-counsel-share-wrap" id="ai-counsel-share-wrap">
-          <button class="ai-counsel-share-btn" onclick="shareAIResponse()">📤 이 인사이트 공유하기</button>
-        </div>
-        <div id="ai-counsel-share-card"></div>
-      </div>
-
       <!-- ═══ Tier 2: 탭 기반 상세 분석 ═══ -->
       <nav class="result-tabs" id="result-tabs" aria-label="분석 카테고리">
         <button class="result-tab active" onclick="switchTab('올해')" role="tab" aria-selected="true">올해</button>
@@ -5774,6 +5752,28 @@ function analyze() {
         </div><!-- /utility-grid -->
         <div class="tab-ai-prompt"><button class="tab-ai-btn" onclick="askAI('대운 흐름을 봤을 때 인생의 다음 전환점은 언제인가요?')">🔮 심화 분석 AI에게 더 물어보기</button></div>
       </div><!-- /탭: 심화 -->
+
+      <!-- ═══ AI 사주 상담 (탭 아래) ═══ -->
+      <div class="ai-counsel-section" id="ai-counsel-section" style="display:none">
+        <h3>🔮 사주 상담</h3>
+        <p class="ai-counsel-subtitle">무엇이든 물어보세요</p>
+        <div class="ai-counsel-presets">
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 이직해도 될까요?</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">재물운 좋은 시기는?</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">나의 강점과 약점</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 건강 주의사항</button>
+        </div>
+        <div class="ai-counsel-input-wrap">
+          <textarea class="ai-counsel-input" id="ai-counsel-input" placeholder="예: 내년에 결혼하면 좋을까요?" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>
+          <button class="ai-counsel-send" id="ai-counsel-send" onclick="askAI()">➤</button>
+        </div>
+        <div class="ai-counsel-loading" id="ai-counsel-loading">분석 중입니다<span class="dots"></span></div>
+        <div class="ai-counsel-response" id="ai-counsel-response"></div>
+        <div class="ai-counsel-share-wrap" id="ai-counsel-share-wrap">
+          <button class="ai-counsel-share-btn" onclick="shareAIResponse()">📤 이 인사이트 공유하기</button>
+        </div>
+        <div id="ai-counsel-share-card"></div>
+      </div>
 
       <!-- ═══ 관계 분석 ═══ -->
       <div class="gunghap-section">
@@ -6035,11 +6035,16 @@ async function autoSajuReading() {
   const autoQuestion = generateAutoQuestion(result);
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
     const res = await fetch('/api/counsel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sajuContext, question: autoQuestion })
+      body: JSON.stringify({ sajuContext, question: autoQuestion }),
+      signal: controller.signal
     });
+    clearTimeout(timeout);
 
     if (!res.ok) {
       if (res.status === 429) {
