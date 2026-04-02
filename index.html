@@ -3161,12 +3161,20 @@ function analyzeGunghap() {
   if (hasYukhap) workScore += 10;
   workScore = Math.max(10, Math.min(100, workScore));
 
-  // ── 결과 저장 (공유용) ──
+  // ── 결과 저장 (공유 + 딥링크용) ──
   window._lastGunghapResult = {
     myName: myResult.name,
     partnerName,
     score, grade, gradeIcon, chemistry,
-    personalityScore, loveScore, workScore
+    personalityScore, loveScore, workScore,
+    // 딥링크 URL 생성에 필요한 원본 데이터
+    myYear: myResult.birthDate ? parseInt(myResult.birthDate.split('-')[0]) : null,
+    myMonth: myResult.birthDate ? parseInt(myResult.birthDate.split('-')[1]) : null,
+    myDay: myResult.birthDate ? parseInt(myResult.birthDate.split('-')[2]) : null,
+    myGender: myResult.gender === '남' ? 'm' : 'f',
+    partnerYear: pYear,
+    partnerMonth: pMonth,
+    partnerDay: pDay
   };
 
   // ── 렌더링 ──
@@ -3217,11 +3225,27 @@ function analyzeGunghap() {
   if (typeof gtag === 'function') gtag('event', 'gunghap_complete', { event_category: 'engagement', event_label: grade });
 }
 
+function buildGunghapDeepLink(data) {
+  // 딥링크 페이로드: OG 렌더링용 결과 + 폼 채우기용 입력값
+  const payload = {
+    mn: data.myName, pn: data.partnerName,
+    s: data.score, g: data.grade, gi: data.gradeIcon, c: data.chemistry,
+    ps: data.personalityScore, ls: data.loveScore, ws: data.workScore,
+    my: data.myYear, mm: data.myMonth, md: data.myDay, mg: data.myGender,
+    py: data.partnerYear, pm: data.partnerMonth, pd: data.partnerDay
+  };
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  return { encoded, url: `https://whatsyoursaju.com/share/gunghap?d=${encoded}` };
+}
+
 function shareGunghap() {
   const data = window._lastGunghapResult;
   if (!data) return;
 
   if (typeof gtag === 'function') gtag('event', 'gunghap_share', { event_category: 'engagement' });
+
+  // 딥링크 URL 생성
+  const deepLink = buildGunghapDeepLink(data);
 
   // 공유 카드 생성
   const card = document.getElementById('gunghap-share-card');
@@ -3244,22 +3268,22 @@ function shareGunghap() {
       card.style.left = '-9999px';
       canvas.toBlob(async blob => {
         const file = new File([blob], 'gunghap.png', { type: 'image/png' });
-        // 1순위: 모바일 공유시트 (카카오톡 등)
+        // 1순위: 모바일 공유시트 (카카오톡 등) — 딥링크 URL 포함
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             await navigator.share({
               title: `${data.myName} ♥ ${data.partnerName} 궁합`,
-              text: `궁합 점수 ${data.score}점! ${data.grade}\nhttps://whatsyoursaju.com`,
+              text: `궁합 점수 ${data.score}점! ${data.grade}\n${deepLink.url}`,
               files: [file]
             });
             return;
           } catch(e) { /* 사용자 취소 등 — fallback */ }
         }
-        // 2순위: 클립보드 이미지 복사
-        if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+        // 2순위: 딥링크 URL 클립보드 복사 (이미지보다 URL이 바이럴에 유리)
+        if (navigator.clipboard) {
           try {
-            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-            if (typeof showToast === 'function') showToast('궁합 카드가 클립보드에 복사되었습니다!');
+            await navigator.clipboard.writeText(`${data.myName} ♥ ${data.partnerName} 궁합 ${data.score}점! ${data.grade}\n${deepLink.url}`);
+            if (typeof showToast === 'function') showToast('궁합 링크가 클립보드에 복사되었습니다!');
             return;
           } catch(e) { /* clipboard 실패 — fallback */ }
         }
@@ -3273,7 +3297,13 @@ function shareGunghap() {
     });
   } else {
     card.style.left = '-9999px';
-    alert('공유 카드 생성 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+    // html2canvas 미로드 시에도 딥링크 URL 복사 fallback
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(`${data.myName} ♥ ${data.partnerName} 궁합 ${data.score}점! ${data.grade}\n${deepLink.url}`);
+      if (typeof showToast === 'function') showToast('궁합 링크가 클립보드에 복사되었습니다!');
+    } else {
+      alert('공유 카드 생성 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+    }
   }
 }
 
@@ -4055,6 +4085,53 @@ let selectedCalendar = 'solar';
   for (let d = 1; d <= 31; d++) {
     daySel.innerHTML += `<option value="${d}">${d}일</option>`;
   }
+})();
+
+// ── 딥링크 파라미터 감지 (궁합 공유 URL) ──
+(function checkGunghapDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const encoded = params.get('gunghap');
+  if (!encoded) return;
+
+  try {
+    const json = decodeURIComponent(escape(atob(encoded)));
+    const data = JSON.parse(json);
+    if (!data.mn || !data.pn || !data.my) return;
+
+    // 딥링크 데이터 저장 (analyze 완료 후 사용)
+    window._pendingGunghap = data;
+
+    // GA: 딥링크 방문 이벤트
+    if (typeof gtag === 'function') {
+      gtag('event', 'gunghap_deeplink_land', { event_category: 'viral', event_label: `${data.mn}_${data.pn}` });
+    }
+
+    // 폼 자동 채우기: 공유자의 생년월일+성별
+    document.getElementById('name').value = data.mn;
+    document.getElementById('year').value = data.my;
+    if (data.mm) document.getElementById('month').value = data.mm;
+    if (data.md) document.getElementById('day').value = data.md;
+    document.getElementById('hour').value = '-1'; // 궁합은 시간 불필요
+
+    // 성별 자동 선택
+    if (data.mg) {
+      const genderVal = data.mg === 'm' ? 'male' : 'female';
+      const genderEl = document.querySelector(`.gender-option[data-value="${genderVal}"]`);
+      if (genderEl) genderEl.click();
+    }
+
+    // 안내 배너 표시
+    const banner = document.createElement('div');
+    banner.id = 'deeplink-banner';
+    banner.style.cssText = 'background:linear-gradient(135deg,#2a1f3d,#1a1230);border:1px solid var(--gold-dim);border-radius:12px;padding:16px 20px;margin:0 auto 20px;max-width:480px;text-align:center;color:var(--text);font-size:14px;line-height:1.6;';
+    banner.innerHTML = `<div style="font-size:16px;margin-bottom:8px">💌 <strong>${escHtml(data.mn)}</strong>님이 보낸 궁합 결과가 있어요!</div><div style="color:var(--text-dim)">아래 "분석 시작"을 누르면 궁합 결과를 확인할 수 있습니다.</div>`;
+    const form = document.querySelector('.form-container');
+    if (form) form.parentNode.insertBefore(banner, form);
+
+    // URL에서 gunghap 파라미터 제거 (히스토리 정리)
+    const cleanUrl = window.location.pathname;
+    window.history.replaceState({}, '', cleanUrl);
+  } catch(e) { /* 잘못된 딥링크 데이터 — 무시 */ }
 })();
 
 function selectGender(el) {
@@ -5018,6 +5095,38 @@ function analyze() {
     setTimeout(() => {
       resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 200);
+
+    // ── 딥링크 궁합 자동 실행 ──
+    if (window._pendingGunghap) {
+      const pg = window._pendingGunghap;
+      window._pendingGunghap = null;
+
+      // 배너 제거
+      const banner = document.getElementById('deeplink-banner');
+      if (banner) banner.remove();
+
+      setTimeout(() => {
+        // 파트너 필드 채우기
+        document.getElementById('partner-name').value = pg.pn || '';
+        if (pg.py) document.getElementById('partner-year').value = pg.py;
+        if (pg.pm) document.getElementById('partner-month').value = pg.pm;
+        if (pg.pd) document.getElementById('partner-day').value = pg.pd;
+
+        // 궁합 실행
+        analyzeGunghap();
+
+        // 궁합 결과로 스크롤
+        setTimeout(() => {
+          const gunghapResult = document.getElementById('gunghap-result');
+          if (gunghapResult) gunghapResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+
+        // GA: 딥링크 궁합 결과 표시
+        if (typeof gtag === 'function') {
+          gtag('event', 'gunghap_deeplink_view', { event_category: 'viral', event_label: `${pg.mn}_${pg.pn}` });
+        }
+      }, 800); // 분석 결과 렌더링 완료 후
+    }
 
   } catch(err) {
     console.error('분석 오류:', err);

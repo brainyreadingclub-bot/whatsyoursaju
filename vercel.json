@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/share/gunghap", "destination": "/api/og-gunghap" }
+  ]
+}
