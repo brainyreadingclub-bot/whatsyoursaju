@@ -1656,6 +1656,188 @@ input::placeholder {
 }
 
 /* ─── Gunghap Mini Game ─── */
+/* ─── 관계 분석 듀얼 폼 ─── */
+.relation-dual-form {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+@media (max-width: 640px) {
+  .relation-dual-form {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+.relation-person {
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+}
+.relation-person-label {
+  font-size: 12px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.relation-my-info {
+  text-align: center;
+  padding: 12px 0;
+}
+.relation-my-name {
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.relation-my-detail {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.relation-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--gold-dim);
+  font-weight: 700;
+  padding-top: 40px;
+}
+@media (max-width: 640px) {
+  .relation-vs { padding-top: 0; }
+}
+.relation-type-selector {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.relation-type-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid rgba(107,63,160,0.3);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.relation-type-btn.selected {
+  background: rgba(107,63,160,0.2);
+  border-color: var(--gold-dim);
+  color: var(--gold);
+}
+.partner-gender-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.partner-gender-btn {
+  flex: 1;
+  padding: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid rgba(107,63,160,0.3);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.partner-gender-btn.selected {
+  background: rgba(107,63,160,0.15);
+  border-color: var(--gold-dim);
+  color: var(--gold-light);
+}
+
+/* ─── 관계 분석 결과 ─── */
+.relation-result-section {
+  margin-top: 32px;
+}
+.relation-profiles {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 640px) {
+  .relation-profiles {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+.relation-profile-card {
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  text-align: center;
+}
+.profile-daygan {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.profile-summary {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-top: 8px;
+}
+.relation-analysis-card {
+  padding: 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.relation-analysis-card h4 {
+  font-size: 15px;
+  color: var(--gold-light);
+  margin-bottom: 12px;
+}
+.relation-point {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.relation-point-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.cross-pillar-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px;
+  color: var(--text);
+}
+.cross-pillar-label {
+  color: var(--text-dim);
+  font-size: 12px;
+}
+.sipsung-cross {
+  padding: 16px;
+  background: rgba(212,168,83,0.05);
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: 12px;
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+}
+
 .gunghap-section {
   margin: 48px 0;
   padding: 32px 20px;
@@ -3124,6 +3306,456 @@ ${fortuneStr}`.trim();
 const 오행상생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
 const 오행상극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
 
+// 관계 분석 상태
+let selectedPartnerGender = '';
+let selectedRelationType = '연인';
+
+function selectPartnerGender(el) {
+  document.querySelectorAll('.partner-gender-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPartnerGender = el.dataset.value;
+}
+
+function selectRelationType(el) {
+  document.querySelectorAll('.relation-type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRelationType = el.dataset.type;
+}
+
+// ── 교차 십신 (양방향) ──
+function getCrossSipsung(dayGanA, dayGanB) {
+  return {
+    aToB: getSipsung(dayGanA, dayGanB), // B가 A에게 어떤 존재인가
+    bToA: getSipsung(dayGanB, dayGanA)  // A가 B에게 어떤 존재인가
+  };
+}
+
+// ── 4기둥 교차 분석 ──
+function analyzeCrossPillars(pillarsA, pillarsB) {
+  const 궁위이름 = ['사회궁(년주)', '직업궁(월주)', '자아궁(일주)', '미래궁(시주)'];
+  const results = [];
+
+  for (let i = 0; i < 4; i++) {
+    const pA = pillarsA[i];
+    const pB = pillarsB[i];
+    if (!pA || !pB) { results.push({ 궁위: 궁위이름[i], 분석: [] }); continue; }
+
+    const 분석 = [];
+    // 천간합 체크
+    const ganA = 천간[pA.gan], ganB = 천간[pB.gan];
+    const jiA = 지지[pA.ji], jiB = 지지[pB.ji];
+
+    for (const [a, b, el] of 천간합) {
+      if ((ganA === a && ganB === b) || (ganA === b && ganB === a)) {
+        분석.push({ type: '합', icon: '💚', text: `천간합(${ganA}-${ganB} → ${el})` });
+      }
+    }
+    // 지지 육합
+    for (const [a, b] of 육합) {
+      if ((jiA === a && jiB === b) || (jiA === b && jiB === a)) {
+        분석.push({ type: '합', icon: '💙', text: `육합(${jiA}-${jiB})` });
+      }
+    }
+    // 지지 상충
+    for (const [a, b] of 상충) {
+      if ((jiA === a && jiB === b) || (jiA === b && jiB === a)) {
+        분석.push({ type: '충', icon: '⚡', text: `상충(${jiA}-${jiB})` });
+      }
+    }
+    // 지지 형
+    for (const s of 삼형) {
+      if (s.지지s.length === 2) {
+        if ((jiA === s.지지s[0] && jiB === s.지지s[1]) || (jiA === s.지지s[1] && jiB === s.지지s[0])) {
+          분석.push({ type: '형', icon: '🔶', text: `${s.이름}(${jiA}-${jiB})` });
+        }
+      }
+    }
+    // 지지 파/해
+    for (const [a, b] of 파) {
+      if ((jiA === a && jiB === b) || (jiA === b && jiB === a)) {
+        분석.push({ type: '파', icon: '💔', text: `파(${jiA}-${jiB})` });
+      }
+    }
+    for (const [a, b] of 해) {
+      if ((jiA === a && jiB === b) || (jiA === b && jiB === a)) {
+        분석.push({ type: '해', icon: '⚠', text: `해(${jiA}-${jiB})` });
+      }
+    }
+    if (분석.length === 0) 분석.push({ type: '무', icon: '—', text: '특별한 관계 없음' });
+
+    results.push({ 궁위: 궁위이름[i], 간지A: ganA + jiA, 간지B: ganB + jiB, 분석 });
+  }
+  return results;
+}
+
+// ── 오행 보완성 분석 ──
+function analyzeOhaengComplement(elA, elB) {
+  const 오행목록 = ['목', '화', '토', '금', '수'];
+  const complement = [], sharedWeak = [], sharedStrong = [];
+
+  for (const el of 오행목록) {
+    const a = elA[el] || 0, b = elB[el] || 0;
+    if (a < 1.5 && b >= 3.0) complement.push({ element: el, from: 'B', desc: `B의 ${el}(${오행한자[el]})이 A의 부족한 ${el}을 보완` });
+    else if (b < 1.5 && a >= 3.0) complement.push({ element: el, from: 'A', desc: `A의 ${el}(${오행한자[el]})이 B의 부족한 ${el}을 보완` });
+    if (a < 1.5 && b < 1.5) sharedWeak.push(el);
+    if (a >= 3.0 && b >= 3.0) sharedStrong.push(el);
+  }
+  return { complement, sharedWeak, sharedStrong };
+}
+
+// ── 관계 분석 마스터 함수 ──
+function analyzeRelationship(personA, personB, relationType) {
+  const crossPillars = analyzeCrossPillars(personA.pillars, personB.pillars);
+  const ohaeng = analyzeOhaengComplement(personA.elementCounts, personB.elementCounts);
+  const crossSipsung = getCrossSipsung(personA.dayP.gan, personB.dayP.gan);
+  const yongsinCompat = checkYongsinCompat(personA, personB);
+
+  return { crossPillars, ohaeng, crossSipsung, yongsinCompat, relationType };
+}
+
+function checkYongsinCompat(a, b) {
+  const result = { aHelpsB: false, bHelpsA: false, details: [] };
+  const aYongsin = a.yongsinInfo.용신;
+  const bYongsin = b.yongsinInfo.용신;
+
+  // B의 강한 오행이 A의 용신과 일치?
+  const 오행목록 = ['목', '화', '토', '금', '수'];
+  for (const el of 오행목록) {
+    if (el === aYongsin && (b.elementCounts[el] || 0) >= 2.5) {
+      result.bHelpsA = true;
+      result.details.push(`B의 강한 ${el}(${오행한자[el]}) 기운이 A의 용신과 일치합니다`);
+    }
+    if (el === bYongsin && (a.elementCounts[el] || 0) >= 2.5) {
+      result.aHelpsB = true;
+      result.details.push(`A의 강한 ${el}(${오행한자[el]}) 기운이 B의 용신과 일치합니다`);
+    }
+  }
+  return result;
+}
+
+// ── 좋은 점 / 주의할 점 텍스트 ──
+const 관계해석 = {
+  '연인': {
+    합: (t) => `${t} — 서로에게 자연스럽게 끌리는 천생연분의 기운입니다.`,
+    충: (t) => `${t} — 강한 끌림이 있지만 부딪힘도 잦을 수 있습니다. 오히려 긴장감이 관계를 뜨겁게 합니다.`,
+    형: (t) => `${t} — 서로를 성장시키는 마찰이 있습니다. 잘 다루면 성장의 촉매가 됩니다.`,
+    파: (t) => `${t} — 기대와 현실의 갭이 생길 수 있습니다. 솔직한 대화가 필요합니다.`,
+    해: (t) => `${t} — 미묘한 상처를 줄 수 있는 관계입니다. 상대의 약점을 알면 피할 수 있습니다.`
+  },
+  '가족': {
+    합: (t) => `${t} — 말하지 않아도 통하는 자연스러운 유대감입니다.`,
+    충: (t) => `${t} — 세대 갈등의 원인이 될 수 있습니다. 서로의 방식을 존중하는 것이 핵심입니다.`,
+    형: (t) => `${t} — 기대치의 차이에서 오는 마찰입니다. 각자의 속도를 인정해주세요.`,
+    파: (t) => `${t} — 가까울수록 상처가 깊을 수 있습니다. 적절한 거리감이 필요합니다.`,
+    해: (t) => `${t} — 선의가 오해를 낳을 수 있습니다. 명확한 표현을 연습하세요.`
+  },
+  '친구': {
+    합: (t) => `${t} — 만나면 편안하고 오래가는 우정의 기운입니다.`,
+    충: (t) => `${t} — 가치관 충돌이 있지만, 그래서 서로 다른 관점을 줍니다.`,
+    형: (t) => `${t} — 경쟁 관계가 될 수 있습니다. 건강한 경쟁은 성장의 동력입니다.`,
+    파: (t) => `${t} — 사소한 오해가 쌓일 수 있습니다. 정기적으로 진솔한 대화를 나누세요.`,
+    해: (t) => `${t} — 무심코 던진 말이 상처가 될 수 있습니다. 배려의 말을 의식하세요.`
+  },
+  '동료': {
+    합: (t) => `${t} — 업무에서 시너지를 내는 최적의 파트너십입니다.`,
+    충: (t) => `${t} — 업무 스타일 충돌이 있지만, 역할 분담이 명확하면 보완적입니다.`,
+    형: (t) => `${t} — 일하는 방식의 차이가 마찰을 일으킬 수 있습니다. 프로세스를 합의하세요.`,
+    파: (t) => `${t} — 기대하는 성과의 기준이 다를 수 있습니다. 목표를 명문화하세요.`,
+    해: (t) => `${t} — 무의식적 견제가 발생할 수 있습니다. 투명한 소통이 해결책입니다.`
+  }
+};
+
+function getGoodPoints(cross, relType) {
+  const points = [];
+  const 해석 = 관계해석[relType] || 관계해석['친구'];
+
+  // 교차 기둥에서 합 찾기
+  for (const cp of cross.crossPillars) {
+    for (const a of cp.분석) {
+      if (a.type === '합') points.push(해석.합(`${cp.궁위} ${a.text}`));
+    }
+  }
+  // 오행 보완
+  for (const c of cross.ohaeng.complement) {
+    points.push(`오행 보완: ${c.desc}`);
+  }
+  // 용신 호환
+  for (const d of cross.yongsinCompat.details) {
+    points.push(d);
+  }
+  // 십신 해석 (좋은 관계)
+  const goodSipsung = ['정재', '정관', '정인', '식신'];
+  if (goodSipsung.includes(cross.crossSipsung.aToB)) {
+    const info = 십신사전[cross.crossSipsung.aToB];
+    points.push(`상대는 나에게 '${info.순화}' — ${info.설명}`);
+  }
+
+  return points.length > 0 ? points.slice(0, 5) : ['두 사람의 오행이 균형 잡힌 관계입니다.'];
+}
+
+function getCautionPoints(cross, relType) {
+  const points = [];
+  const 해석 = 관계해석[relType] || 관계해석['친구'];
+
+  for (const cp of cross.crossPillars) {
+    for (const a of cp.분석) {
+      if (a.type === '충') points.push(해석.충(`${cp.궁위} ${a.text}`));
+      if (a.type === '형') points.push(해석.형(`${cp.궁위} ${a.text}`));
+      if (a.type === '파') points.push(해석.파(`${cp.궁위} ${a.text}`));
+      if (a.type === '해') points.push(해석.해(`${cp.궁위} ${a.text}`));
+    }
+  }
+  // 공유 약점
+  if (cross.ohaeng.sharedWeak.length > 0) {
+    points.push(`두 사람 모두 ${cross.ohaeng.sharedWeak.map(e => e + '(' + 오행한자[e] + ')').join(', ')} 기운이 부족합니다. 이 영역에서 서로를 보완해줄 수 없으므로 외부 도움이 필요할 수 있습니다.`);
+  }
+  // 십신 해석 (주의 관계)
+  const cautionSipsung = ['편관', '상관', '겁재'];
+  if (cautionSipsung.includes(cross.crossSipsung.aToB)) {
+    const info = 십신사전[cross.crossSipsung.aToB];
+    points.push(`상대는 나에게 '${info.순화}' — ${info.설명}. 의식적으로 조절이 필요합니다.`);
+  }
+
+  return points.length > 0 ? points.slice(0, 5) : ['특별한 주의점이 없는 안정적인 관계입니다.'];
+}
+
+// ── 보완 사주 / 관계 에너지 ──
+function describeIdealComplement(person) {
+  const dayGanIdx = person.dayP.gan;
+  // 천간합 상대 찾기
+  let idealGan = null, idealEl = null;
+  for (const [a, b, el] of 천간합) {
+    if (천간[dayGanIdx] === a) { idealGan = b; idealEl = el; break; }
+    if (천간[dayGanIdx] === b) { idealGan = a; idealEl = el; break; }
+  }
+  // 용신 기반 필요 오행
+  const yongsinEl = person.yongsinInfo.용신;
+  // 해당 오행이 강한 일간 목록
+  const matchingGans = [];
+  for (let g = 0; g < 10; g++) {
+    if (천간오행[g] === yongsinEl) matchingGans.push(`${천간[g]}(${천간한글[g]})`);
+  }
+  // 출생년도 힌트 (해당 일간이 년간인 해)
+  const hintYears = [];
+  for (let y = 1960; y <= 2010; y++) {
+    const ganIdx = ((y - 4) % 10 + 10) % 10;
+    if (천간오행[ganIdx] === yongsinEl) hintYears.push(y);
+  }
+
+  return {
+    idealGan, idealEl,
+    yongsinEl,
+    matchingGans,
+    hintYears: hintYears.slice(-6), // 최근 6개년
+    일간특성: idealGan ? `${idealGan} 일간을 가진 사람과 천간합 — 자연스러운 조화` : null
+  };
+}
+
+function getRelationshipEnergy(personA, personB) {
+  const combined = {};
+  const 오행목록 = ['목', '화', '토', '금', '수'];
+  for (const el of 오행목록) {
+    combined[el] = (personA.elementCounts[el] || 0) + (personB.elementCounts[el] || 0);
+  }
+  // 가장 약한 오행
+  let weakest = 오행목록[0], weakVal = combined[오행목록[0]];
+  for (const el of 오행목록) {
+    if (combined[el] < weakVal) { weakest = el; weakVal = combined[el]; }
+  }
+  // 해당 오행이 강한 일간
+  const gans = [];
+  for (let g = 0; g < 10; g++) {
+    if (천간오행[g] === weakest) gans.push(`${천간[g]}(${천간한글[g]})`);
+  }
+  const 오행성격 = {
+    '목': '성장 지향적이고 창의적인', '화': '열정적이고 표현력이 풍부한',
+    '토': '안정적이고 중재를 잘하는', '금': '결단력 있고 원칙적인',
+    '수': '침착하고 경청을 잘하는'
+  };
+  return {
+    weakElement: weakest,
+    description: `두 분 사이에 ${weakest}(${오행한자[weakest]}) 기운이 부족합니다.`,
+    mediator: `${gans.join(' 또는 ')} 일간의 사람이 중재자 역할을 잘 할 수 있습니다.`,
+    personality: `이런 사람은 보통 ${오행성격[weakest]} 타입입니다.`
+  };
+}
+
+// ── 관계 분석 풀스펙 실행 ──
+function analyzeRelationshipFull() {
+  const partnerName = document.getElementById('partner-name').value.trim();
+  const pYear = parseInt(document.getElementById('partner-year').value);
+  const pMonth = parseInt(document.getElementById('partner-month').value);
+  const pDay = parseInt(document.getElementById('partner-day').value);
+  const pHour = parseInt(document.getElementById('partner-hour').value);
+
+  if (!partnerName) { alert('상대방 이름을 입력해주세요.'); return; }
+  if (!selectedPartnerGender) { alert('상대방 성별을 선택해주세요.'); return; }
+  if (!pYear || !pMonth || !pDay) { alert('상대방 생년월일을 모두 선택해주세요.'); return; }
+
+  const myResult = window._lastAnalysisResult;
+  if (!myResult) { alert('먼저 나의 사주를 분석해주세요.'); return; }
+
+  if (typeof gtag === 'function') gtag('event', 'relationship_start', { event_category: 'engagement', event_label: selectedRelationType });
+
+  // 파트너 4주 계산
+  const pYearP = getYearPillar(pYear, pMonth, pDay);
+  const pMonthP = getMonthPillar(pYear, pMonth, pDay);
+  const pDayP = getDayPillar(pYear, pMonth, pDay);
+  const pHourP = (pHour >= 0) ? getHourPillar(pDayP.gan, pHour) : null;
+  const pPillars = [pYearP, pMonthP, pDayP, pHourP];
+
+  // 파트너 전체 분석
+  const pElementCounts = countElements(pPillars);
+  const pYongsinInfo = getYongsin(pDayP.gan, pElementCounts);
+  const pSinsalList = detectSinsal(pYearP.ji, pDayP.ji);
+
+  const partnerResult = {
+    name: partnerName,
+    gender: selectedPartnerGender === 'female' ? '여' : '남',
+    dayP: pDayP, yearP: pYearP, monthP: pMonthP, hourP: pHourP,
+    pillars: pPillars,
+    elementCounts: pElementCounts,
+    yongsinInfo: pYongsinInfo,
+    sinsalList: pSinsalList
+  };
+
+  window._partnerAnalysisResult = partnerResult;
+
+  // 교차 분석
+  const crossResult = analyzeRelationship(myResult, partnerResult, selectedRelationType);
+  const goodPoints = getGoodPoints(crossResult, selectedRelationType);
+  const cautionPoints = getCautionPoints(crossResult, selectedRelationType);
+  const energy = getRelationshipEnergy(myResult, partnerResult);
+  const idealA = describeIdealComplement(myResult);
+
+  // 결과 렌더링
+  renderRelationshipResult(myResult, partnerResult, crossResult, goodPoints, cautionPoints, energy, idealA);
+
+  if (typeof gtag === 'function') gtag('event', 'relationship_complete', { event_category: 'engagement', event_label: selectedRelationType });
+}
+
+// ── 관계 분석 결과 렌더링 ──
+function renderRelationshipResult(personA, personB, cross, goodPts, cautionPts, energy, idealA) {
+  const resultEl = document.getElementById('gunghap-result');
+  const nameA = escHtml(personA.name), nameB = escHtml(personB.name);
+  const dayGanA = 천간[personA.dayP.gan], dayGanB = 천간[personB.dayP.gan];
+  const elA = 천간오행[personA.dayP.gan], elB = 천간오행[personB.dayP.gan];
+  const sipsungInfo = cross.crossSipsung;
+
+  resultEl.innerHTML = `
+    <div class="relation-result-section">
+      <!-- ① 각자 읽기 -->
+      <div class="relation-analysis-card">
+        <h4>① 각자 읽기</h4>
+        <div class="relation-profiles">
+          <div class="relation-profile-card">
+            <div class="profile-daygan" style="color:${오행색상[elA]}">${dayGanA}</div>
+            <div style="font-size:14px;color:var(--text-primary);font-weight:600">${nameA}</div>
+            <div style="font-size:12px;color:var(--text-dim)">${elA}(${오행한자[elA]}) · ${천간음양[personA.dayP.gan]} · ${personA.yongsinInfo.신강여부}</div>
+            <div class="profile-summary">
+              용신: ${personA.yongsinInfo.용신}(${오행한자[personA.yongsinInfo.용신]})
+              ${personA.sinsalList.length > 0 ? '<br>' + personA.sinsalList.slice(0,2).map(s => 신살사전[s.name]?.아이콘 + ' ' + 신살사전[s.name]?.순화).join(' · ') : ''}
+            </div>
+          </div>
+          <div class="relation-vs" style="padding-top:0;font-size:16px">VS</div>
+          <div class="relation-profile-card">
+            <div class="profile-daygan" style="color:${오행색상[elB]}">${dayGanB}</div>
+            <div style="font-size:14px;color:var(--text-primary);font-weight:600">${nameB}</div>
+            <div style="font-size:12px;color:var(--text-dim)">${elB}(${오행한자[elB]}) · ${천간음양[personB.dayP.gan]} · ${personB.yongsinInfo.신강여부}</div>
+            <div class="profile-summary">
+              용신: ${personB.yongsinInfo.용신}(${오행한자[personB.yongsinInfo.용신]})
+              ${personB.sinsalList.length > 0 ? '<br>' + personB.sinsalList.slice(0,2).map(s => 신살사전[s.name]?.아이콘 + ' ' + 신살사전[s.name]?.순화).join(' · ') : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ② 관계 읽기 -->
+      <div class="relation-analysis-card">
+        <h4>② 관계 읽기</h4>
+
+        <!-- 4기둥 교차 -->
+        ${cross.crossPillars.map(cp => cp.분석.some(a => a.type !== '무') ? `
+        <div class="cross-pillar-row">
+          <div class="cross-pillar-label">${cp.궁위}</div>
+          <div>${cp.분석.map(a => `${a.icon} ${a.text}`).join(' · ')}</div>
+        </div>` : '').join('')}
+
+        <!-- 좋은 점 -->
+        <div style="margin-top:20px">
+          <div style="font-size:14px;color:var(--gold);margin-bottom:10px">💚 이 관계의 좋은 점</div>
+          ${goodPts.map(p => `<div class="relation-point"><span class="relation-point-icon">•</span><span>${p}</span></div>`).join('')}
+        </div>
+
+        <!-- 주의할 점 -->
+        <div style="margin-top:16px">
+          <div style="font-size:14px;color:#ef5350;margin-bottom:10px">⚡ 이 관계에서 주의할 점</div>
+          ${cautionPts.map(p => `<div class="relation-point"><span class="relation-point-icon">•</span><span>${p}</span></div>`).join('')}
+        </div>
+
+        <!-- 서로에게 어떤 존재인가 -->
+        <div class="sipsung-cross">
+          <div style="margin-bottom:8px"><strong>${nameB}</strong>에게 <strong>${nameA}</strong>은(는) <span class="highlight">'${십신사전[sipsungInfo.bToA]?.순화 || sipsungInfo.bToA}'</span> <span class="saju-badge">${sipsungInfo.bToA}</span></div>
+          <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">${십신사전[sipsungInfo.bToA]?.설명 || ''}</div>
+          <div style="margin-bottom:8px"><strong>${nameA}</strong>에게 <strong>${nameB}</strong>은(는) <span class="highlight">'${십신사전[sipsungInfo.aToB]?.순화 || sipsungInfo.aToB}'</span> <span class="saju-badge">${sipsungInfo.aToB}</span></div>
+          <div style="font-size:13px;color:var(--text-dim)">${십신사전[sipsungInfo.aToB]?.설명 || ''}</div>
+        </div>
+      </div>
+
+      <!-- ③ 성장 읽기 -->
+      <div class="relation-analysis-card">
+        <h4>③ 성장 읽기</h4>
+        <div class="relation-point"><span class="relation-point-icon">🌊</span><span>${energy.description}</span></div>
+        <div class="relation-point"><span class="relation-point-icon">🧭</span><span>${energy.mediator}</span></div>
+        <div class="relation-point"><span class="relation-point-icon">✨</span><span>${energy.personality}</span></div>
+        ${idealA.일간특성 ? `<div style="margin-top:16px;padding:12px 16px;background:rgba(212,168,83,0.05);border:1px solid rgba(212,168,83,0.15);border-radius:10px;font-size:13px;color:var(--text)">
+          <div style="color:var(--gold);margin-bottom:6px"><strong>${nameA}에게 이상적인 보완 관계</strong></div>
+          <div>${idealA.일간특성}</div>
+          <div style="margin-top:4px;color:var(--text-dim)">용신(${idealA.yongsinEl}) 기반 추천: ${idealA.matchingGans.join(', ')} 일간</div>
+          <div style="margin-top:4px;color:var(--text-dim)">관련 출생년도: ${idealA.hintYears.join(', ')}년 등</div>
+        </div>` : ''}
+      </div>
+
+      <!-- CTA -->
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+        <button class="tab-ai-btn" onclick="askRelationshipAI()">🔮 이 관계 AI에게 상담하기</button>
+        <button class="gunghap-share-btn" onclick="shareGunghap()" style="padding:10px 20px;border-radius:24px;border:1px solid rgba(107,63,160,0.3);background:rgba(107,63,160,0.1);color:var(--gold-light);font-size:13px;font-family:inherit;cursor:pointer">📤 관계 분석 공유</button>
+      </div>
+    </div>
+  `;
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── 관계 분석 AI 상담 ──
+function askRelationshipAI() {
+  const a = window._lastAnalysisResult;
+  const b = window._partnerAnalysisResult;
+  if (!a || !b) return;
+
+  const contextA = serializeSajuContext(a);
+  const fmtP = (p) => p ? `${천간[p.gan]}${지지[p.ji]}` : '미상';
+  const contextB = `\n\n[상대방 사주]\n이름: ${b.name} | 성별: ${b.gender}\n년주: ${fmtP(b.yearP)} | 월주: ${fmtP(b.monthP)} | 일주: ${fmtP(b.dayP)} | 시주: ${fmtP(b.hourP)}\n일간: ${천간[b.dayP.gan]}(${천간오행[b.dayP.gan]}) | ${b.yongsinInfo.신강여부} | 용신: ${b.yongsinInfo.용신}\n관계 유형: ${selectedRelationType}`;
+
+  const question = `이 두 사람의 ${selectedRelationType} 관계를 사주 관점에서 읽어주세요. 좋은 점, 주의할 점, 그리고 이 관계가 더 좋아지려면 어떻게 해야 하는지 300자 이내로 알려주세요.`;
+
+  // AI 섹션으로 스크롤 후 질문
+  const aiSection = document.getElementById('ai-counsel-section');
+  if (aiSection) aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const input = document.getElementById('ai-counsel-input');
+  if (input) input.value = question;
+
+  // 커스텀 컨텍스트로 AI 호출
+  const result = window._lastAnalysisResult;
+  if (!result) return;
+
+  const fullContext = contextA + contextB;
+  // askAI에 질문 전달
+  setTimeout(() => askAI(question), 300);
+}
+
+// ── 기존 궁합 함수 (하위 호환) ──
 function analyzeGunghap() {
   const partnerName = document.getElementById('partner-name').value.trim();
   const pYear = parseInt(document.getElementById('partner-year').value);
@@ -5037,18 +5669,63 @@ function analyze() {
         <div class="tab-ai-prompt"><button class="tab-ai-btn" onclick="askAI('대운 흐름을 봤을 때 인생의 다음 전환점은 언제인가요?')">🔮 심화 분석 AI에게 더 물어보기</button></div>
       </div><!-- /탭: 심화 -->
 
-      <!-- ═══ 관계 분석 (Day 2에서 전면 교체 예정) ═══ -->
+      <!-- ═══ 관계 분석 ═══ -->
       <div class="gunghap-section">
         <h3>💫 사주 관계 분석</h3>
         <p class="gunghap-subtitle">두 사람의 사주로 깊이 있는 관계를 분석합니다</p>
-        <div class="gunghap-input-area">
-          <input type="text" placeholder="상대방 이름" id="partner-name" maxlength="10">
-          <div class="gunghap-birth-row">
-            <select id="partner-year"><option value="">년</option></select>
-            <select id="partner-month"><option value="">월</option></select>
-            <select id="partner-day"><option value="">일</option></select>
+
+        <!-- 관계 유형 선택 -->
+        <div class="relation-type-selector">
+          <button class="relation-type-btn selected" data-type="연인" onclick="selectRelationType(this)">연인/부부</button>
+          <button class="relation-type-btn" data-type="가족" onclick="selectRelationType(this)">부모-자녀</button>
+          <button class="relation-type-btn" data-type="친구" onclick="selectRelationType(this)">친구/동료</button>
+          <button class="relation-type-btn" data-type="동료" onclick="selectRelationType(this)">상사-부하</button>
+        </div>
+
+        <!-- 듀얼 입력 폼 -->
+        <div class="relation-dual-form">
+          <div class="relation-person">
+            <div class="relation-person-label">나</div>
+            <div class="relation-my-info">
+              <div class="relation-my-name" id="relation-my-name">${escHtml(name)}</div>
+              <div class="relation-my-detail" id="relation-my-detail">${solarYear}.${solarMonth}.${solarDay} · ${selectedGender === 'female' ? '여' : '남'}</div>
+            </div>
           </div>
-          <button class="gunghap-btn" onclick="analyzeGunghap()">궁합 보기</button>
+          <div class="relation-vs">VS</div>
+          <div class="relation-person">
+            <div class="relation-person-label">상대</div>
+            <div class="gunghap-input-area">
+              <input type="text" placeholder="이름" id="partner-name" maxlength="10">
+              <div class="partner-gender-toggle">
+                <button class="partner-gender-btn" data-value="female" onclick="selectPartnerGender(this)">여성 ♀</button>
+                <button class="partner-gender-btn" data-value="male" onclick="selectPartnerGender(this)">남성 ♂</button>
+              </div>
+              <div class="gunghap-birth-row">
+                <select id="partner-year"><option value="">년</option></select>
+                <select id="partner-month"><option value="">월</option></select>
+                <select id="partner-day"><option value="">일</option></select>
+              </div>
+              <select id="partner-hour" style="width:100%;padding:10px 14px;font-size:14px;font-family:inherit;color:var(--text-primary);background:rgba(17,13,26,0.95);border:1px solid rgba(107,63,160,0.3);border-radius:10px;color-scheme:dark;box-sizing:border-box">
+                <option value="-1">시간 모름</option>
+                <option value="0">子시 (23~01시)</option>
+                <option value="1">丑시 (01~03시)</option>
+                <option value="2">寅시 (03~05시)</option>
+                <option value="3">卯시 (05~07시)</option>
+                <option value="4">辰시 (07~09시)</option>
+                <option value="5">巳시 (09~11시)</option>
+                <option value="6">午시 (11~13시)</option>
+                <option value="7">未시 (13~15시)</option>
+                <option value="8">申시 (15~17시)</option>
+                <option value="9">酉시 (17~19시)</option>
+                <option value="10">戌시 (19~21시)</option>
+                <option value="11">亥시 (21~23시)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center">
+          <button class="gunghap-btn" onclick="analyzeRelationshipFull()">관계 분석하기</button>
         </div>
         <div id="gunghap-result" style="display:none"></div>
       </div>
