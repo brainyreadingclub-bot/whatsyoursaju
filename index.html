@@ -1062,6 +1062,7 @@ input::placeholder {
   .title-chinese { font-size: 44px; letter-spacing: 12px; }
   .pillars-grid { grid-template-columns: repeat(2, 1fr); }
   .lucky-grid { grid-template-columns: 1fr; }
+  .ai-reading-section { padding: 20px 16px; }
   .analysis-card { padding: 20px 16px; }
   .analysis-card.card-hero { padding: 24px 16px; }
   .elements-chart { gap: 12px; }
@@ -1229,20 +1230,27 @@ input::placeholder {
     cursor: pointer;
     font-family: inherit;
   }
+  .sticky-cta-bar button {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .sticky-cta-bar .sticky-ai {
     background: linear-gradient(135deg, var(--gold), var(--gold-dim));
     color: #0a0610;
   }
-  .sticky-cta-bar .sticky-premium {
-    background: rgba(107,63,160,0.3);
-    color: var(--text-primary);
+  .sticky-cta-bar .sticky-relation {
+    background: rgba(107,63,160,0.25);
+    color: var(--gold-light);
     border: 1px solid rgba(107,63,160,0.4);
   }
+  .sticky-cta-bar .sticky-premium,
   .sticky-cta-bar .sticky-share {
-    background: rgba(107,63,160,0.3);
+    background: rgba(107,63,160,0.15);
     color: var(--text-primary);
-    border: 1px solid rgba(107,63,160,0.4);
+    border: 1px solid rgba(107,63,160,0.3);
   }
+  .toast { bottom: 80px !important; }
   #results.visible ~ .footer { padding-bottom: 72px; }
 }
 
@@ -2641,7 +2649,7 @@ input::placeholder {
     </div>
     <div class="title-chinese">SAJU</div>
     <h1 class="title-korean">사 주 명 리 분 석</h1>
-    <div class="subtitle">Discover Your Four Pillars of Destiny</div>
+    <div class="subtitle">생년월일시로 읽는 나의 운명</div>
   </header>
 
   <!-- Input Form -->
@@ -2711,7 +2719,7 @@ input::placeholder {
       </div>
 
       <div class="submit-wrap">
-        <button class="submit-btn" onclick="analyze()" aria-label="사주 분석 시작">운명 풀이</button>
+        <button class="submit-btn" onclick="analyze()" aria-label="사주 분석 시작">내 사주 보기</button>
       </div>
     </div>
   </section>
@@ -2738,7 +2746,8 @@ input::placeholder {
 
 <!-- 모바일 sticky CTA bar -->
 <div class="sticky-cta-bar" id="sticky-cta-bar" style="display:none">
-  <button class="sticky-ai" onclick="scrollToAIChat()" style="flex:2">🔮 사주 상담</button>
+  <button class="sticky-ai" onclick="scrollToAIChat()">🔮 상담</button>
+  <button class="sticky-relation" onclick="document.querySelector('.gunghap-section')?.scrollIntoView({behavior:'smooth',block:'start'})">💫 관계</button>
   <button class="sticky-share" onclick="webShare()">공유</button>
   <button class="sticky-premium" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'sticky_cta'})">✦ 알림</button>
 </div>
@@ -5436,13 +5445,13 @@ function analyze() {
 
       <!-- ═══ AI가 읽어주는 사주 (메인) ═══ -->
       <div class="ai-reading-section" id="ai-reading-section">
-        <div class="ai-reading-header">🔮 당신의 사주를 읽어보겠습니다</div>
+        <div class="ai-reading-header">🔮 사주 핵심 인사이트</div>
         <div class="ai-reading-body" id="ai-reading-body">
-          <div class="ai-reading-loading" id="ai-reading-loading">사주를 읽고 있습니다<span class="dots"></span></div>
+          <div class="ai-reading-loading" id="ai-reading-loading">분석 중입니다<span class="dots"></span></div>
         </div>
         <div class="ai-reading-followup" id="ai-reading-followup" style="display:none">
-          <span>더 궁금한 게 있으신가요?</span>
-          <button onclick="scrollToAIChat()">상담 계속하기 →</button>
+          <span>궁금한 점이 있다면</span>
+          <button onclick="scrollToAIChat()">더 물어보기 →</button>
         </div>
       </div>
 
@@ -5516,8 +5525,8 @@ function analyze() {
 
       <!-- ═══ AI 사주 상담 (탭 위로 이동) ═══ -->
       <div class="ai-counsel-section" id="ai-counsel-section" style="display:none">
-        <h3>🔮 AI 사주 상담</h3>
-        <p class="ai-counsel-subtitle">당신의 사주를 바탕으로 궁금한 것을 물어보세요</p>
+        <h3>🔮 사주 상담</h3>
+        <p class="ai-counsel-subtitle">무엇이든 물어보세요</p>
         <div class="ai-counsel-presets">
           <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 이직해도 될까요?</button>
           <button class="ai-counsel-preset" onclick="askAI(this.textContent)">재물운 좋은 시기는?</button>
@@ -5528,7 +5537,7 @@ function analyze() {
           <textarea class="ai-counsel-input" id="ai-counsel-input" placeholder="예: 내년에 결혼하면 좋을까요?" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>
           <button class="ai-counsel-send" id="ai-counsel-send" onclick="askAI()">➤</button>
         </div>
-        <div class="ai-counsel-loading" id="ai-counsel-loading">사주를 읽고 있습니다<span class="dots"></span></div>
+        <div class="ai-counsel-loading" id="ai-counsel-loading">분석 중입니다<span class="dots"></span></div>
         <div class="ai-counsel-response" id="ai-counsel-response"></div>
         <div class="ai-counsel-share-wrap" id="ai-counsel-share-wrap">
           <button class="ai-counsel-share-btn" onclick="shareAIResponse()">📤 이 인사이트 공유하기</button>
@@ -5769,7 +5778,7 @@ function analyze() {
       <!-- ═══ 관계 분석 ═══ -->
       <div class="gunghap-section">
         <h3>💫 사주 관계 분석</h3>
-        <p class="gunghap-subtitle">두 사람의 사주로 깊이 있는 관계를 분석합니다</p>
+        <p class="gunghap-subtitle">두 사람 사이, 사주가 말해주는 것</p>
 
         <!-- 관계 유형 선택 -->
         <div class="relation-type-selector">
@@ -6034,7 +6043,7 @@ async function autoSajuReading() {
 
     if (!res.ok) {
       if (res.status === 429) {
-        bodyEl.innerHTML = '<div style="color:var(--text-dim);font-size:13px">오늘의 AI 상담 횟수를 모두 사용하셨습니다.</div>';
+        bodyEl.innerHTML = '<div style="color:var(--text-dim);font-size:13px;line-height:1.8">오늘의 무료 상담을 모두 사용했습니다.<br>내일 3회가 다시 충전됩니다.<br><a onclick="openPrelaunchModal()" style="color:var(--gold);cursor:pointer;text-decoration:underline">프리미엄 출시 알림 받기 →</a></div>';
         return;
       }
       throw new Error('API error');
@@ -6130,8 +6139,11 @@ async function askAI(presetQuestion) {
       if (data.remaining === 0) gtag('event', 'ai_limit_reached', { event_category: 'conversion' });
     }
   } catch (err) {
-    const msg = err.message.includes('무료 상담 횟수') ? err.message : '죄송합니다. 상담 응답 생성에 실패했습니다. 잠시 후 다시 시도해주세요.';
-    responseEl.textContent = msg;
+    const isLimit = err.message.includes('무료 상담') || err.message.includes('횟수');
+    const msg = isLimit
+      ? '오늘의 무료 상담을 모두 사용했습니다. 내일 3회가 다시 충전됩니다. <a onclick="openPrelaunchModal()" style="color:var(--gold);cursor:pointer;text-decoration:underline">프리미엄 출시 알림 받기 →</a>'
+      : '잠시 후 다시 시도해주세요.';
+    responseEl.innerHTML = msg;
     responseEl.classList.add('visible');
     document.getElementById('ai-counsel-share-wrap').classList.remove('visible');
   } finally {
