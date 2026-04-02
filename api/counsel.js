@@ -119,7 +119,7 @@ module.exports = async function handler(req, res) {
   if (typeof question !== 'string' || question.length > 500) {
     return res.status(400).json({ error: '질문은 500자 이내로 입력해 주세요.' });
   }
-  if (typeof sajuContext !== 'string' || sajuContext.length > 3000) {
+  if (typeof sajuContext !== 'string' || sajuContext.length > 6000) {
     return res.status(400).json({ error: '사주 데이터가 너무 깁니다.' });
   }
 

@@ -3628,6 +3628,19 @@ function analyzeRelationshipFull() {
   const energy = getRelationshipEnergy(myResult, partnerResult);
   const idealA = describeIdealComplement(myResult);
 
+  // 공유용 데이터 설정 (기존 shareGunghap 호환)
+  window._lastGunghapResult = {
+    myName: myResult.name, partnerName,
+    score: 0, grade: selectedRelationType + ' 관계 분석', gradeIcon: '💫',
+    chemistry: goodPoints[0] || '관계 분석 완료',
+    personalityScore: 0, loveScore: 0, workScore: 0,
+    myYear: parseInt(myResult.birthDate?.split('-')[0]) || null,
+    myMonth: parseInt(myResult.birthDate?.split('-')[1]) || null,
+    myDay: parseInt(myResult.birthDate?.split('-')[2]) || null,
+    myGender: myResult.gender === '남' ? 'm' : 'f',
+    partnerYear: pYear, partnerMonth: pMonth, partnerDay: pDay
+  };
+
   // 결과 렌더링
   renderRelationshipResult(myResult, partnerResult, crossResult, goodPoints, cautionPoints, energy, idealA);
 
