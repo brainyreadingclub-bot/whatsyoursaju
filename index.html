@@ -1229,9 +1229,14 @@ input::placeholder {
     cursor: pointer;
     font-family: inherit;
   }
-  .sticky-cta-bar .sticky-premium {
+  .sticky-cta-bar .sticky-ai {
     background: linear-gradient(135deg, var(--gold), var(--gold-dim));
     color: #0a0610;
+  }
+  .sticky-cta-bar .sticky-premium {
+    background: rgba(107,63,160,0.3);
+    color: var(--text-primary);
+    border: 1px solid rgba(107,63,160,0.4);
   }
   .sticky-cta-bar .sticky-share {
     background: rgba(107,63,160,0.3);
@@ -1399,9 +1404,95 @@ input::placeholder {
   color: var(--text-dim);
 }
 
+/* ─── AI 사주 읽기 (최상단 자동 인사이트) ─── */
+.ai-reading-section {
+  margin: 24px 0 32px;
+  padding: 28px 24px;
+  background: linear-gradient(145deg, rgba(17,13,26,0.95), rgba(45,27,78,0.3));
+  border: 1px solid rgba(212,168,83,0.25);
+  border-radius: 16px;
+  min-height: 80px;
+}
+.ai-reading-header {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 16px; color: var(--gold); font-weight: 600;
+  margin-bottom: 16px;
+}
+.ai-reading-body {
+  font-size: 14px; line-height: 1.9; color: var(--text);
+}
+.ai-reading-loading {
+  font-size: 14px; color: var(--text-dim);
+}
+.ai-reading-followup {
+  margin-top: 20px; display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+}
+.ai-reading-followup span {
+  font-size: 13px; color: var(--text-dim);
+}
+.ai-reading-followup button {
+  padding: 10px 20px; border-radius: 24px;
+  border: 1px solid var(--gold-dim);
+  background: linear-gradient(135deg, rgba(212,168,83,0.15), rgba(212,168,83,0.05));
+  color: var(--gold); font-size: 13px; font-family: inherit; cursor: pointer;
+  transition: all 0.2s;
+}
+.ai-reading-followup button:hover {
+  background: linear-gradient(135deg, rgba(212,168,83,0.25), rgba(212,168,83,0.1));
+  transform: translateY(-1px);
+}
+.ai-reading-remaining {
+  font-size: 12px; color: var(--text-dim); margin-top: 12px; text-align: right;
+}
+
+/* ─── 상세 데이터 아코디언 ─── */
+.saju-data-accordion {
+  margin: 24px 0;
+}
+.saju-data-accordion summary {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; color: var(--text-dim); cursor: pointer;
+  padding: 12px 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  list-style: none;
+  transition: all 0.2s;
+}
+.saju-data-accordion summary:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+}
+.saju-data-accordion summary::before {
+  content: '▶'; font-size: 10px; transition: transform 0.2s;
+}
+.saju-data-accordion[open] summary::before {
+  transform: rotate(90deg);
+}
+.saju-data-accordion .accordion-content {
+  padding: 20px 0;
+}
+
+/* ─── 탭 내 AI 연결 버튼 ─── */
+.tab-ai-prompt {
+  margin-top: 20px; text-align: center;
+}
+.tab-ai-btn {
+  padding: 10px 20px; border-radius: 24px;
+  border: 1px solid rgba(107,63,160,0.3);
+  background: linear-gradient(135deg, rgba(107,63,160,0.1), rgba(107,63,160,0.05));
+  color: var(--gold-light); font-size: 13px; font-family: inherit; cursor: pointer;
+  transition: all 0.2s;
+}
+.tab-ai-btn:hover {
+  background: linear-gradient(135deg, rgba(107,63,160,0.2), rgba(107,63,160,0.1));
+  transform: translateY(-1px);
+}
+
 /* ─── AI 상담 ─── */
 .ai-counsel-section {
-  margin: 48px 0;
+  margin: 32px 0;
   padding: 32px 20px;
   background: linear-gradient(145deg, rgba(17,13,26,0.95), rgba(26,19,40,0.9));
   border: 1px solid rgba(107,63,160,0.3);
@@ -2465,8 +2556,9 @@ input::placeholder {
 
 <!-- 모바일 sticky CTA bar -->
 <div class="sticky-cta-bar" id="sticky-cta-bar" style="display:none">
-  <button class="sticky-premium" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'sticky_cta'})">✦ 출시 알림</button>
-  <button class="sticky-share" onclick="webShare()">공유하기</button>
+  <button class="sticky-ai" onclick="scrollToAIChat()" style="flex:2">🔮 사주 상담</button>
+  <button class="sticky-share" onclick="webShare()">공유</button>
+  <button class="sticky-premium" onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'sticky_cta'})">✦ 알림</button>
 </div>
 
 <script>
@@ -3027,7 +3119,7 @@ ${table}
 ${fortuneStr}`.trim();
 }
 
-// ── 궁합 미니게임 ──
+// ── 관계 분석 ──
 // 오행 상생/상극 관계
 const 오행상생 = { '목':'화', '화':'토', '토':'금', '금':'수', '수':'목' };
 const 오행상극 = { '목':'토', '화':'금', '토':'수', '금':'목', '수':'화' };
@@ -4613,7 +4705,41 @@ function analyze() {
         <div class="result-subtitle">${lunarOriginal ? `음력 ${lunarOriginal.year}년 ${lunarOriginal.month}월 ${lunarOriginal.day}일${lunarOriginal.isLeap ? ' (윤달)' : ''} → 양력 ${solarYear}년 ${solarMonth}월 ${solarDay}일` : `${year}년 ${month}월 ${day}일 · 양력`} · ${selectedGender === 'female' ? '여성' : '남성'}</div>
       </div>
 
-      <!-- ═══ Tier 1: 핵심 요약 (항상 펼침) ═══ -->
+      <!-- ═══ AI가 읽어주는 사주 (메인) ═══ -->
+      <div class="ai-reading-section" id="ai-reading-section">
+        <div class="ai-reading-header">🔮 당신의 사주를 읽어보겠습니다</div>
+        <div class="ai-reading-body" id="ai-reading-body">
+          <div class="ai-reading-loading" id="ai-reading-loading">사주를 읽고 있습니다<span class="dots"></span></div>
+        </div>
+        <div class="ai-reading-followup" id="ai-reading-followup" style="display:none">
+          <span>더 궁금한 게 있으신가요?</span>
+          <button onclick="scrollToAIChat()">상담 계속하기 →</button>
+        </div>
+      </div>
+
+      <!-- 사주 유형 라벨 (AI 읽기 아래 미니 요약) -->
+      ${(() => {
+        const typeKey = \`\${dayGan}_\${yongsinInfo.신강여부}\`;
+        const typeInfo = 사주유형[typeKey];
+        return typeInfo ? \`
+        <div class="saju-type-label">
+          <div class="saju-type-name">\${typeInfo.라벨}</div>
+          <div class="saju-type-catch">\${typeInfo.캐치}</div>
+        </div>\` : '';
+      })()}
+
+      <!-- 일간 핵심 요약 한 줄 -->
+      <div class="tier1-summary">
+        일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> · ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <strong>${용어순화[yongsinInfo.신강여부]}</strong> <span class="saju-badge">${yongsinInfo.신강여부}</span>
+        ${sinsalList.length > 0 ? ` · ${sinsalList.slice(0,3).map(s => 신살사전[s.name].아이콘 + ' ' + 신살사전[s.name].순화).join(' · ')}` : ''}
+      </div>
+
+      <!-- 상세 데이터 (아코디언, 기본 닫힘) -->
+      <details class="saju-data-accordion">
+        <summary>상세 사주 데이터 보기</summary>
+        <div class="accordion-content">
+
+      <!-- 사주팔자 + 오행 -->
       <div class="tier1-grid">
         <div class="tier1-left">
           <!-- 사주팔자 -->
@@ -4641,35 +4767,13 @@ function analyze() {
         </div>
       </div>
 
-      <!-- 사주 유형 라벨 -->
-      ${(() => {
-        const typeKey = `${dayGan}_${yongsinInfo.신강여부}`;
-        const typeInfo = 사주유형[typeKey];
-        return typeInfo ? `
-        <div class="saju-type-label">
-          <div class="saju-type-name">${typeInfo.라벨}</div>
-          <div class="saju-type-catch">${typeInfo.캐치}</div>
-        </div>` : '';
-      })()}
+      </div><!-- /accordion-content -->
+      </details><!-- /사주 데이터 아코디언 -->
 
-      <!-- 일간 핵심 요약 -->
-      <div class="tier1-summary">
-        일간 <span class="highlight">${dayGan}(${천간한글[dayP.gan]})</span> · ${천간오행[dayP.gan]}(${오행한자[천간오행[dayP.gan]]}) · ${천간음양[dayP.gan]} · <strong>${용어순화[yongsinInfo.신강여부]}</strong> <span class="saju-badge">${yongsinInfo.신강여부}</span>
-        ${sinsalList.length > 0 ? ` · ${sinsalList.slice(0,3).map(s => 신살사전[s.name].아이콘 + ' ' + 신살사전[s.name].순화).join(' · ')}` : ''}
-      </div>
-
-      <!-- 충격의 한 줄 (전환 트리거) -->
-      <div class="teaser-insight">
-        <div class="teaser-insight-icon">${teaserInsight.icon}</div>
-        <div class="teaser-insight-text">${teaserInsight.text}</div>
-        <div class="teaser-insight-sub">아래에서 더 자세한 이야기를 만나보세요</div>
-        <div class="teaser-insight-arrow">▼</div>
-      </div>
-
-      <!-- 광고 슬롯 1: 충격의 한 줄 아래 (AdSense 승인 후 코드 삽입) -->
+      <!-- 광고 슬롯 1 -->
       <div class="ad-slot" id="ad-slot-1"></div>
 
-      <!-- Early CTA -->
+      <!-- CTA -->
       <div class="early-cta">
         <button class="share-btn" onclick="saveShareCard()">
           <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
@@ -4679,6 +4783,28 @@ function analyze() {
           <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
           공유하기
         </button>
+      </div>
+
+      <!-- ═══ AI 사주 상담 (탭 위로 이동) ═══ -->
+      <div class="ai-counsel-section" id="ai-counsel-section" style="display:none">
+        <h3>🔮 AI 사주 상담</h3>
+        <p class="ai-counsel-subtitle">당신의 사주를 바탕으로 궁금한 것을 물어보세요</p>
+        <div class="ai-counsel-presets">
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 이직해도 될까요?</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">재물운 좋은 시기는?</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">나의 강점과 약점</button>
+          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 건강 주의사항</button>
+        </div>
+        <div class="ai-counsel-input-wrap">
+          <textarea class="ai-counsel-input" id="ai-counsel-input" placeholder="예: 내년에 결혼하면 좋을까요?" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>
+          <button class="ai-counsel-send" id="ai-counsel-send" onclick="askAI()">➤</button>
+        </div>
+        <div class="ai-counsel-loading" id="ai-counsel-loading">사주를 읽고 있습니다<span class="dots"></span></div>
+        <div class="ai-counsel-response" id="ai-counsel-response"></div>
+        <div class="ai-counsel-share-wrap" id="ai-counsel-share-wrap">
+          <button class="ai-counsel-share-btn" onclick="shareAIResponse()">📤 이 인사이트 공유하기</button>
+        </div>
+        <div id="ai-counsel-share-card"></div>
       </div>
 
       <!-- ═══ Tier 2: 탭 기반 상세 분석 ═══ -->
@@ -4712,6 +4838,7 @@ function analyze() {
           </div>
         </div>
 
+        <div class="tab-ai-prompt"><button class="tab-ai-btn" onclick="askAI('올해 가장 중요한 기회와 위기는 언제인가요?')">🔮 올해 운세 AI에게 더 물어보기</button></div>
         <div class="inline-premium-teaser">${escHtml(name)}님의 ${currentYear}년, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_올해'})">더 알아보기 →</a></div>
       </div>
 
@@ -4726,6 +4853,7 @@ function analyze() {
             </div>
           </div>
         </div>
+        <div class="tab-ai-prompt"><button class="tab-ai-btn" onclick="askAI('내 사주에서 이상적인 연인은 어떤 사람인가요?')">🔮 연애운 AI에게 더 물어보기</button></div>
         <div class="inline-premium-teaser">${escHtml(name)}님의 인연, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_사랑'})">더 알아보기 →</a></div>
       </div>
 
@@ -4744,6 +4872,7 @@ function analyze() {
           <h3 class="card-title">직업운 및 적성</h3>
           <div class="card-content">${careerText}</div>
         </div>
+        <div class="tab-ai-prompt"><button class="tab-ai-btn" onclick="askAI('재물운을 극대화하려면 올해 어떤 전략이 좋을까요?')">🔮 재물운 AI에게 더 물어보기</button></div>
         <div class="inline-premium-teaser">${escHtml(name)}님의 재물운, 더 깊은 이야기가 있습니다 <a onclick="openPrelaunchModal(); if(typeof gtag==='function') gtag('event','premium_click',{event_category:'conversion',event_label:'tab_재물'})">더 알아보기 →</a></div>
       </div>
 
@@ -4786,6 +4915,7 @@ function analyze() {
             }).join('<br>')}
           </div>
         </div>` : ''}
+        <div class="tab-ai-prompt"><button class="tab-ai-btn" onclick="askAI('제 성격의 숨겨진 강점은 무엇인가요?')">🔮 성격 AI에게 더 물어보기</button></div>
       </div>
 
       <!-- 탭: 건강 -->
@@ -4794,6 +4924,7 @@ function analyze() {
           <h3 class="card-title">건강 주의사항</h3>
           <div class="card-content">${healthHTML}</div>
         </div>
+        <div class="tab-ai-prompt"><button class="tab-ai-btn" onclick="askAI('올해 건강 관리에서 가장 주의할 점은?')">🔮 건강 AI에게 더 물어보기</button></div>
       </div>
 
       <!-- 탭: 심화 -->
@@ -4903,52 +5034,13 @@ function analyze() {
           </div>
         </div>
         </div><!-- /utility-grid -->
+        <div class="tab-ai-prompt"><button class="tab-ai-btn" onclick="askAI('대운 흐름을 봤을 때 인생의 다음 전환점은 언제인가요?')">🔮 심화 분석 AI에게 더 물어보기</button></div>
       </div><!-- /탭: 심화 -->
 
-      <!-- ═══ Tier 3: 하단 고정 ═══ -->
-
-      <!-- 공유 버튼 -->
-      <div class="share-bar" id="share-bar">
-        <button class="share-btn" onclick="saveShareCard()">
-          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-          카드 이미지 저장
-        </button>
-        <button class="share-btn" onclick="copyShareURL()">
-          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-          링크 복사
-        </button>
-        <button class="share-btn" onclick="webShare()">
-          <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-          공유하기
-        </button>
-      </div>
-
-      <!-- AI 사주 상담 -->
-      <div class="ai-counsel-section" id="ai-counsel-section" style="display:none">
-        <h3>🔮 AI 사주 상담</h3>
-        <p class="ai-counsel-subtitle">당신의 사주를 바탕으로 궁금한 것을 물어보세요</p>
-        <div class="ai-counsel-presets">
-          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 이직해도 될까요?</button>
-          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">재물운 좋은 시기는?</button>
-          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">나의 강점과 약점</button>
-          <button class="ai-counsel-preset" onclick="askAI(this.textContent)">올해 건강 주의사항</button>
-        </div>
-        <div class="ai-counsel-input-wrap">
-          <textarea class="ai-counsel-input" id="ai-counsel-input" placeholder="예: 내년에 결혼하면 좋을까요?" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>
-          <button class="ai-counsel-send" id="ai-counsel-send" onclick="askAI()">➤</button>
-        </div>
-        <div class="ai-counsel-loading" id="ai-counsel-loading">사주를 읽고 있습니다<span class="dots"></span></div>
-        <div class="ai-counsel-response" id="ai-counsel-response"></div>
-        <div class="ai-counsel-share-wrap" id="ai-counsel-share-wrap">
-          <button class="ai-counsel-share-btn" onclick="shareAIResponse()">📤 이 인사이트 공유하기</button>
-        </div>
-        <div id="ai-counsel-share-card"></div>
-      </div>
-
-      <!-- 궁합 미니게임 -->
+      <!-- ═══ 관계 분석 (Day 2에서 전면 교체 예정) ═══ -->
       <div class="gunghap-section">
-        <h3>💕 궁합 미니게임</h3>
-        <p class="gunghap-subtitle">친구, 연인, 가족과의 궁합을 무료로 확인해보세요</p>
+        <h3>💫 사주 관계 분석</h3>
+        <p class="gunghap-subtitle">두 사람의 사주로 깊이 있는 관계를 분석합니다</p>
         <div class="gunghap-input-area">
           <input type="text" placeholder="상대방 이름" id="partner-name" maxlength="10">
           <div class="gunghap-birth-row">
@@ -5049,7 +5141,7 @@ function analyze() {
     const stickyBar = document.getElementById('sticky-cta-bar');
     if (stickyBar && window.innerWidth < 768) stickyBar.classList.add('visible');
 
-    // 궁합 미니게임 셀렉트 초기화
+    // 관계 분석 셀렉트 초기화
     const pYearSel = document.getElementById('partner-year');
     const pMonthSel = document.getElementById('partner-month');
     const pDaySel = document.getElementById('partner-day');
@@ -5087,6 +5179,9 @@ function analyze() {
 
     // AI 상담 섹션 표시
     document.getElementById('ai-counsel-section').style.display = 'block';
+
+    // AI 자동 사주 읽기 (메인 인사이트)
+    autoSajuReading();
 
     // IntersectionObserver로 카드 스크롤 등장
     setTimeout(() => observeResultCards(), 100);
@@ -5143,7 +5238,79 @@ function analyze() {
 //  AI 상담
 // ═══════════════════════════════════════════════════════
 
+// AI 자동 사주 읽기 (분석 완료 후 자동 호출)
+async function autoSajuReading() {
+  const result = window._lastAnalysisResult;
+  if (!result) return;
+
+  const loadingEl = document.getElementById('ai-reading-loading');
+  const bodyEl = document.getElementById('ai-reading-body');
+  const followupEl = document.getElementById('ai-reading-followup');
+  if (!bodyEl) return;
+
+  const sajuContext = serializeSajuContext(result);
+  const autoQuestion = generateAutoQuestion(result);
+
+  try {
+    const res = await fetch('/api/counsel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sajuContext, question: autoQuestion })
+    });
+
+    if (!res.ok) {
+      if (res.status === 429) {
+        bodyEl.innerHTML = '<div style="color:var(--text-dim);font-size:13px">오늘의 AI 상담 횟수를 모두 사용하셨습니다.</div>';
+        return;
+      }
+      throw new Error('API error');
+    }
+
+    const data = await res.json();
+    const answer = escHtml(data.answer).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    bodyEl.innerHTML = answer;
+    if (followupEl) followupEl.style.display = 'flex';
+    if (data.remaining !== undefined) {
+      bodyEl.innerHTML += `<div class="ai-reading-remaining">AI 상담 ${data.remaining}회 남음</div>`;
+    }
+
+    if (typeof gtag === 'function') gtag('event', 'ai_auto_reading', { event_category: 'engagement' });
+  } catch(e) {
+    bodyEl.innerHTML = '<div style="color:var(--text-dim);font-size:13px">사주 읽기를 불러오지 못했습니다. 아래에서 직접 질문해보세요.</div>';
+    if (followupEl) followupEl.style.display = 'flex';
+  }
+}
+
+function generateAutoQuestion(result) {
+  if (!result) return '이 사주의 핵심 특성과 올해 주의할 점을 300자 이내로 읽어주세요.';
+  const fortune = result.yearFortune;
+  if (fortune && (fortune.등급 === '조심' || fortune.등급 === '주의')) {
+    return '이 사주의 핵심 특성을 읽고, 올해 특히 주의해야 할 점과 대처법을 300자 이내로 알려주세요. 사주 핑거프린트를 포함해주세요.';
+  }
+  if (fortune && (fortune.등급 === '좋음' || fortune.등급 === '매우좋음')) {
+    return '이 사주의 핵심 특성을 읽고, 올해 찾아올 기회와 그것을 활용하는 방법을 300자 이내로 알려주세요. 사주 핑거프린트를 포함해주세요.';
+  }
+  return '이 사주를 가진 사람의 핵심 특성과 올해 가장 중요한 흐름을 300자 이내로 읽어주세요. 사주 핑거프린트를 포함해주세요.';
+}
+
+function scrollToAIChat() {
+  const aiSection = document.getElementById('ai-counsel-section');
+  if (aiSection) {
+    aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => {
+      const input = document.getElementById('ai-counsel-input');
+      if (input) input.focus();
+    }, 500);
+  }
+}
+
 async function askAI(presetQuestion) {
+  // 탭에서 호출 시 AI 섹션으로 스크롤
+  const aiSection = document.getElementById('ai-counsel-section');
+  if (presetQuestion && aiSection) {
+    aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   const input = document.getElementById('ai-counsel-input');
   const question = presetQuestion || input.value.trim();
   if (!question) return;
