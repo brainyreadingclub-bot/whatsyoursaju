@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://whatsyoursaju.com/sitemap.xml
+Sitemap: https://www.whatsyoursaju.com/sitemap.xml
