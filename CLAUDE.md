@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**SAJU (사주명리 분석)** — 생년월일시 기반 사주명리 분석 웹 서비스. 프론트엔드는 단일 `index.html`(약 6,600줄) 정적 페이지, 백엔드는 Vercel Serverless Functions(`api/*.js`) 하이브리드 구조.
+**SAJU (사주명리 분석)** — 생년월일시 기반 사주명리 분석 웹 서비스. 프론트엔드는 단일 `index.html`(약 6,680줄) 정적 페이지, 백엔드는 Vercel Serverless Functions(`api/*.js`) 하이브리드 구조.
 
-- 배포: Vercel (https://whatsyoursaju.com)
+- 배포: Vercel (https://www.whatsyoursaju.com)
 - 프론트 의존성 (모두 CDN): html2canvas, korean-lunar-calendar (v0.3.6), Google Fonts, GA (G-LTFZ1YMVNM)
 - 백엔드 의존성 (`node_modules/`): `@anthropic-ai/sdk` — Vercel Functions 런타임 전용
 - 사전 예약 폼: Formspree (https://formspree.io/f/mreyjvza)
@@ -19,11 +19,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 파일 구조
 ```
-index.html            ← 메인 서비스 (CSS+HTML+JS 인라인, 약 6,600줄)
+index.html            ← 메인 서비스 (CSS+HTML+JS 인라인, 약 6,680줄)
 about.html            ← 서비스 소개
 privacy.html          ← 개인정보 처리방침
 terms.html            ← 이용약관
-guide/                ← SEO용 가이드 아티클 (sitemap.xml에 등록)
+guide/                ← SEO용 가이드 아티클 (현재 18개, sitemap.xml에 등록)
 api/
   counsel.js          ← AI 상담 엔드포인트 (Claude Sonnet 4.6)
   og-gunghap.js       ← 궁합 OG 이미지 동적 생성
@@ -34,8 +34,10 @@ robots.txt            ← 크롤러 허용 + sitemap 경로
 sitemap.xml           ← SEO sitemap (HTTPS URL만 등록)
 vercel.json           ← cleanUrls + /share/gunghap rewrite
 ads.txt               ← 광고 인증 (AdSense 준비)
-CORE/                 ← 기획 문서 (서비스개요, PRD, 기술스택, TODO)
+CORE/                 ← 기획 문서 (서비스개요, PRD, 기술스택, TODO, DEFERRED_PHASE0)
 검토문서/              ← 해석 품질 개선 등 검토 자료
+memory/               ← auto-memory (세션 간 컨텍스트 보존, MEMORY.md 인덱스)
+docs/                 ← superpowers 플러그인 캐시 (자동 생성 가능)
 test_step1~3.js       ← 계산 로직 검증 (index.html 함수 독립 복사본)
 test_review.js        ← 버그 수정 회귀 테스트
 test_ai_counsel.js    ← AI 상담 응답 테스트 (+ test_ai_counsel_results.json)
@@ -47,16 +49,16 @@ test_ai_counsel.js    ← AI 상담 응답 테스트 (+ test_ai_counsel_results.
 | 1–38 | `<head>` (meta, fonts, CDN scripts, GA) |
 | 39–2530 | `<style>` CSS (약 2,490줄) |
 | 2604–2753 | HTML body (입력 폼, 파티클, 로딩, 결과 영역, 모달, sticky CTA) |
-| 2755–2946 | JS 데이터 상수 (천간/지지/오행/절기/합충형파해/공망/신살 조견표) |
-| 2947–3214 | JS 핵심 계산 (`getSajuYear`, 4주, 공망, 십신, 12운성, 용신, 합충) |
-| 3215–3342 | JS `serializeSajuContext` (AI 상담용 컨텍스트 직렬화) |
-| 3343–3860 | JS **관계 분석 엔진** (`analyzeCrossPillars`, `analyzeOhaengComplement`, `analyzeRelationship`, `analyzeRelationshipFull`) |
-| 3865–4309 | JS 궁합 미니게임 (`analyzeGunghap`, shareGunghap) |
-| 4310–4983 | JS 신살/분석 텍스트 (건강·재물·연애·세운) |
-| 4984–5065 | JS `generateTeaserInsight` (충격의 한 줄) |
-| 5066–6255 | JS `analyze()` 메인 함수 (2.5초 setTimeout 내 렌더링) |
-| 6256–6383 | JS 공유/탭 전환/sticky CTA/프리미엄 모달 |
-| 6384–6550 | JS `runTests()` 브라우저 내장 테스트 러너 |
+| 2846–2946 | JS 데이터 상수 (천간/지지/오행/절기/합충형파해/공망/신살 조견표) |
+| 2947–3305 | JS 핵심 계산 (`getSajuYear`, 4주, 공망, 십신, 12운성, 용신, 합충) |
+| 3306–3433 | JS `serializeSajuContext` (AI 상담용 컨텍스트 직렬화) |
+| 3434–3955 | JS **관계 분석 엔진** (`analyzeCrossPillars`, `analyzeOhaengComplement`, `analyzeRelationship`, `analyzeRelationshipFull`) |
+| 3956–4400 | JS 궁합 미니게임 (`analyzeGunghap`, shareGunghap) |
+| 4401–5074 | JS 신살/분석 텍스트 (건강·재물·연애·세운) |
+| 5075–5156 | JS `generateTeaserInsight` (충격의 한 줄) |
+| 5157–6400 | JS `analyze()` 메인 함수 (2.5초 setTimeout 내 렌더링) |
+| 6401–6474 | JS 공유/탭 전환/sticky CTA/프리미엄 모달 |
+| 6475–6641 | JS `runTests()` 브라우저 내장 테스트 러너 |
 
 ### 결과 화면 3-Tier 구조
 ```
@@ -178,7 +180,7 @@ node test_ai_counsel.js   # 실제 /api/counsel 호출 — ANTHROPIC_API_KEY 필
 
 ## Git 커밋 컨벤션
 
-- 한국어 메시지, 접두사: `Phase N:`, `Fix:`, `UX:`, `Step N:`
+- 한국어 메시지, 접두사: `Phase N:`, `Fix:`, `UX:`, `Step N:`, `docs:`, `Merge:`, `서비스 재정의 Day N:`
 - 도메인 용어 그대로 사용 (편재, 천간합, 장간 등)
 
 ## 기준 테스트 케이스
