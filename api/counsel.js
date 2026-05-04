@@ -87,7 +87,7 @@ const BAD_GOOD_EXAMPLE = `
 
 module.exports = async function handler(req, res) {
   // CORS — 자사 도메인만 허용 (BC-2 수정)
-  const allowedOrigin = 'https://whatsyoursaju.com';
+  const allowedOrigin = 'https://www.whatsyoursaju.com';
   const origin = req.headers.origin;
   if (origin === allowedOrigin) {
     res.setHeader('Access-Control-Allow-Origin', allowedOrigin);

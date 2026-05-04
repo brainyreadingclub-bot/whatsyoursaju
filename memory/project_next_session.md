@@ -7,7 +7,7 @@
 ### 완료된 것
 - 무료 분석 서비스 전체 (index.html, 83개 테스트)
 - 코어 문서 4개 전면 재설계 (구독 모델 + MZ 패턴 + 관계 그래프 반영)
-- 도메인 연결 (whatsyoursaju.com)
+- 도메인 연결 (www.whatsyoursaju.com)
 - SEO 전면 구현 (robots.txt, sitemap.xml, JSON-LD, 시맨틱 HTML, ARIA)
 - Google/Naver 검색 등록 + sitemap 제출
 - 사주유형 20종 + 카드 공유 버튼 + 대운 신강/신약 분기

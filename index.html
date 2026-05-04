@@ -9,16 +9,16 @@
 <meta property="og:title" content="내 사주, AI가 읽어드립니다 — 무료 사주풀이">
 <meta property="og:description" content="가입 없이 30초면 성격, 재물운, 연애운, 궁합까지. 2026년 나에게 올 변화는?">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://whatsyoursaju.com">
-<meta property="og:image" content="https://whatsyoursaju.com/og-image.png">
+<meta property="og:url" content="https://www.whatsyoursaju.com">
+<meta property="og:image" content="https://www.whatsyoursaju.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="내 사주, AI가 읽어드립니다 — 무료 사주풀이">
 <meta name="twitter:description" content="가입 없이 30초면 성격, 재물운, 연애운, 궁합까지. 2026년 나에게 올 변화는?">
-<meta name="twitter:image" content="https://whatsyoursaju.com/og-image.png">
-<link rel="canonical" href="https://whatsyoursaju.com">
+<meta name="twitter:image" content="https://www.whatsyoursaju.com/og-image.png">
+<link rel="canonical" href="https://www.whatsyoursaju.com">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <meta name="naver-site-verification" content="9aa72fc5a6f1951088326d20b1f3ee5a7809fc74" />
 <meta name="theme-color" content="#0a0610">
@@ -2534,7 +2534,7 @@ input::placeholder {
   "@type": "WebApplication",
   "name": "SAJU — 사주명리 분석",
   "alternateName": "사주풀이",
-  "url": "https://whatsyoursaju.com",
+  "url": "https://www.whatsyoursaju.com",
   "description": "정밀 사주명리 분석. 생년월일시만 입력하면 성격, 재물운, 연애운, 건강, 올해 운세까지 무료로 확인하세요.",
   "applicationCategory": "LifestyleApplication",
   "operatingSystem": "Web",
@@ -2549,9 +2549,9 @@ input::placeholder {
   "author": {
     "@type": "Organization",
     "name": "SAJU",
-    "url": "https://whatsyoursaju.com"
+    "url": "https://www.whatsyoursaju.com"
   },
-  "image": "https://whatsyoursaju.com/og-image.png"
+  "image": "https://www.whatsyoursaju.com/og-image.png"
 }
 </script>
 <script type="application/ld+json">
@@ -2595,7 +2595,7 @@ input::placeholder {
       "@type": "ListItem",
       "position": 1,
       "name": "SAJU 사주명리 분석",
-      "item": "https://whatsyoursaju.com"
+      "item": "https://www.whatsyoursaju.com"
     }
   ]
 }
@@ -4156,7 +4156,7 @@ function buildGunghapDeepLink(data) {
     py: data.partnerYear, pm: data.partnerMonth, pd: data.partnerDay
   };
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  return { encoded, url: `https://whatsyoursaju.com/share/gunghap?d=${encoded}` };
+  return { encoded, url: `https://www.whatsyoursaju.com/share/gunghap?d=${encoded}` };
 }
 
 function shareGunghap() {
@@ -4180,7 +4180,7 @@ function shareGunghap() {
       <div><div style="font-size:11px;color:var(--text-dim)">연애</div><div style="font-size:18px;color:var(--gold-light)">${data.loveScore}</div></div>
       <div><div style="font-size:11px;color:var(--text-dim)">업무</div><div style="font-size:18px;color:var(--gold-light)">${data.workScore}</div></div>
     </div>
-    <div class="share-url">whatsyoursaju.com</div>
+    <div class="share-url">www.whatsyoursaju.com</div>
   `;
   card.style.left = '0';
 
@@ -6266,7 +6266,7 @@ function shareAIResponse() {
       <div style="color:#d4a853;font-size:13px;margin-bottom:12px">${escHtml(fingerprint)}</div>
       <div>${escHtml(teaser)}</div>
     </div>
-    <div class="sc-footer">whatsyoursaju.com에서 무료 사주 분석</div>
+    <div class="sc-footer">www.whatsyoursaju.com에서 무료 사주 분석</div>
   `;
   card.style.left = '0';
 
@@ -6277,7 +6277,7 @@ function shareAIResponse() {
         const file = new File([blob], 'saju-insight.png', { type: 'image/png' });
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
-            await navigator.share({ title: 'AI 사주 인사이트', text: fingerprint + '\nhttps://whatsyoursaju.com', files: [file] });
+            await navigator.share({ title: 'AI 사주 인사이트', text: fingerprint + '\nhttps://www.whatsyoursaju.com', files: [file] });
           } catch(e) {}
         } else {
           const url = URL.createObjectURL(blob);
@@ -6337,7 +6337,7 @@ function createShareCard(name, year, month, day, pillars, dayP, yongsinInfo, day
         12운성 <strong>${운성순화[dayUnsung] || dayUnsung}</strong> · ${용어순화['용신']} <strong>${오행한자[yongsinInfo.용신]}·${오행한자[yongsinInfo.희신]}</strong>
         ${(sinsalList || []).length > 0 ? `<br><span style="font-size:0.75rem; color:#e8d5a3;">${(sinsalList || []).slice(0, 3).map(s => 신살사전[s.name].아이콘 + ' ' + 신살사전[s.name].순화).join(' · ')}</span>` : ''}
       </div>
-      <div class="sc-footer">whatsyoursaju.com</div>
+      <div class="sc-footer">www.whatsyoursaju.com</div>
     </div>
   `;
   document.body.appendChild(card);
